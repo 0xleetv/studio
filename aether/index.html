@@ -1,0 +1,2556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AETHER Phone 1 // Titanium Pro — Flagship Showcase</title>
+
+  <!-- Typography: Cinzel for high-fashion editorial headers, Inter for ultra-clean tech copy -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Core Libraries: Three.js and GSAP with ScrollTrigger via CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <style>
+    /* ==========================================================================
+       1. LUXURY DARK-MODE DESIGN SYSTEM (#0a0d14 base, zero voids)
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-base: #0a0d14;
+      --bg-elevated: #111724;
+      --surface-glass: rgba(18, 24, 38, 0.45);
+      --border-glass: rgba(255, 255, 255, 0.12);
+      --border-highlight: rgba(255, 255, 255, 0.28);
+      --text-primary: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --accent-titanium: #cbd5e1;
+      --accent-cyan: #38bdf8;
+      --accent-copper: #ea580c;
+      --accent-gold: #d4b886;
+      --font-serif: 'Cinzel', serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    html {
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      background: radial-gradient(ellipse at 50% 20%, #162032 0%, #0d131f 45%, #0a0d14 100%);
+      background-attachment: fixed;
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: hidden;
+      width: 100%;
+      position: relative;
+      touch-action: pan-y;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    ::selection {
+      background: var(--accent-cyan);
+      color: #0a0d14;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0a0d14;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.18);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.35);
+    }
+
+    /* ==========================================================================
+       2. PERSISTENT FIXED 3D CANVAS (Living reactive backdrop across entire document)
+       ========================================================================== */
+    #canvas-container {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      z-index: 1;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: none;
+    }
+
+    #webgl-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      outline: none;
+    }
+
+    /* Studio Ambient Lighting Vignette */
+    .studio-vignette {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      background: 
+        radial-gradient(circle at 50% 50%, transparent 45%, rgba(10, 13, 20, 0.55) 90%),
+        linear-gradient(to bottom, rgba(10, 13, 20, 0.4) 0%, transparent 12%, transparent 88%, rgba(10, 13, 20, 0.8) 100%);
+    }
+
+    /* ==========================================================================
+       3. STICKY PRODUCTION NAVIGATION BAR (True Glassmorphism)
+       ========================================================================== */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      z-index: 100;
+      background: rgba(18, 24, 38, 0.55);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid var(--border-glass);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      transition: all 0.3s ease;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .brand-logo {
+      font-family: var(--font-serif);
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.26em;
+      color: #ffffff;
+      text-transform: uppercase;
+    }
+
+    .brand-pill {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 18px;
+      background: rgba(18, 24, 38, 0.65);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-glass);
+      border-top: 1px solid var(--border-highlight);
+      color: var(--accent-titanium);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      list-style: none;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      transition: color 0.25s ease;
+    }
+
+    .nav-link:hover {
+      color: #ffffff;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .btn-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      color: #0a0d14;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 9px 24px;
+      border-radius: 24px;
+      text-decoration: none;
+      border: 1px solid transparent;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .btn-cta:hover {
+      background: #ffffff;
+      box-shadow: 0 0 24px rgba(255, 255, 255, 0.35);
+      transform: translateY(-1px);
+    }
+
+    /* ==========================================================================
+       4. CONTINUOUS DOCUMENT FLOW (Real semantic sections, no dead stops)
+       ========================================================================== */
+    .document-stream {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      pointer-events: auto;
+      touch-action: pan-y;
+    }
+
+    .editorial-section {
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      padding: 120px 7vw;
+      pointer-events: none;
+      touch-action: pan-y;
+    }
+
+    .editorial-section.align-left {
+      justify-content: flex-start;
+    }
+
+    .editorial-section.align-right {
+      justify-content: flex-end;
+    }
+
+    .editorial-section.align-center {
+      justify-content: center;
+      text-align: center;
+    }
+
+    /* TRUE GLASSMORPHISM ON EDITORIAL STORY CARDS */
+    .story-card {
+      width: 480px;
+      max-width: calc(100vw - 48px);
+      pointer-events: auto;
+      background: rgba(18, 24, 38, 0.45);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-top: 1px solid rgba(255, 255, 255, 0.28);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      border-radius: 18px;
+      padding: 44px 40px;
+      transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .story-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.22);
+      border-top-color: rgba(255, 255, 255, 0.45);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), 0 0 35px rgba(56, 189, 248, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    }
+
+    .card-kicker {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--accent-cyan);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-kicker::before {
+      content: '';
+      display: inline-block;
+      width: 18px;
+      height: 1px;
+      background: currentColor;
+    }
+
+    .card-title {
+      font-family: var(--font-serif);
+      font-size: 38px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      line-height: 1.15;
+      color: #ffffff;
+      margin-bottom: 18px;
+    }
+
+    .card-desc {
+      font-size: 15px;
+      line-height: 1.75;
+      color: var(--text-muted);
+      font-weight: 300;
+      margin-bottom: 24px;
+    }
+
+    .card-specs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .spec-node {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .spec-key {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .spec-val {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    /* Hero Section */
+    #hero-section {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      text-align: center;
+      padding: 140px 24px 48px;
+      pointer-events: none;
+      touch-action: pan-y;
+    }
+
+    .hero-header-block {
+      pointer-events: auto;
+      max-width: 820px;
+    }
+
+    .hero-kicker {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.36em;
+      text-transform: uppercase;
+      color: var(--accent-titanium);
+      margin-bottom: 16px;
+    }
+
+    .hero-main-title {
+      font-family: var(--font-serif);
+      font-size: 56px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      line-height: 1.1;
+      color: #ffffff;
+      margin-bottom: 18px;
+      text-shadow: 0 4px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    .hero-subhead {
+      font-size: 17px;
+      line-height: 1.6;
+      color: var(--text-muted);
+      font-weight: 300;
+      max-width: 580px;
+      margin: 0 auto;
+    }
+
+    .hero-scroll-cue {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      pointer-events: auto;
+      opacity: 0.8;
+      transition: opacity 0.4s ease;
+    }
+
+    .scroll-cue-text {
+      font-size: 10px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .scroll-mouse-icon {
+      width: 18px;
+      height: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 12px;
+      position: relative;
+    }
+
+    .scroll-mouse-icon::after {
+      content: '';
+      position: absolute;
+      top: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 5px;
+      background: #ffffff;
+      border-radius: 2px;
+      animation: mouseScroll 1.6s infinite ease-in-out;
+    }
+
+    @keyframes mouseScroll {
+      0% { transform: translate(-50%, 0); opacity: 1; }
+      100% { transform: translate(-50%, 8px); opacity: 0; }
+    }
+
+    /* ==========================================================================
+       5. RICH PRODUCTION CONTENT SECTIONS (True Glassmorphism)
+       ========================================================================== */
+    .content-container {
+      position: relative;
+      width: 100%;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 40px;
+      pointer-events: auto;
+    }
+
+    .section-header-block {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    .section-kicker-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--accent-cyan);
+      margin-bottom: 12px;
+    }
+
+    .section-heading-title {
+      font-family: var(--font-serif);
+      font-size: 40px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: #ffffff;
+      line-height: 1.2;
+    }
+
+    /* SPECS COMPARISON GRID */
+    .specs-section {
+      padding: 100px 0;
+    }
+
+    .specs-table-card {
+      background: rgba(18, 24, 38, 0.45);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-top: 1px solid rgba(255, 255, 255, 0.28);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      border-radius: 18px;
+      padding: 48px;
+      transition: border-color 0.3s ease;
+    }
+
+    .specs-table-card:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .specs-grid-row {
+      display: grid;
+      grid-template-columns: 220px 1fr 1fr;
+      padding: 24px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      align-items: center;
+    }
+
+    .specs-grid-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .spec-category-title {
+      font-family: var(--font-serif);
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #ffffff;
+    }
+
+    .spec-cell-highlight {
+      font-size: 14px;
+      color: var(--accent-cyan);
+      font-weight: 500;
+      line-height: 1.6;
+    }
+
+    .spec-cell-detail {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* INTERACTIVE PRICING & FINISH SELECTOR */
+    .pricing-section {
+      padding: 80px 0 100px;
+    }
+
+    .pricing-card {
+      background: rgba(18, 24, 38, 0.45);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-top: 1px solid rgba(255, 255, 255, 0.28);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      border-radius: 18px;
+      padding: 56px 64px;
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 56px;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pricing-info-col {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .pricing-badge {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--accent-cyan);
+    }
+
+    .pricing-product-title {
+      font-family: var(--font-serif);
+      font-size: 38px;
+      font-weight: 500;
+      line-height: 1.15;
+      color: #ffffff;
+    }
+
+    .pricing-product-desc {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--text-muted);
+      font-weight: 300;
+    }
+
+    .price-display-block {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .price-value-hero {
+      font-family: var(--font-serif);
+      font-size: 40px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .price-monthly-note {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Configuration Panel */
+    .config-panel {
+      background: rgba(10, 13, 20, 0.55);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-top: 1px solid rgba(255, 255, 255, 0.24);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      border-radius: 18px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .config-row-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .config-label-title {
+      color: var(--text-muted);
+    }
+
+    .config-label-active {
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    /* Color Swatches */
+    .swatch-group {
+      display: flex;
+      gap: 12px;
+    }
+
+    .swatch-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-top: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 28px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .swatch-pill:hover {
+      border-color: rgba(255, 255, 255, 0.35);
+      color: #ffffff;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .swatch-pill.active {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: #ffffff;
+      color: #ffffff;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+
+    .swatch-circle {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+    }
+
+    .swatch-natural { background: #cbd5e1; }
+    .swatch-obsidian { background: #1e293b; }
+    .swatch-gold { background: #d4b886; }
+
+    /* Storage Selector */
+    .tier-group {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .tier-btn {
+      padding: 11px 0;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-top: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 12px;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .tier-btn:hover {
+      border-color: rgba(255, 255, 255, 0.35);
+      color: #ffffff;
+    }
+
+    .tier-btn.active {
+      border-color: #ffffff;
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.16);
+      box-shadow: 0 0 16px rgba(255, 255, 255, 0.15);
+    }
+
+    .btn-reserve-action {
+      width: 100%;
+      padding: 16px;
+      background: #ffffff;
+      color: #0a0d14;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-reserve-action:hover {
+      box-shadow: 0 0 32px rgba(255, 255, 255, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .delivery-guarantee {
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: -10px;
+    }
+
+    /* PARTNER & BACKERS ECOSYSTEM */
+    .ecosystem-section {
+      padding: 60px 0 80px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .ecosystem-kicker {
+      text-align: center;
+      font-size: 11px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 32px;
+    }
+
+    .ecosystem-badges {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 40px;
+      align-items: center;
+      opacity: 0.75;
+    }
+
+    .ecosystem-item {
+      font-family: var(--font-serif);
+      font-size: 13px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* COMPREHENSIVE FAQ ACCORDION */
+    .faq-section {
+      padding: 100px 0;
+    }
+
+    .faq-wrapper {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .faq-item {
+      background: rgba(18, 24, 38, 0.45);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-top: 1px solid rgba(255, 255, 255, 0.28);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      border-radius: 18px;
+      overflow: hidden;
+      transition: border-color 0.3s ease;
+    }
+
+    .faq-item:hover {
+      border-color: rgba(255, 255, 255, 0.24);
+    }
+
+    .faq-header {
+      width: 100%;
+      padding: 22px 28px;
+      background: transparent;
+      border: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      color: #ffffff;
+      font-family: var(--font-sans);
+      font-size: 16px;
+      font-weight: 500;
+      text-align: left;
+    }
+
+    .faq-chevron {
+      width: 16px;
+      height: 16px;
+      stroke: var(--text-muted);
+      transition: transform 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .faq-item.open .faq-chevron {
+      transform: rotate(180deg);
+      stroke: #ffffff;
+    }
+
+    .faq-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease, padding 0.35s ease;
+      padding: 0 28px;
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .faq-item.open .faq-content {
+      max-height: 240px;
+      padding-bottom: 22px;
+    }
+
+    /* TOAST NOTIFICATION */
+    .toast-modal {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      background: rgba(18, 24, 38, 0.85);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-top: 1px solid rgba(255, 255, 255, 0.35);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      padding: 16px 24px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 200;
+      pointer-events: none;
+    }
+
+    .toast-modal.visible {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .toast-icon {
+      color: #38bdf8;
+    }
+
+    .toast-text {
+      font-size: 13px;
+      color: #ffffff;
+    }
+
+    /* FOOTER */
+    .footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 56px 0 44px;
+      background: rgba(10, 13, 20, 0.85);
+      backdrop-filter: blur(16px);
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-left {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .footer-brand {
+      font-family: var(--font-serif);
+      font-size: 16px;
+      letter-spacing: 0.24em;
+      color: #ffffff;
+    }
+
+    .footer-copy {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .footer-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .footer-link:hover {
+      color: #ffffff;
+    }
+
+    /* ==========================================================================
+       RESPONSIVE ADAPTATIONS & MOBILE CHROME OPTIMIZATIONS
+       ========================================================================== */
+    @media (max-width: 980px) {
+      .navbar {
+        padding: 0 24px;
+        height: 68px;
+      }
+      .nav-links {
+        display: none;
+      }
+      .hero-main-title {
+        font-size: 42px;
+      }
+      .editorial-section {
+        padding: 90px 24px;
+        justify-content: center !important;
+      }
+      .story-card {
+        width: 100%;
+        max-width: 580px;
+        padding: 34px 28px;
+      }
+      .specs-table-card {
+        padding: 32px 24px;
+      }
+      .specs-grid-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      .pricing-card {
+        grid-template-columns: 1fr;
+        padding: 40px 28px;
+        gap: 36px;
+      }
+      .footer-inner {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 0 18px;
+        height: 64px;
+      }
+      .brand-logo {
+        font-size: 17px;
+        letter-spacing: 0.2em;
+      }
+      .brand-pill {
+        display: none;
+      }
+      .btn-cta {
+        padding: 10px 18px;
+        font-size: 11px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        touch-action: manipulation;
+      }
+      .content-container {
+        padding: 0 18px;
+      }
+      #hero-section {
+        padding: 108px 18px 36px;
+      }
+      .hero-kicker {
+        font-size: 10px;
+        letter-spacing: 0.28em;
+        margin-bottom: 12px;
+      }
+      .hero-main-title {
+        font-size: 32px;
+        margin-bottom: 14px;
+      }
+      .hero-subhead {
+        font-size: 15px;
+        line-height: 1.55;
+      }
+      .editorial-section {
+        padding: 72px 18px;
+        min-height: 100vh;
+        min-height: 100dvh;
+      }
+      .story-card {
+        padding: 26px 20px;
+        border-radius: 16px;
+      }
+      .card-kicker {
+        font-size: 10px;
+        letter-spacing: 0.22em;
+        margin-bottom: 10px;
+      }
+      .card-title {
+        font-size: 26px;
+        margin-bottom: 12px;
+      }
+      .card-desc {
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 18px;
+      }
+      .card-specs-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        padding-top: 16px;
+      }
+      .spec-key {
+        font-size: 9px;
+      }
+      .spec-val {
+        font-size: 13px;
+      }
+      .section-heading-title {
+        font-size: 28px;
+      }
+      .specs-section {
+        padding: 70px 0;
+      }
+      .specs-table-card {
+        padding: 24px 18px;
+        border-radius: 16px;
+      }
+      .specs-grid-row {
+        padding: 16px 0;
+      }
+      .pricing-section {
+        padding: 60px 0 80px;
+      }
+      .pricing-card {
+        padding: 28px 20px;
+        gap: 28px;
+        border-radius: 16px;
+      }
+      .pricing-product-title {
+        font-size: 28px;
+      }
+      .price-value-hero {
+        font-size: 34px;
+      }
+      .config-panel {
+        padding: 22px 18px;
+        border-radius: 14px;
+        gap: 20px;
+      }
+      .swatch-group {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .swatch-pill {
+        min-height: 44px;
+        padding: 10px 14px;
+        font-size: 12px;
+        touch-action: manipulation;
+      }
+      .tier-group {
+        gap: 8px;
+      }
+      .tier-btn {
+        min-height: 44px;
+        font-size: 12px;
+        touch-action: manipulation;
+      }
+      .btn-reserve-action {
+        min-height: 48px;
+        font-size: 12px;
+        touch-action: manipulation;
+      }
+      .faq-section {
+        padding: 70px 0;
+      }
+      .faq-header {
+        padding: 18px 20px;
+        font-size: 14px;
+        min-height: 48px;
+        touch-action: manipulation;
+      }
+      .faq-content {
+        padding: 0 20px;
+        font-size: 13px;
+      }
+      .faq-item.open .faq-content {
+        padding-bottom: 18px;
+      }
+      .toast-modal {
+        left: 16px;
+        right: 16px;
+        bottom: 20px;
+        transform: translateY(120px);
+        justify-content: center;
+        padding: 14px 18px;
+        border-radius: 14px;
+      }
+      .toast-modal.visible {
+        transform: translateY(0);
+      }
+      .ecosystem-badges {
+        gap: 24px;
+      }
+      .footer-links {
+        flex-direction: column;
+        gap: 14px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero-main-title {
+        font-size: 26px;
+      }
+      .hero-subhead {
+        font-size: 13px;
+      }
+      .card-title {
+        font-size: 23px;
+      }
+      .story-card {
+        padding: 20px 16px;
+      }
+      .card-specs-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .tier-group {
+        grid-template-columns: 1fr;
+      }
+      .section-heading-title {
+        font-size: 24px;
+      }
+      .price-value-hero {
+        font-size: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. PERSISTENT FIXED 3D CANVAS (Always visible throughout entire document) -->
+  <div id="canvas-container">
+    <canvas id="webgl-canvas"></canvas>
+  </div>
+  <div class="studio-vignette"></div>
+
+  <!-- 2. STICKY PRODUCTION NAVIGATION BAR -->
+  <header class="navbar">
+    <a href="#hero-section" class="nav-brand">
+      <span class="brand-logo">AETHER</span>
+      <span class="brand-pill">TITANIUM PRO</span>
+    </a>
+
+    <nav>
+      <ul class="nav-links">
+        <li><a href="#optics-section" class="nav-link">Optics</a></li>
+        <li><a href="#silicon-section" class="nav-link">Silicon</a></li>
+        <li><a href="#materials-section" class="nav-link">Materials</a></li>
+        <li><a href="#specs-section" class="nav-link">Specs</a></li>
+        <li><a href="#pricing-section" class="nav-link">Pricing</a></li>
+        <li><a href="#faq-section" class="nav-link">FAQ</a></li>
+      </ul>
+    </nav>
+
+    <div class="nav-actions">
+      <a href="#pricing-section" class="btn-cta">Pre-order</a>
+    </div>
+  </header>
+
+  <!-- 3. CONTINUOUS DOCUMENT FLOW (Real semantic sections, no dead stops) -->
+  <div class="document-stream" id="scrolly-stream">
+
+    <!-- HERO SECTION -->
+    <section class="editorial-section align-center" id="hero-section">
+      <div class="hero-header-block">
+        <div class="hero-kicker">AETHER Phone 1 // Flagship Edition</div>
+        <h1 class="hero-main-title">Forged in Titanium. Driven by Bionic Silicon.</h1>
+        <p class="hero-subhead">
+          An ultra-thin monolithic design engineered from aerospace Grade 5 titanium, featuring folded periscope optics and a next-generation 3nm neural engine.
+        </p>
+      </div>
+
+      <div class="hero-scroll-cue">
+        <span class="scroll-cue-text">Scroll to explore hardware</span>
+        <div class="scroll-mouse-icon"></div>
+      </div>
+    </section>
+
+    <!-- SECTION 1: THE 200MP PERISCOPE ARRAY -->
+    <section class="editorial-section align-left" id="optics-section">
+      <article class="story-card">
+        <div class="card-kicker">01 // Optical Engineering</div>
+        <h2 class="card-title">The 200MP Periscope Array</h2>
+        <p class="card-desc">
+          A bespoke folded optical light-path. Floating anti-reflective lens discs and sapphire front elements align with 5-axis sensor-shift stabilization, capturing medium-format detail in the thinnest envelope ever engineered.
+        </p>
+        <div class="card-specs-grid">
+          <div class="spec-node">
+            <span class="spec-key">Main Sensor</span>
+            <span class="spec-val">1-inch Quad Pixel</span>
+          </div>
+          <div class="spec-node">
+            <span class="spec-key">Focal Range</span>
+            <span class="spec-val">13mm – 120mm</span>
+          </div>
+          <div class="spec-node">
+            <span class="spec-key">Stabilization</span>
+            <span class="spec-val">10,000 cal/sec</span>
+          </div>
+          <div class="spec-node">
+            <span class="spec-key">Glass Coating</span>
+            <span class="spec-val">Sapphire Fluorite</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- SECTION 2: A19 PRO & VAPOR DYNAMICS -->
+    <section class="editorial-section align-right" id="silicon-section">
+      <article class="story-card">
+        <div class="card-kicker">02 // Silicon Dynamics</div>
+        <h2 class="card-title">A19 Pro & Vapor Dynamics</h2>
+        <p class="card-desc">
+          Beneath the surface lies a 3-nanometer silicon monolith paired with a laser-welded copper vapor chamber. Stamped fluid micro-channels dissipate extreme thermal spikes instantaneously during sustained AI workflows.
+        </p>
+        <div class="card-specs-grid">
+          <div class="spec-node">
+            <span class="spec-key">Silicon Node</span>
+            <span class="spec-val">3nm FinFET Pro</span>
+          </div>
+          <div class="spec-node">
+            <span class="spec-key">Neural Engine</span>
+            <span class="spec-val">42 TOPS Matrix</span>
+          </div>
+          <div class="spec-node">
+            <span class="spec-key">Thermal Pipe</span>
+            <span class="spec-val">3D Vapor Jet</span>
+          </div>
+          <div class="spec-node">
+            <span class="spec-key">Sustained Peak</span>
+            <span class="spec-val">+40% GPU Thru</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- SECTION 3: AEROSPACE TITANIUM & DISPLAY -->
+    <section class="editorial-section align-left" id="materials-section">
+      <article class="story-card">
+        <div class="card-kicker">03 // Chassis & Display</div>
+        <h2 class="card-title">Aerospace Titanium & Display</h2>
+        <p class="card-desc">
+          Precision-machined from aerospace Ti-6Al-4V titanium alloy. An ultralight midframe provides unprecedented structural rigidity with sub-micron tolerances, contoured seamlessly into satin micro-blasted chamfers.
+        </p>
+        <div class="card-specs-grid">
+          <div class="spec-node">
+            <span class="spec-key">Chassis Alloy</span>
+            <span class="spec-val">Ti-6Al-4V Grade 5</span>
+          </div>
+          <div class="spec-node">
+            <span class="spec-key">Yield Strength</span>
+            <span class="spec-val">830 MPa</span>
+          </div>
+          <div class="spec-node">
+            <span class="spec-key">Panel Tech</span>
+            <span class="spec-val">Tandem OLED Pro</span>
+          </div>
+          <div class="spec-node">
+            <span class="spec-key">Peak Luminance</span>
+            <span class="spec-val">3,000 Nits</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- SECTION 4: CONVERGENCE -->
+    <section class="editorial-section align-right" id="convergence-section">
+      <article class="story-card">
+        <div class="card-kicker">04 // Complete Synthesis</div>
+        <h2 class="card-title">Seamless Convergence</h2>
+        <p class="card-desc">
+          Every discrete component contracts back into zero-tolerance harmony. The result is an uncompromising, ultra-thin monolith engineered to last generations without compromise.
+        </p>
+        <div class="card-specs-grid">
+          <div class="spec-node">
+            <span class="spec-key">Profile</span>
+            <span class="spec-val">7.8 mm Profile</span>
+          </div>
+          <div class="spec-node">
+            <span class="spec-key">Ingress</span>
+            <span class="spec-val">IP68 (6m / 30m)</span>
+          </div>
+          <div class="spec-node">
+            <span class="spec-key">Bezel</span>
+            <span class="spec-val">1.15 mm Uniform</span>
+          </div>
+          <div class="spec-node">
+            <span class="spec-key">Weight</span>
+            <span class="spec-val">188 grams</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- TECHNICAL SPECS COMPARISON GRID -->
+    <section class="specs-section" id="specs-section">
+      <div class="content-container">
+        <div class="section-header-block">
+          <div class="section-kicker-label">Technical Architecture</div>
+          <h2 class="section-heading-title">Engineering Specifications</h2>
+        </div>
+
+        <div class="specs-table-card">
+          <div class="specs-grid-row">
+            <div class="spec-category-title">Display</div>
+            <div class="spec-cell-highlight">6.8-inch Tandem Super Retina XDR Pro OLED</div>
+            <div class="spec-cell-detail">1Hz–120Hz ProMotion, 3000 nits peak, 2868 x 1320 px at 460 ppi, Ceramic Shield Gen 2</div>
+          </div>
+          <div class="specs-grid-row">
+            <div class="spec-category-title">Silicon</div>
+            <div class="spec-cell-highlight">A19 Pro Bionic Chip (3nm FinFET Architecture)</div>
+            <div class="spec-cell-detail">6-core CPU (2 performance + 4 efficiency), 6-core GPU with hardware ray tracing, 16-core NPU (42 TOPS)</div>
+          </div>
+          <div class="specs-grid-row">
+            <div class="spec-category-title">Cameras</div>
+            <div class="spec-cell-highlight">Quad-Prism 200MP Triple Camera System</div>
+            <div class="spec-cell-detail">200MP Main (f/1.6, 2nd-gen OIS), 48MP Ultra Wide (120° FOV, macro), 48MP 5x Periscope Telephoto (120mm, f/2.8)</div>
+          </div>
+          <div class="specs-grid-row">
+            <div class="spec-category-title">Battery</div>
+            <div class="spec-cell-highlight">Solid-State Silicon-Carbon 5,200 mAh</div>
+            <div class="spec-cell-detail">Up to 34 hours video playback, 50W wired charging (50% in 18 min), 25W MagSafe / Qi2 wireless</div>
+          </div>
+          <div class="specs-grid-row">
+            <div class="spec-category-title">Chassis</div>
+            <div class="spec-cell-highlight">Aerospace Ti-6Al-4V Grade 5 Titanium Midframe</div>
+            <div class="spec-cell-detail">Satin micro-blasted finish, textured matte AG back glass, Action Button, IP68 water & dust resistance</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INTERACTIVE PRICING & STORAGE TIER SELECTOR -->
+    <section class="pricing-section" id="pricing-section">
+      <div class="content-container">
+        <div class="pricing-card">
+          
+          <!-- Product Description -->
+          <div class="pricing-info-col">
+            <span class="pricing-badge">Direct Factory Allocation</span>
+            <h2 class="pricing-product-title">AETHER Phone 1 // Titanium Pro</h2>
+            <p class="pricing-product-desc">
+              Precision milled titanium frame, 120Hz Tandem OLED, A19 Pro Bionic silicon, braided Kevlar fast-charge cable, and 2-year AetherCare concierge warranty included.
+            </p>
+            
+            <div class="price-display-block">
+              <span class="price-value-hero" id="price-hero-display">$1,199</span>
+              <span class="price-monthly-note" id="price-monthly-display">or $49.95/mo for 24 months</span>
+            </div>
+          </div>
+
+          <!-- Configuration Panel -->
+          <div class="config-panel">
+            
+            <!-- Finish Selector -->
+            <div>
+              <div class="config-row-header" style="margin-bottom: 12px;">
+                <span class="config-label-title">Titanium Finish</span>
+                <span class="config-label-active" id="active-finish-label">Natural Titanium</span>
+              </div>
+              <div class="swatch-group">
+                <button class="swatch-pill active" data-color="natural" data-name="Natural Titanium">
+                  <span class="swatch-circle swatch-natural"></span>
+                  <span>Natural</span>
+                </button>
+                <button class="swatch-pill" data-color="obsidian" data-name="Obsidian Black">
+                  <span class="swatch-circle swatch-obsidian"></span>
+                  <span>Obsidian</span>
+                </button>
+                <button class="swatch-pill" data-color="gold" data-name="Desert Gold">
+                  <span class="swatch-circle swatch-gold"></span>
+                  <span>Desert Gold</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Capacity Selector -->
+            <div>
+              <div class="config-row-header" style="margin-bottom: 12px;">
+                <span class="config-label-title">Storage Tier</span>
+                <span class="config-label-active" id="active-tier-label">256 GB</span>
+              </div>
+              <div class="tier-group">
+                <button class="tier-btn active" data-storage="256" data-price="$1,199" data-monthly="$49.95">256 GB</button>
+                <button class="tier-btn" data-storage="512" data-price="$1,399" data-monthly="$58.29">512 GB</button>
+                <button class="tier-btn" data-storage="1TB" data-price="$1,599" data-monthly="$66.62">1 TB</button>
+              </div>
+            </div>
+
+            <!-- Reserve Button -->
+            <button class="btn-reserve-action" id="btn-preorder-action">
+              <span>Reserve Your Allocation</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </button>
+            <div class="delivery-guarantee">Ships Worldwide November 2026. Zero risk, 100% refundable reservation.</div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- PARTNER & CARRIER ECOSYSTEM -->
+    <section class="ecosystem-section">
+      <div class="content-container">
+        <div class="ecosystem-kicker">Engineered with Global Technology Partners</div>
+        <div class="ecosystem-badges">
+          <span class="ecosystem-item">TSMC 3nm Node</span>
+          <span class="ecosystem-item">Corning Ceramic Shield</span>
+          <span class="ecosystem-item">Qualcomm Snapdragon X75</span>
+          <span class="ecosystem-item">Dolby Vision & Atmos</span>
+          <span class="ecosystem-item">Qi2 Wireless Certified</span>
+          <span class="ecosystem-item">Global Dual eSIM</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPREHENSIVE FAQ ACCORDION -->
+    <section class="faq-section" id="faq-section">
+      <div class="content-container">
+        <div class="section-header-block">
+          <div class="section-kicker-label">Assistance & Support</div>
+          <h2 class="section-heading-title">Frequently Asked Questions</h2>
+        </div>
+
+        <div class="faq-wrapper">
+          <div class="faq-item">
+            <button class="faq-header">
+              <span>What global cellular bands and satellite frequencies are supported?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="faq-content">
+              AETHER Phone 1 supports universal 5G NR (sub-6 GHz and mmWave) across over 48 worldwide bands, alongside integrated L-band and S-band satellite SOS messaging and emergency location beacons operational without cellular tower coverage.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-header">
+              <span>How does the 2-Year AetherCare Concierge Warranty work?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="faq-content">
+              Every AETHER Phone 1 includes 24 months of worldwide complimentary accidental damage repair, express courier replacement within 24 hours in over 60 countries, and direct 24/7 dedicated engineering concierge support.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-header">
+              <span>Is the Grade 5 titanium chassis scratch and fingerprint resistant?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="faq-content">
+              Yes. The Ti-6Al-4V titanium rail undergoes high-pressure satin micro-blasting followed by a physical vapor deposition (PVD) oleophobic barrier that repels oils and resists micro-abrasions under everyday pocket use.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-header">
+              <span>Can I trade in my existing smartphone for instant credit?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="faq-content">
+              Yes. During checkout finalization prior to shipment, you will be invited to submit your existing device details for an instant prepaid trade-in kit, receiving up to $800 in refund credit directly back to your payment card.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="content-container">
+        <div class="footer-inner">
+          <div class="footer-left">
+            <div class="footer-brand">AETHER</div>
+            <div class="footer-copy">© 2026 AETHER Technologies Inc. All rights reserved. Designed in California.</div>
+          </div>
+
+          <ul class="footer-links">
+            <li><a href="#" class="footer-link">Privacy Policy</a></li>
+            <li><a href="#" class="footer-link">Terms of Supply</a></li>
+            <li><a href="#" class="footer-link">Environmental Statement</a></li>
+            <li><a href="#" class="footer-link">Global Support</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="toast-modal" id="toast-modal">
+    <div class="toast-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M20 6L9 17l-5-5"/>
+      </svg>
+    </div>
+    <div class="toast-text" id="toast-text">Priority pre-order reservation confirmed.</div>
+  </div>
+
+
+  <!-- ==========================================================================
+       6. THREE.JS LUXURY PHYSICAL SHADING & CONTINUOUS SCROLL/MOUSE PARALLAX
+       ========================================================================== -->
+  <script>
+    (function() {
+      'use strict';
+
+      /* --------------------------------------------------------------------------
+         A. THREE.JS ENGINE SETUP & SHADOW MAPPING
+         -------------------------------------------------------------------------- */
+      const canvas = document.getElementById('webgl-canvas');
+      const renderer = new THREE.WebGLRenderer({
+        canvas,
+        antialias: true,
+        alpha: true,
+        powerPreference: 'high-performance'
+      });
+      const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || ('ontouchstart' in window && window.innerWidth <= 980);
+      const targetDPR = isMobileDevice ? Math.min(window.devicePixelRatio || 1, 1.8) : Math.min(window.devicePixelRatio || 1, 2);
+      renderer.setPixelRatio(targetDPR);
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.38;
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+      const scene = new THREE.Scene();
+      
+      const camera = new THREE.PerspectiveCamera(32, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.set(0, 0, 78);
+
+      /* --------------------------------------------------------------------------
+         B. PROCEDURAL STUDIO ENVIRONMENT MAP (For True Anisotropic & Glass Glare)
+         -------------------------------------------------------------------------- */
+      const envCanvas = document.createElement('canvas');
+      envCanvas.width = 1024;
+      envCanvas.height = 512;
+      const eCtx = envCanvas.getContext('2d');
+
+      // Studio horizon gradient
+      const envGrad = eCtx.createLinearGradient(0, 0, 0, 512);
+      envGrad.addColorStop(0, '#1e293b');
+      envGrad.addColorStop(0.48, '#0f172a');
+      envGrad.addColorStop(0.52, '#090d16');
+      envGrad.addColorStop(1, '#020617');
+      eCtx.fillStyle = envGrad;
+      eCtx.fillRect(0, 0, 1024, 512);
+
+      // Overhead softbox light strip
+      eCtx.fillStyle = '#ffffff';
+      eCtx.filter = 'blur(16px)';
+      eCtx.fillRect(250, 40, 524, 80);
+
+      // Warm key softbox
+      eCtx.fillStyle = '#fffbeb';
+      eCtx.filter = 'blur(24px)';
+      eCtx.fillRect(700, 120, 240, 260);
+
+      // Cool rim softbox
+      eCtx.fillStyle = '#38bdf8';
+      eCtx.filter = 'blur(20px)';
+      eCtx.fillRect(60, 160, 180, 240);
+      eCtx.filter = 'none';
+
+      const envTexture = new THREE.CanvasTexture(envCanvas);
+      envTexture.mapping = THREE.EquirectangularReflectionMapping;
+      const pmremGenerator = new THREE.PMREMGenerator(renderer);
+      pmremGenerator.compileEquirectangularShader();
+      const studioEnvMap = pmremGenerator.fromEquirectangular(envTexture).texture;
+      scene.environment = studioEnvMap;
+
+      /* --------------------------------------------------------------------------
+         C. PROCEDURAL TEXTURES (BRUSHED TITANIUM, STAMPED COPPER, OPTICAL COATING)
+         -------------------------------------------------------------------------- */
+      // 1. Brushed Titanium Anisotropic Texture
+      const brushedCanvas = document.createElement('canvas');
+      brushedCanvas.width = 512;
+      brushedCanvas.height = 512;
+      const bCtx = brushedCanvas.getContext('2d');
+      bCtx.fillStyle = '#808080';
+      bCtx.fillRect(0, 0, 512, 512);
+      for (let i = 0; i < 4000; i++) {
+        const val = Math.floor(115 + Math.random() * 30);
+        bCtx.fillStyle = `rgb(${val},${val},${val})`;
+        const y = Math.random() * 512;
+        bCtx.fillRect(0, y, 512, Math.random() * 1.5 + 0.5);
+      }
+      const brushedTexture = new THREE.CanvasTexture(brushedCanvas);
+      brushedTexture.wrapS = THREE.RepeatWrapping;
+      brushedTexture.wrapT = THREE.RepeatWrapping;
+      brushedTexture.repeat.set(1, 4);
+
+      // 2. Stamped Copper Vapor Chamber Texture with Micro-Conduits
+      const copperCanvas = document.createElement('canvas');
+      copperCanvas.width = 1024;
+      copperCanvas.height = 1024;
+      const cCtx = copperCanvas.getContext('2d');
+
+      // Brushed copper base
+      cCtx.fillStyle = '#c25e2e';
+      cCtx.fillRect(0, 0, 1024, 1024);
+
+      // Embossed capillary grid
+      cCtx.strokeStyle = 'rgba(234, 88, 12, 0.4)';
+      cCtx.lineWidth = 1;
+      for (let x = 0; x < 1024; x += 16) {
+        cCtx.beginPath(); cCtx.moveTo(x, 0); cCtx.lineTo(x, 1024); cCtx.stroke();
+      }
+      for (let y = 0; y < 1024; y += 16) {
+        cCtx.beginPath(); cCtx.moveTo(0, y); cCtx.lineTo(1024, y); cCtx.stroke();
+      }
+
+      // Micro fluid conduit circuits
+      cCtx.strokeStyle = '#f97316';
+      cCtx.lineWidth = 3.5;
+      cCtx.beginPath();
+      cCtx.roundRect(120, 120, 784, 784, 40);
+      cCtx.roundRect(240, 240, 544, 544, 30);
+      cCtx.stroke();
+
+      // Laser weld seam dots
+      cCtx.fillStyle = '#fdba74';
+      for (let d = 140; d < 880; d += 28) {
+        cCtx.beginPath(); cCtx.arc(d, 120, 2.5, 0, Math.PI * 2); cCtx.fill();
+        cCtx.beginPath(); cCtx.arc(d, 904, 2.5, 0, Math.PI * 2); cCtx.fill();
+        cCtx.beginPath(); cCtx.arc(120, d, 2.5, 0, Math.PI * 2); cCtx.fill();
+        cCtx.beginPath(); cCtx.arc(904, d, 2.5, 0, Math.PI * 2); cCtx.fill();
+      }
+      const copperTexture = new THREE.CanvasTexture(copperCanvas);
+
+      // 3. Multi-Coated Optical Lens Glare Texture (Deep Emerald & Sapphire)
+      const opticCanvas = document.createElement('canvas');
+      opticCanvas.width = 512;
+      opticCanvas.height = 512;
+      const oCtx = opticCanvas.getContext('2d');
+
+      const opticGrad = oCtx.createRadialGradient(256, 256, 10, 256, 256, 256);
+      opticGrad.addColorStop(0, '#06b6d4');   // Iridescent cyan core
+      opticGrad.addColorStop(0.35, '#059669'); // Deep emerald
+      opticGrad.addColorStop(0.7, '#1e1b4b');  // Deep indigo
+      opticGrad.addColorStop(1, '#020617');    // Obsidian edge
+      oCtx.fillStyle = opticGrad;
+      oCtx.fillRect(0, 0, 512, 512);
+
+      // Calibration notches & micro-aperture ring ticks
+      oCtx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+      oCtx.lineWidth = 2;
+      for (let a = 0; a < 36; a++) {
+        const rad = (a / 36) * Math.PI * 2;
+        const r1 = a % 3 === 0 ? 210 : 230;
+        const r2 = 246;
+        oCtx.beginPath();
+        oCtx.moveTo(256 + Math.cos(rad) * r1, 256 + Math.sin(rad) * r1);
+        oCtx.lineTo(256 + Math.cos(rad) * r2, 256 + Math.sin(rad) * r2);
+        oCtx.stroke();
+      }
+      const opticTexture = new THREE.CanvasTexture(opticCanvas);
+
+      /* --------------------------------------------------------------------------
+         D. LIGHTING RIG WITH DYNAMIC SHADOWS & SPECULAR REFLECTION GLARE
+         -------------------------------------------------------------------------- */
+      const ambientLight = new THREE.AmbientLight(0x94a3b8, 1.0);
+      scene.add(ambientLight);
+
+      const keyLightWarm = new THREE.DirectionalLight(0xfffbf2, 3.2);
+      keyLightWarm.position.set(30, 45, 40);
+      keyLightWarm.castShadow = true;
+      keyLightWarm.shadow.mapSize.width = 1024;
+      keyLightWarm.shadow.mapSize.height = 1024;
+      keyLightWarm.shadow.camera.near = 10;
+      keyLightWarm.shadow.camera.far = 120;
+      keyLightWarm.shadow.camera.left = -25;
+      keyLightWarm.shadow.camera.right = 25;
+      keyLightWarm.shadow.camera.top = 25;
+      keyLightWarm.shadow.camera.bottom = -25;
+      keyLightWarm.shadow.bias = -0.001;
+      scene.add(keyLightWarm);
+
+      const fillLightSlate = new THREE.DirectionalLight(0x93c5fd, 2.0);
+      fillLightSlate.position.set(-35, -20, 30);
+      scene.add(fillLightSlate);
+
+      const rimLightTop = new THREE.DirectionalLight(0xffffff, 4.0);
+      rimLightTop.position.set(0, 50, -25);
+      scene.add(rimLightTop);
+
+      const groundBounceLight = new THREE.DirectionalLight(0x38bdf8, 1.0);
+      groundBounceLight.position.set(0, -40, 20);
+      scene.add(groundBounceLight);
+
+      // Amber/Cyan Dual-Phase Silicon Core Pulse Light
+      const internalSiliconGlow = new THREE.PointLight(0x38bdf8, 0, 25, 1.8);
+      internalSiliconGlow.position.set(0, 4, 1.5);
+      scene.add(internalSiliconGlow);
+
+      /* --------------------------------------------------------------------------
+         E. FINISH PALETTES & PHYSICAL MATERIALS
+         -------------------------------------------------------------------------- */
+      const COLOR_PALETTES = {
+        natural: {
+          titanium: 0xbac0cb,
+          backGlass: 0x8a92a1,
+          roughness: 0.18,
+          glassRoughness: 0.22
+        },
+        obsidian: {
+          titanium: 0x1e2430,
+          backGlass: 0x111622,
+          roughness: 0.22,
+          glassRoughness: 0.26
+        },
+        gold: {
+          titanium: 0xcbb084,
+          backGlass: 0xbfa477,
+          roughness: 0.18,
+          glassRoughness: 0.20
+        }
+      };
+
+      let activeTheme = COLOR_PALETTES.natural;
+
+      const phoneGroup = new THREE.Group();
+      scene.add(phoneGroup);
+
+      // Physical Anisotropic Brushed Titanium Material
+      const titaniumFrameMat = new THREE.MeshPhysicalMaterial({
+        color: activeTheme.titanium,
+        metalness: 0.96,
+        roughness: activeTheme.roughness,
+        roughnessMap: brushedTexture,
+        clearcoat: 0.75,
+        clearcoatRoughness: 0.12,
+        reflectivity: 0.95
+      });
+
+      // Hairline Specular Chamfer Highlight Material
+      const chamferMat = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.55
+      });
+
+      // Physical Frosted AG Back Glass with Satin Sheen
+      const backGlassMat = new THREE.MeshPhysicalMaterial({
+        color: activeTheme.backGlass,
+        metalness: 0.15,
+        roughness: activeTheme.glassRoughness,
+        transmission: 0.15,
+        reflectivity: 0.85,
+        clearcoat: 0.85,
+        clearcoatRoughness: 0.15
+      });
+
+      // Ceramic Shield Ultra-Gloss Front Glass with IOR Refraction
+      const displayGlassMat = new THREE.MeshPhysicalMaterial({
+        color: 0x05070a,
+        metalness: 0.08,
+        roughness: 0.03,
+        transmission: 0.92,
+        thickness: 0.9,
+        reflectivity: 0.98,
+        clearcoat: 1.0,
+        clearcoatRoughness: 0.02,
+        ior: 1.54,
+        transparent: true,
+        opacity: 0.88
+      });
+
+      // Micro-Embossed Copper Vapor Chamber Material
+      const copperMat = new THREE.MeshStandardMaterial({
+        color: 0xc86a34,
+        map: copperTexture,
+        bumpMap: copperTexture,
+        bumpScale: 0.04,
+        metalness: 0.94,
+        roughness: 0.32
+      });
+
+      const circuitBoardMat = new THREE.MeshStandardMaterial({
+        color: 0x0c1220,
+        metalness: 0.45,
+        roughness: 0.4
+      });
+
+      const chipDieMat = new THREE.MeshStandardMaterial({
+        color: 0x1e293b,
+        metalness: 0.88,
+        roughness: 0.16,
+        emissive: 0x0369a1,
+        emissiveIntensity: 0.6
+      });
+
+      // Multi-Coated Camera Lens Material
+      const cameraLensMat = new THREE.MeshPhysicalMaterial({
+        color: 0x0f172a,
+        map: opticTexture,
+        metalness: 0.28,
+        roughness: 0.04,
+        transmission: 0.95,
+        thickness: 1.6,
+        reflectivity: 0.99,
+        clearcoat: 1.0,
+        clearcoatRoughness: 0.03
+      });
+
+      function createRoundedRectShape(width, height, radius) {
+        const shape = new THREE.Shape();
+        const x = -width / 2;
+        const y = -height / 2;
+        shape.moveTo(x + radius, y);
+        shape.lineTo(x + width - radius, y);
+        shape.quadraticCurveTo(x + width, y, x + width, y + radius);
+        shape.lineTo(x + width, y + height - radius);
+        shape.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+        shape.lineTo(x + radius, y + height);
+        shape.quadraticCurveTo(x, y + height, x, y + height - radius);
+        shape.lineTo(x, y + radius);
+        shape.quadraticCurveTo(x, y, x + radius, y);
+        return shape;
+      }
+
+      /* --------------------------------------------------------------------------
+         F. COMPONENT SUBSYSTEMS & AMBIENT OCCLUSION CAST SHADOWS
+         -------------------------------------------------------------------------- */
+      const PHONE_W = 14.8;
+      const PHONE_H = 30.5;
+      const CORNER_R = 2.4;
+
+      const layers = {
+        frontGlass: new THREE.Group(),
+        displayPanel: new THREE.Group(),
+        thermalCopper: new THREE.Group(),
+        logicBoard: new THREE.Group(),
+        batteryCells: new THREE.Group(),
+        cameraOptics: new THREE.Group(),
+        cameraPlateau: new THREE.Group(),
+        titaniumFrame: new THREE.Group(),
+        backGlass: new THREE.Group()
+      };
+
+      Object.values(layers).forEach(layer => phoneGroup.add(layer));
+
+      // LAYER 1: BACK FROSTED GLASS SHELL
+      const backGlassGeo = new THREE.ExtrudeGeometry(
+        createRoundedRectShape(PHONE_W - 0.2, PHONE_H - 0.2, CORNER_R - 0.1),
+        { depth: 0.35, bevelEnabled: true, bevelSegments: 3, steps: 1, bevelSize: 0.15, bevelThickness: 0.15 }
+      );
+      const backGlassMesh = new THREE.Mesh(backGlassGeo, backGlassMat);
+      backGlassMesh.position.z = -0.7;
+      backGlassMesh.castShadow = true;
+      backGlassMesh.receiveShadow = true;
+      layers.backGlass.add(backGlassMesh);
+
+      // Back AETHER Logo
+      const logoPlate = new THREE.Mesh(
+        new THREE.PlaneGeometry(3.6, 0.7),
+        new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.96, roughness: 0.08 })
+      );
+      logoPlate.position.set(0, 0, -0.72);
+      logoPlate.rotation.y = Math.PI;
+      layers.backGlass.add(logoPlate);
+
+      // LAYER 2: TITANIUM MIDFRAME CHASSIS & 1PX HAIRLINE BEVEL HIGHLIGHTS
+      const frameGeo = new THREE.ExtrudeGeometry(
+        createRoundedRectShape(PHONE_W, PHONE_H, CORNER_R),
+        { depth: 1.3, bevelEnabled: true, bevelSegments: 5, steps: 1, bevelSize: 0.25, bevelThickness: 0.25 }
+      );
+      const titaniumFrameMesh = new THREE.Mesh(frameGeo, titaniumFrameMat);
+      titaniumFrameMesh.position.z = -0.65;
+      titaniumFrameMesh.castShadow = true;
+      titaniumFrameMesh.receiveShadow = true;
+      layers.titaniumFrame.add(titaniumFrameMesh);
+
+      // 1px Hairline Edge Highlights along Chamfers
+      const frameEdges = new THREE.EdgesGeometry(frameGeo, 24);
+      const hairlineMesh = new THREE.LineSegments(frameEdges, chamferMat);
+      hairlineMesh.position.z = -0.65;
+      layers.titaniumFrame.add(hairlineMesh);
+
+      // Tactile Buttons
+      const btnGeo = new THREE.BoxGeometry(0.2, 2.2, 0.45);
+      const actionBtn = new THREE.Mesh(new THREE.BoxGeometry(0.2, 1.2, 0.45), titaniumFrameMat);
+      actionBtn.position.set(-PHONE_W / 2 - 0.2, 7.5, 0);
+      layers.titaniumFrame.add(actionBtn);
+
+      const volUp = new THREE.Mesh(btnGeo, titaniumFrameMat);
+      volUp.position.set(-PHONE_W / 2 - 0.2, 4.5, 0);
+      layers.titaniumFrame.add(volUp);
+
+      const volDown = new THREE.Mesh(btnGeo, titaniumFrameMat);
+      volDown.position.set(-PHONE_W / 2 - 0.2, 1.8, 0);
+      layers.titaniumFrame.add(volDown);
+
+      const powerBtn = new THREE.Mesh(new THREE.BoxGeometry(0.2, 3.2, 0.45), titaniumFrameMat);
+      powerBtn.position.set(PHONE_W / 2 + 0.2, 4.0, 0);
+      layers.titaniumFrame.add(powerBtn);
+
+      // LAYER 3: DUAL-CELL BATTERY SYSTEM
+      const batteryMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.7, roughness: 0.35 });
+      const batteryCell1 = new THREE.Mesh(new THREE.BoxGeometry(5.8, 16.5, 0.5), batteryMat);
+      batteryCell1.position.set(2.8, -3.5, 0);
+      batteryCell1.castShadow = true;
+      batteryCell1.receiveShadow = true;
+      layers.batteryCells.add(batteryCell1);
+
+      const batteryCell2 = new THREE.Mesh(new THREE.BoxGeometry(5.8, 8.5, 0.5), batteryMat);
+      batteryCell2.position.set(-3.2, -7.5, 0);
+      batteryCell2.castShadow = true;
+      batteryCell2.receiveShadow = true;
+      layers.batteryCells.add(batteryCell2);
+
+      // LAYER 4: LOGIC BOARD & A19 PRO SILICON
+      const pcbShape = createRoundedRectShape(6.5, 10.5, 0.8);
+      const pcbGeo = new THREE.ExtrudeGeometry(pcbShape, { depth: 0.3, bevelEnabled: false });
+      const pcbMesh = new THREE.Mesh(pcbGeo, circuitBoardMat);
+      pcbMesh.position.set(-3.2, 5.2, -0.15);
+      pcbMesh.castShadow = true;
+      pcbMesh.receiveShadow = true;
+      layers.logicBoard.add(pcbMesh);
+
+      const chipMesh = new THREE.Mesh(new THREE.BoxGeometry(3.2, 3.2, 0.25), chipDieMat);
+      chipMesh.position.set(-3.2, 5.2, 0.15);
+      layers.logicBoard.add(chipMesh);
+
+      for (let i = 0; i < 18; i++) {
+        const smd = new THREE.Mesh(
+          new THREE.BoxGeometry(0.4, 0.25, 0.15),
+          new THREE.MeshStandardMaterial({ color: 0xd4b886, metalness: 0.9, roughness: 0.2 })
+        );
+        smd.position.set(-3.2 + (Math.random() - 0.5) * 5.0, 5.2 + (Math.random() - 0.5) * 8.0, 0.1);
+        layers.logicBoard.add(smd);
+      }
+
+      // LAYER 5: STAMPED COPPER VAPOR CHAMBER WITH MICRO-CONDUITS
+      const vaporShape = createRoundedRectShape(12.5, 24.5, 1.8);
+      const vaporGeo = new THREE.ExtrudeGeometry(vaporShape, { depth: 0.14, bevelEnabled: false });
+      const vaporMesh = new THREE.Mesh(vaporGeo, copperMat);
+      vaporMesh.position.z = 0.2;
+      vaporMesh.castShadow = true;
+      vaporMesh.receiveShadow = true;
+      layers.thermalCopper.add(vaporMesh);
+
+      for (let p = 0; p < 3; p++) {
+        const pipe = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 18, 16), copperMat);
+        pipe.position.set(-3 + p * 3, -1, 0.3);
+        pipe.castShadow = true;
+        layers.thermalCopper.add(pipe);
+      }
+
+      // Diffuse Soft Ambient Occlusion Plane under Copper Layer
+      const shadowPlaneGeo = new THREE.PlaneGeometry(13.5, 25.5);
+      const shadowPlaneMat = new THREE.MeshBasicMaterial({
+        color: 0x000000,
+        transparent: true,
+        opacity: 0.35,
+        blending: THREE.MultiplyBlending
+      });
+      const shadowVapor = new THREE.Mesh(shadowPlaneGeo, shadowPlaneMat);
+      shadowVapor.position.z = 0.12;
+      layers.thermalCopper.add(shadowVapor);
+
+      // LAYER 6: TANDEM OLED DISPLAY PANEL
+      const screenCanvas = document.createElement('canvas');
+      screenCanvas.width = 1024;
+      screenCanvas.height = 2048;
+      const sCtx = screenCanvas.getContext('2d');
+
+      const sGrad = sCtx.createRadialGradient(512, 1024, 100, 512, 1024, 1100);
+      sGrad.addColorStop(0, '#1e293b');
+      sGrad.addColorStop(0.5, '#0f172a');
+      sGrad.addColorStop(1, '#0a0d14');
+      sCtx.fillStyle = sGrad;
+      sCtx.fillRect(0, 0, 1024, 2048);
+
+      sCtx.beginPath();
+      sCtx.moveTo(0, 600);
+      sCtx.bezierCurveTo(400, 300, 700, 1400, 1024, 1100);
+      sCtx.bezierCurveTo(700, 1700, 200, 1300, 0, 1900);
+      sCtx.closePath();
+      const silkGrad = sCtx.createLinearGradient(0, 300, 1024, 1800);
+      silkGrad.addColorStop(0, 'rgba(56, 189, 248, 0.22)');
+      silkGrad.addColorStop(0.5, 'rgba(212, 184, 134, 0.18)');
+      silkGrad.addColorStop(1, 'rgba(255, 255, 255, 0.02)');
+      sCtx.fillStyle = silkGrad;
+      sCtx.fill();
+
+      // Dynamic Island Cutout
+      sCtx.fillStyle = '#000000';
+      sCtx.beginPath();
+      sCtx.roundRect(412, 100, 200, 60, 30);
+      sCtx.fill();
+
+      sCtx.fillStyle = 'rgba(255, 255, 255, 0.92)';
+      sCtx.font = '300 130px Inter, sans-serif';
+      sCtx.textAlign = 'center';
+      sCtx.fillText('09:41', 512, 420);
+
+      sCtx.font = '500 28px Inter, sans-serif';
+      sCtx.fillStyle = 'rgba(148, 163, 184, 0.75)';
+      sCtx.fillText('FRIDAY, OCTOBER 3', 512, 490);
+
+      const screenTexture = new THREE.CanvasTexture(screenCanvas);
+      const displayPanelGeo = new THREE.PlaneGeometry(PHONE_W - 0.5, PHONE_H - 0.5);
+      const displayPanelMesh = new THREE.Mesh(displayPanelGeo, new THREE.MeshBasicMaterial({ map: screenTexture }));
+      displayPanelMesh.position.z = 0.55;
+      layers.displayPanel.add(displayPanelMesh);
+
+      // LAYER 7: CERAMIC SHIELD FRONT GLASS WITH SPECULAR GLARE STRIPE & REFRACTED EDGES
+      const frontGlassGeo = new THREE.ExtrudeGeometry(
+        createRoundedRectShape(PHONE_W - 0.1, PHONE_H - 0.1, CORNER_R),
+        { depth: 0.25, bevelEnabled: true, bevelSegments: 3, steps: 1, bevelSize: 0.1, bevelThickness: 0.1 }
+      );
+      const frontGlassMesh = new THREE.Mesh(frontGlassGeo, displayGlassMat);
+      frontGlassMesh.position.z = 0.65;
+      frontGlassMesh.castShadow = true;
+      frontGlassMesh.receiveShadow = true;
+      layers.frontGlass.add(frontGlassMesh);
+
+      // Refracted Internal Edge Borders (1px stroke with rgba(255,255,255,0.4))
+      const glassEdges = new THREE.EdgesGeometry(frontGlassGeo, 24);
+      const glassBorderLines = new THREE.LineSegments(
+        glassEdges,
+        new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.4 })
+      );
+      glassBorderLines.position.z = 0.65;
+      layers.frontGlass.add(glassBorderLines);
+
+      // Dynamic Diagonal Specular Glare Stripe (Reacts to cursor light reflection)
+      const glareCanvas = document.createElement('canvas');
+      glareCanvas.width = 512;
+      glareCanvas.height = 512;
+      const gCtx = glareCanvas.getContext('2d');
+      const glareGrad = gCtx.createLinearGradient(0, 0, 512, 512);
+      glareGrad.addColorStop(0, 'rgba(255, 255, 255, 0)');
+      glareGrad.addColorStop(0.42, 'rgba(255, 255, 255, 0.02)');
+      glareGrad.addColorStop(0.5, 'rgba(255, 255, 255, 0.28)');
+      glareGrad.addColorStop(0.58, 'rgba(255, 255, 255, 0.02)');
+      glareGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      gCtx.fillStyle = glareGrad;
+      gCtx.fillRect(0, 0, 512, 512);
+      const glareTexture = new THREE.CanvasTexture(glareCanvas);
+
+      const glarePlaneGeo = new THREE.PlaneGeometry(PHONE_W * 1.5, PHONE_H * 1.5);
+      const glarePlaneMat = new THREE.MeshBasicMaterial({
+        map: glareTexture,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        opacity: 0.7
+      });
+      const dynamicGlareStripe = new THREE.Mesh(glarePlaneGeo, glarePlaneMat);
+      dynamicGlareStripe.position.z = 0.95;
+      layers.frontGlass.add(dynamicGlareStripe);
+
+      // LAYER 8: QUAD-PRISM CAMERA PLATEAU & EMERALD/SAPPHIRE OPTICS
+      const plateauShape = createRoundedRectShape(6.2, 6.2, 1.4);
+      const plateauGeo = new THREE.ExtrudeGeometry(plateauShape, {
+        depth: 0.6,
+        bevelEnabled: true,
+        bevelSegments: 4,
+        bevelSize: 0.2,
+        bevelThickness: 0.2
+      });
+      const plateauMesh = new THREE.Mesh(plateauGeo, backGlassMat);
+      plateauMesh.position.set(-3.6, 10.8, -1.3);
+      plateauMesh.castShadow = true;
+      plateauMesh.receiveShadow = true;
+      layers.cameraPlateau.add(plateauMesh);
+
+      const lensStackElements = [];
+      const lensCoords = [
+        { x: -4.8, y: 12.0 },
+        { x: -2.4, y: 12.0 },
+        { x: -4.8, y: 9.6 }
+      ];
+
+      lensCoords.forEach((coord) => {
+        // Knurled titanium outer lens ring with 1px chamfer edge
+        const barrelRing = new THREE.Mesh(new THREE.TorusGeometry(1.0, 0.18, 16, 32), titaniumFrameMat);
+        barrelRing.position.set(coord.x, coord.y, -1.5);
+        barrelRing.castShadow = true;
+        layers.cameraPlateau.add(barrelRing);
+
+        const barrelEdge = new THREE.LineSegments(new THREE.EdgesGeometry(barrelRing.geometry), chamferMat);
+        barrelEdge.position.set(coord.x, coord.y, -1.5);
+        layers.cameraPlateau.add(barrelEdge);
+
+        // Stacking precision optical lens discs with deep anti-reflective multi-coating
+        for (let l = 0; l < 3; l++) {
+          const lensDisc = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.85 - l * 0.1, 0.85 - l * 0.1, 0.1, 32),
+            cameraLensMat
+          );
+          lensDisc.rotation.x = Math.PI / 2;
+          lensDisc.position.set(coord.x, coord.y, -1.5 - l * 0.4);
+          lensDisc.castShadow = true;
+          lensDisc.userData = {
+            baseZ: -1.5 - l * 0.4,
+            explodeZ: -1.5 - (l + 1) * 3.4
+          };
+          layers.cameraOptics.add(lensDisc);
+          lensStackElements.push(lensDisc);
+        }
+      });
+
+      const flashMesh = new THREE.Mesh(
+        new THREE.CircleGeometry(0.45, 16),
+        new THREE.MeshStandardMaterial({ color: 0xfff3db, emissive: 0xffe6ba, emissiveIntensity: 0.6 })
+      );
+      flashMesh.position.set(-2.4, 9.6, -1.35);
+      layers.cameraPlateau.add(flashMesh);
+
+      const lidarMesh = new THREE.Mesh(
+        new THREE.CircleGeometry(0.4, 16),
+        new THREE.MeshBasicMaterial({ color: 0x05070a })
+      );
+      lidarMesh.position.set(-3.6, 8.8, -1.35);
+      layers.cameraPlateau.add(lidarMesh);
+
+
+      /* --------------------------------------------------------------------------
+         G. INTERACTIVE MOUSE PARALLAX, GYROSCOPE TILT & DYNAMIC LIGHT REFLECTIONS
+         -------------------------------------------------------------------------- */
+      const mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
+      let hasGyroscope = false;
+
+      // Desktop Mouse Tracking
+      window.addEventListener('mousemove', (e) => {
+        mouse.targetX = (e.clientX / window.innerWidth - 0.5) * 2;
+        mouse.targetY = -(e.clientY / window.innerHeight - 0.5) * 2;
+      });
+
+      // Mobile Touch Drag Tracking (Non-blocking passive listener)
+      window.addEventListener('touchmove', (e) => {
+        if (e.touches && e.touches.length > 0 && !hasGyroscope) {
+          mouse.targetX = (e.touches[0].clientX / window.innerWidth - 0.5) * 2;
+          mouse.targetY = -(e.touches[0].clientY / window.innerHeight - 0.5) * 2;
+        }
+      }, { passive: true });
+
+      // Mobile Gyroscope / Physical Device Tilt Tracking
+      function handleOrientation(e) {
+        if (e.gamma === null || e.beta === null) return;
+        hasGyroscope = true;
+        
+        // gamma: side-to-side tilt in degrees (-90 to +90).
+        // Comfortable hand tilt typically within [-35, 35] deg.
+        const clampedGamma = Math.max(-35, Math.min(35, e.gamma));
+        mouse.targetX = clampedGamma / 35; // Normalized to [-1, 1]
+
+        // beta: front-to-back tilt in degrees (-180 to +180).
+        // Natural reading angle when holding a mobile device is ~45deg.
+        const deltaBeta = e.beta - 45;
+        const clampedBeta = Math.max(-30, Math.min(30, deltaBeta));
+        mouse.targetY = -clampedBeta / 30; // Normalized to [-1, 1]
+      }
+
+      function initGyroscope() {
+        if (typeof window !== 'undefined' && 'DeviceOrientationEvent' in window) {
+          // iOS 13+ requires explicit user gesture to grant permission
+          if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+            const requestGyroPermission = () => {
+              DeviceOrientationEvent.requestPermission()
+                .then((permissionState) => {
+                  if (permissionState === 'granted') {
+                    window.addEventListener('deviceorientation', handleOrientation, { passive: true });
+                  }
+                })
+                .catch(() => {});
+              window.removeEventListener('click', requestGyroPermission);
+              window.removeEventListener('touchstart', requestGyroPermission);
+            };
+            window.addEventListener('click', requestGyroPermission, { once: true, passive: true });
+            window.addEventListener('touchstart', requestGyroPermission, { once: true, passive: true });
+          } else {
+            // Android Chrome and other standards-compliant mobile browsers
+            window.addEventListener('deviceorientation', handleOrientation, { passive: true });
+          }
+        }
+      }
+
+      initGyroscope();
+
+
+      /* --------------------------------------------------------------------------
+         H. FLUID CONTINUOUS GSAP SCROLLTRIGGER MAPPING
+         -------------------------------------------------------------------------- */
+      gsap.registerPlugin(ScrollTrigger);
+
+      const animState = {
+        explodeFactor: 0,
+        phoneRotX: 0.12,
+        phoneRotY: -0.22,
+        phoneRotZ: 0.02,
+        phonePosX: 0,
+        phonePosY: 0,
+        siliconIntensity: 0,
+        opticStackProgress: 0
+      };
+
+      // Hero to Optics Section (Rotate to 45° rear isometric & expand lenses)
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: "#optics-section",
+          start: "top bottom",
+          end: "center center",
+          scrub: 0.6
+        }
+      })
+      .to(animState, {
+        phoneRotX: 0.28,
+        phoneRotY: 1.82,
+        phoneRotZ: -0.06,
+        phonePosX: 4.5,
+        explodeFactor: 0.35,
+        opticStackProgress: 1.0,
+        ease: "none"
+      });
+
+      // Optics Section to Silicon Section (Chassis splits open, glowing A19 Bionic floats forward)
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: "#silicon-section",
+          start: "top bottom",
+          end: "center center",
+          scrub: 0.6
+        }
+      })
+      .to(animState, {
+        phoneRotX: -0.14,
+        phoneRotY: -0.65,
+        phoneRotZ: 0.08,
+        phonePosX: -4.5,
+        explodeFactor: 0.88,
+        opticStackProgress: 0.2,
+        siliconIntensity: 2.8,
+        ease: "none"
+      });
+
+      // Silicon Section to Materials Section (Titanium rails and Ceramic Shield expand)
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: "#materials-section",
+          start: "top bottom",
+          end: "center center",
+          scrub: 0.6
+        }
+      })
+      .to(animState, {
+        phoneRotX: 0.18,
+        phoneRotY: 0.38,
+        phoneRotZ: -0.04,
+        phonePosX: 4.5,
+        explodeFactor: 0.65,
+        opticStackProgress: 0,
+        siliconIntensity: 0.8,
+        ease: "none"
+      });
+
+      // Materials Section to Convergence Section (Snap cleanly back into unified silhouette)
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: "#convergence-section",
+          start: "top bottom",
+          end: "center center",
+          scrub: 0.6
+        }
+      })
+      .to(animState, {
+        phoneRotX: 0.06,
+        phoneRotY: 0.0,
+        phoneRotZ: 0.0,
+        phonePosX: 0,
+        explodeFactor: 0.0,
+        siliconIntensity: 0.0,
+        ease: "none"
+      });
+
+      // Convergence Section into Post-Scroll Content (Gently docks in background)
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: "#specs-section",
+          start: "top bottom",
+          end: "top center",
+          scrub: 0.8
+        }
+      })
+      .to(animState, {
+        phoneRotX: 0.08,
+        phoneRotY: -0.15,
+        phonePosY: 2.0,
+        ease: "none"
+      });
+
+
+      /* --------------------------------------------------------------------------
+         I. RENDER LOOP (Dynamic Light Reflections & Differential Parallax)
+         -------------------------------------------------------------------------- */
+      const clock = new THREE.Clock();
+
+      function renderFrame() {
+        requestAnimationFrame(renderFrame);
+
+        const delta = clock.getDelta();
+        const elapsed = clock.getElapsedTime();
+
+        // Mouse Parallax Lerping (Fluid Inertia)
+        mouse.x += (mouse.targetX - mouse.x) * 0.055;
+        mouse.y += (mouse.targetY - mouse.y) * 0.055;
+
+        // Apply Master 3D Rotations with Reactive Mouse Tilt
+        phoneGroup.rotation.x = animState.phoneRotX + mouse.y * 0.14;
+        phoneGroup.rotation.y = animState.phoneRotY + mouse.x * 0.20;
+        phoneGroup.rotation.z = animState.phoneRotZ - mouse.x * 0.04;
+
+        phoneGroup.position.x = THREE.MathUtils.lerp(phoneGroup.position.x, animState.phonePosX, 0.08);
+        phoneGroup.position.y = THREE.MathUtils.lerp(phoneGroup.position.y, animState.phonePosY, 0.08);
+
+        // Dynamic Studio Lighting Reflections linked directly to Cursor
+        keyLightWarm.position.x = 30 + mouse.x * 35;
+        keyLightWarm.position.y = 45 + mouse.y * 30;
+        fillLightSlate.position.x = -35 - mouse.x * 25;
+        fillLightSlate.position.y = -20 - mouse.y * 20;
+
+        // Dynamic Glare Stripe slides across glass face mimicking real studio light bounce
+        dynamicGlareStripe.position.x = mouse.x * 2.5;
+        dynamicGlareStripe.position.y = mouse.y * 3.5;
+        dynamicGlareStripe.rotation.z = -0.42 + mouse.x * 0.12;
+
+        // Exploded Layer Offsets along Z-axis based on explodeFactor
+        const ef = animState.explodeFactor;
+
+        // Front assemblies move forward (+Z)
+        layers.frontGlass.position.z = ef * 14.5;
+        layers.displayPanel.position.z = ef * 10.8;
+        layers.thermalCopper.position.z = ef * 5.2;
+
+        // Multi-layer differential parallax
+        layers.frontGlass.position.x = mouse.x * 0.45;
+        layers.frontGlass.position.y = mouse.y * 0.45;
+        layers.displayPanel.position.x = mouse.x * 0.3;
+        layers.displayPanel.position.y = mouse.y * 0.3;
+
+        // Logic board and battery suspend in middle
+        layers.logicBoard.position.z = ef * 2.8;
+        layers.batteryCells.position.z = -ef * 1.5;
+
+        // Midframe stays centered
+        layers.titaniumFrame.position.z = 0;
+
+        // Back glass and camera modules move backward (-Z)
+        layers.backGlass.position.z = -ef * 6.5;
+        layers.cameraPlateau.position.z = -ef * 8.2;
+        layers.backGlass.position.x = -mouse.x * 0.35;
+        layers.backGlass.position.y = -mouse.y * 0.35;
+
+        // Optical Lens Stack Discs (Independent stacking control for Section 1)
+        const opticProgress = Math.max(ef, animState.opticStackProgress);
+        lensStackElements.forEach((lens) => {
+          lens.position.z = THREE.MathUtils.lerp(lens.userData.baseZ, lens.userData.explodeZ, opticProgress);
+        });
+
+        // Silicon Core Dual-Phase (Amber/Cyan) Breathing Pulse
+        const pulseCycle = (Math.sin(elapsed * 4) + 1) * 0.5; // 0 to 1
+        const cyanColor = new THREE.Color(0x38bdf8);
+        const amberColor = new THREE.Color(0xf59e0b);
+        internalSiliconGlow.color.copy(cyanColor).lerp(amberColor, pulseCycle * 0.4);
+        internalSiliconGlow.intensity = animState.siliconIntensity * (1 + Math.sin(elapsed * 6) * 0.25);
+
+        // Render Frame
+        renderer.render(scene, camera);
+      }
+
+      renderFrame();
+
+
+      /* --------------------------------------------------------------------------
+         J. RECALIBRATED AUTO-SCALER (Cross-device, portrait mobile & HiDPI optimized)
+         -------------------------------------------------------------------------- */
+      function updateViewportScaling() {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || ('ontouchstart' in window && w <= 980);
+        const cappedDPR = isMobile ? Math.min(window.devicePixelRatio || 1, 1.8) : Math.min(window.devicePixelRatio || 1, 2);
+        renderer.setPixelRatio(cappedDPR);
+
+        const isPortrait = h > w;
+        let scaleFactor;
+        if (isPortrait) {
+          scaleFactor = Math.min(w / 420, h / 860) * 0.46;
+        } else {
+          scaleFactor = Math.min(w / 1440, h / 900) * 0.72;
+        }
+        
+        // Ensures complete phone silhouette fits comfortably with safe padding (never clipped)
+        const finalScale = isPortrait
+          ? Math.max(0.38, Math.min(scaleFactor, 0.58))
+          : Math.max(0.48, Math.min(scaleFactor * 1.18, 0.78));
+        phoneGroup.scale.set(finalScale, finalScale, finalScale);
+      }
+
+      updateViewportScaling();
+
+      window.addEventListener('resize', () => {
+        updateViewportScaling();
+        ScrollTrigger.refresh();
+      });
+
+
+      /* --------------------------------------------------------------------------
+         K. INTERACTIVE PRICING SELECTOR & SWATCH FINISH UPDATES
+         -------------------------------------------------------------------------- */
+      const swatchPills = document.querySelectorAll('.swatch-pill');
+      const activeFinishLabel = document.getElementById('active-finish-label');
+
+      function updatePhoneMaterialTheme(paletteKey) {
+        const theme = COLOR_PALETTES[paletteKey];
+        if (!theme) return;
+
+        gsap.to(titaniumFrameMat.color, {
+          r: ((theme.titanium >> 16) & 255) / 255,
+          g: ((theme.titanium >> 8) & 255) / 255,
+          b: (theme.titanium & 255) / 255,
+          duration: 0.5
+        });
+
+        gsap.to(backGlassMat.color, {
+          r: ((theme.backGlass >> 16) & 255) / 255,
+          g: ((theme.backGlass >> 8) & 255) / 255,
+          b: (theme.backGlass & 255) / 255,
+          duration: 0.5
+        });
+
+        titaniumFrameMat.roughness = theme.roughness;
+        backGlassMat.roughness = theme.glassRoughness;
+      }
+
+      swatchPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+          swatchPills.forEach(p => p.classList.remove('active'));
+          pill.classList.add('active');
+
+          const colorKey = pill.dataset.color;
+          const colorName = pill.dataset.name;
+          activeFinishLabel.textContent = colorName;
+
+          updatePhoneMaterialTheme(colorKey);
+        });
+      });
+
+      // Storage Tier Selector
+      const tierBtns = document.querySelectorAll('.tier-btn');
+      const activeTierLabel = document.getElementById('active-tier-label');
+      const priceHeroDisplay = document.getElementById('price-hero-display');
+      const priceMonthlyDisplay = document.getElementById('price-monthly-display');
+
+      tierBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          tierBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          const storage = btn.dataset.storage;
+          const price = btn.dataset.price;
+          const monthly = btn.dataset.monthly;
+
+          activeTierLabel.textContent = storage.includes('TB') ? storage : `${storage} GB`;
+          priceHeroDisplay.textContent = price;
+          priceMonthlyDisplay.textContent = `or $${monthly}/mo for 24 months`;
+        });
+      });
+
+      // Reserve Submit Action
+      const preorderBtn = document.getElementById('btn-preorder-action');
+      const toastModal = document.getElementById('toast-modal');
+      const toastText = document.getElementById('toast-text');
+
+      preorderBtn.addEventListener('click', () => {
+        const finish = activeFinishLabel.textContent;
+        const tier = activeTierLabel.textContent;
+        const price = priceHeroDisplay.textContent;
+
+        toastText.textContent = `AETHER Phone 1 (${finish}, ${tier}) reserved at ${price}. Priority slot locked!`;
+        toastModal.classList.add('visible');
+
+        setTimeout(() => {
+          toastModal.classList.remove('visible');
+        }, 4500);
+      });
+
+
+      /* --------------------------------------------------------------------------
+         L. FAQ ACCORDION INTERACTIVITY
+         -------------------------------------------------------------------------- */
+      const faqItems = document.querySelectorAll('.faq-item');
+
+      faqItems.forEach(item => {
+        const header = item.querySelector('.faq-header');
+        header.addEventListener('click', () => {
+          const isOpen = item.classList.contains('open');
+          faqItems.forEach(i => i.classList.remove('open'));
+          if (!isOpen) {
+            item.classList.add('open');
+          }
+        });
+      });
+
+    })();
+  </script>
+</body>
+</html>
