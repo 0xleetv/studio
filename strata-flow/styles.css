@@ -1,0 +1,422 @@
+/* ==========================================================================
+   Project Strata · Speculative Digital Architecture & Archival Showcase
+   Created by an Independent Frontend & Visual Designer in Gombe, Nigeria
+   Unified 2-Family Typographic System: 'Syne' (Display) & 'Plus Jakarta Sans' (Body)
+   ========================================================================== */
+
+@charset "UTF-8";
+
+:root {
+  --color-paper: #FAF8F5;
+  --color-parchment: #F4F1EA;
+  --color-parchment-muted: #EDE8DF;
+  --color-card-bg: #FFFFFF;
+  --color-charcoal: #18181B;
+  --color-charcoal-light: #27272A;
+  --color-charcoal-muted: #71717A;
+  --color-amber: #B45309;
+  --color-amber-light: #D97706;
+  --color-border-subtle: rgba(24, 24, 27, 0.1);
+  --color-border-medium: rgba(24, 24, 27, 0.22);
+  --font-display: 'Syne', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Lenis Momentum Scroll Support */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Editorial Body & Paper Tone */
+body {
+  background-color: var(--color-paper);
+  color: var(--color-charcoal);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Scrollbar · Editorial Minimalist */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-parchment);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(24, 24, 27, 0.2);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-amber);
+}
+
+/* Selection Color · Sepia Tint */
+::selection {
+  background: rgba(180, 83, 9, 0.18);
+  color: var(--color-charcoal);
+}
+
+/* Subtle 35mm Film Grain / Editorial Newsprint Texture */
+.film-grain-overlay {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.028'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* Header Frosted Glass Effect */
+#mainHeader {
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  background-color: rgba(250, 248, 245, 0.95);
+}
+
+/* Borders */
+.border-editorial {
+  border-color: var(--color-border-subtle);
+}
+
+.border-editorial-medium {
+  border-color: var(--color-border-medium);
+}
+
+/* Strict 2-Style Typography System */
+.font-display-title {
+  font-family: var(--font-display);
+}
+
+.font-body-text {
+  font-family: var(--font-body);
+}
+
+/* Minimalist Entrance Curtain */
+#minimalEntrance {
+  transition: opacity 0.5s ease;
+}
+
+/* Production Dossier Interactive Cards */
+.story-dossier-card {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+  cursor: pointer;
+}
+
+.story-dossier-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px -8px rgba(24, 24, 27, 0.08);
+  border-color: var(--color-amber);
+}
+
+.story-dossier-card:hover .card-img {
+  transform: scale(1.04);
+}
+
+.card-img {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ==========================================================================
+   AMBIENT CONTINUOUS KINETICS ON ARCHIVE CARDS (ALWAYS RUNNING)
+   ========================================================================== */
+
+/* 1. Screenplay Drafting Loop */
+@keyframes ambientDrafting {
+  0%, 100% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+  25% {
+    transform: translate(8px, -4px) rotate(6deg);
+  }
+  50% {
+    transform: translate(14px, 3px) rotate(-8deg);
+  }
+  75% {
+    transform: translate(6px, 8px) rotate(4deg);
+  }
+}
+
+@keyframes strokeDrawLoop {
+  0% {
+    stroke-dashoffset: 120;
+    opacity: 0.2;
+  }
+  50% {
+    stroke-dashoffset: 0;
+    opacity: 0.9;
+  }
+  100% {
+    stroke-dashoffset: -120;
+    opacity: 0.2;
+  }
+}
+
+.ambient-drafting-nib {
+  animation: ambientDrafting 3.6s ease-in-out infinite;
+}
+
+.ambient-drafting-line {
+  stroke-dasharray: 120;
+  stroke-dashoffset: 120;
+  animation: strokeDrawLoop 3.6s ease-in-out infinite;
+}
+
+/* 2. Cinematography: Volumetric Projector Beam & Drifting Smoke Haze */
+@keyframes volumetricBeamDrift {
+  0%, 100% {
+    transform: rotate(-18deg) scaleY(1);
+    opacity: 0.45;
+  }
+  50% {
+    transform: rotate(-9deg) scaleY(1.22);
+    opacity: 0.78;
+  }
+}
+
+@keyframes smokeHazeDrift {
+  0% {
+    transform: translate(-8%, 6%) scale(1);
+    opacity: 0.28;
+  }
+  50% {
+    transform: translate(12%, -8%) scale(1.18);
+    opacity: 0.58;
+  }
+  100% {
+    transform: translate(-8%, 6%) scale(1);
+    opacity: 0.28;
+  }
+}
+
+.ambient-volumetric-beam {
+  position: absolute;
+  top: -35%;
+  right: -25%;
+  width: 150%;
+  height: 170%;
+  background: conic-gradient(from 195deg at 88% 18%, rgba(217, 119, 6, 0.45) 0deg, rgba(254, 243, 199, 0.38) 22deg, rgba(217, 119, 6, 0.08) 55deg, transparent 72deg);
+  pointer-events: none;
+  filter: blur(14px);
+  animation: volumetricBeamDrift 4.8s ease-in-out infinite;
+}
+
+.ambient-smoke-haze {
+  position: absolute;
+  inset: -25%;
+  background: radial-gradient(circle at 45% 55%, rgba(255, 255, 255, 0.24) 0%, rgba(217, 119, 6, 0.16) 35%, transparent 70%);
+  filter: blur(28px);
+  animation: smokeHazeDrift 7.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* 3. Acoustics: Continuous Slow-Panning Sky & Dancing Audio Spectrum Visualizer */
+@keyframes skyPanLoop {
+  0% {
+    transform: scale(1.12) translate(0%, 0%);
+  }
+  50% {
+    transform: scale(1.22) translate(-5%, -4%);
+  }
+  100% {
+    transform: scale(1.12) translate(0%, 0%);
+  }
+}
+
+.ambient-sky-pan {
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(ellipse at 35% 45%, rgba(217, 119, 6, 0.3) 0%, rgba(180, 83, 9, 0.18) 40%, transparent 75%);
+  animation: skyPanLoop 14s ease-in-out infinite;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+@keyframes eqBarPulse {
+  0%, 100% {
+    height: 4px;
+    opacity: 0.35;
+  }
+  50% {
+    height: 28px;
+    opacity: 0.95;
+  }
+}
+
+.eq-bar-1 { animation: eqBarPulse 0.85s ease-in-out infinite; }
+.eq-bar-2 { animation: eqBarPulse 1.35s ease-in-out 0.2s infinite; }
+.eq-bar-3 { animation: eqBarPulse 0.72s ease-in-out 0.4s infinite; }
+.eq-bar-4 { animation: eqBarPulse 1.15s ease-in-out 0.1s infinite; }
+.eq-bar-5 { animation: eqBarPulse 0.82s ease-in-out 0.3s infinite; }
+.eq-bar-6 { animation: eqBarPulse 1.45s ease-in-out 0.5s infinite; }
+.eq-bar-7 { animation: eqBarPulse 1.05s ease-in-out 0.25s infinite; }
+.eq-bar-8 { animation: eqBarPulse 1.25s ease-in-out 0.35s infinite; }
+
+/* 4. Theatrical Exhibition: Cinematic Flickering Screen Light & Seat Sweep */
+@keyframes cinematicScreenFlicker {
+  0%, 100% {
+    opacity: 0.32;
+    filter: brightness(1) saturate(1);
+  }
+  14% {
+    opacity: 0.75;
+    filter: brightness(1.3) saturate(1.25);
+  }
+  28% {
+    opacity: 0.22;
+    filter: brightness(0.85);
+  }
+  44% {
+    opacity: 0.82;
+    filter: brightness(1.4) saturate(1.3);
+  }
+  62% {
+    opacity: 0.38;
+    filter: brightness(0.95);
+  }
+  78% {
+    opacity: 0.88;
+    filter: brightness(1.45);
+  }
+  90% {
+    opacity: 0.48;
+    filter: brightness(1.1);
+  }
+}
+
+.ambient-screen-flicker {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 15%, rgba(254, 243, 199, 0.55) 0%, rgba(217, 119, 6, 0.3) 45%, rgba(24, 24, 27, 0.4) 85%);
+  animation: cinematicScreenFlicker 3s steps(8, end) infinite;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+@keyframes theaterSeatSweep {
+  0% {
+    transform: rotate(-25deg) translateY(-80%) scaleY(0.8);
+    opacity: 0.08;
+  }
+  50% {
+    transform: rotate(-20deg) translateY(35%) scaleY(1.2);
+    opacity: 0.65;
+  }
+  100% {
+    transform: rotate(-25deg) translateY(150%) scaleY(0.8);
+    opacity: 0.08;
+  }
+}
+
+.ambient-projector-sweep {
+  position: absolute;
+  inset: -50%;
+  background: linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, 0.45) 45%, rgba(217, 119, 6, 0.28) 55%, transparent 100%);
+  animation: theaterSeatSweep 5.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   SLANTED LEFT-PIVOTING MENU CASCADE (Comfortably Framed Inside Drawer)
+   ========================================================================== */
+.slanted-cascade-item {
+  position: relative;
+  border-radius: 12px;
+  padding: 10px 16px;
+  border: 1px solid transparent;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: right center;
+}
+
+.slanted-cascade-item:hover {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-color: rgba(24, 24, 27, 0.09);
+  box-shadow: 0 10px 24px -6px rgba(24, 24, 27, 0.08);
+  transform: translateX(-4px);
+}
+
+.slanted-cascade-item:hover .cascading-menu-link {
+  font-weight: 800;
+  color: var(--color-amber);
+}
+
+/* Precise Slanted Offsets · Prevents Drawer Boundary Collision */
+.cascade-offset-0 {
+  margin-left: 0px;
+  width: 100%;
+}
+.cascade-offset-1 {
+  margin-left: -12px;
+  width: calc(100% + 12px);
+}
+.cascade-offset-2 {
+  margin-left: -24px;
+  width: calc(100% + 24px);
+}
+.cascade-offset-3 {
+  margin-left: -36px;
+  width: calc(100% + 36px);
+}
+
+@media (max-width: 640px) {
+  .cascade-offset-0 { margin-left: 0px; width: 100%; }
+  .cascade-offset-1 { margin-left: -6px; width: calc(100% + 6px); }
+  .cascade-offset-2 { margin-left: -12px; width: calc(100% + 12px); }
+  .cascade-offset-3 { margin-left: -18px; width: calc(100% + 18px); }
+}
+
+/* Kinetic Quill SVG Animation on Hover */
+@keyframes quillWrite {
+  0%, 100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  50% {
+    transform: rotate(-10deg) translateY(-2px);
+  }
+}
+
+.slanted-cascade-item:hover .strata-quill-glyph {
+  animation: quillWrite 0.9s ease-in-out infinite;
+  transform-origin: bottom left;
+}
+
+/* Non-Covering Drawer Glass Backdrop */
+.non-covering-backdrop {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background-color: rgba(24, 24, 27, 0.4);
+}
+
+/* Kinetic Line Reveal Mask */
+.text-mask {
+  overflow: hidden;
+}
+
+/* 4-Pillar Rollup Grid */
+.pillar-rollup-card {
+  transition: transform 0.25s ease, border-color 0.25s ease;
+}
+.pillar-rollup-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-amber);
+}
+
+/* Aspect Ratio Scope Wireframe Boxes for Frame Study */
+.aspect-scope-box {
+  transition: all 0.3s ease;
+}
+.aspect-scope-box:hover {
+  border-color: var(--color-amber);
+  box-shadow: 0 10px 25px -5px rgba(180, 83, 9, 0.15);
+}
