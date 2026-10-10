@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STRATA · Speculative Digital Architecture & Archival Showcase · Gombe, Nigeria</title>
+  <meta name="description" content="A speculative digital architecture and interactive archival showcase created by an independent frontend and visual designer in Gombe, Nigeria. Exploring narrative presentation and web engineering.">
+
+  <!-- Google Fonts: Strictly 2 Families: Syne (Display) & Plus Jakarta Sans (Body and Meta) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS via CDN with Unified 2-Font System -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            paper: '#FAF8F5',
+            parchment: '#F4F1EA',
+            parchmentDark: '#EDE8DF',
+            charcoal: '#18181B',
+            charcoalLight: '#27272A',
+            charcoalMuted: '#71717A',
+            amberAccent: '#B45309',
+            amberLight: '#D97706',
+            editorialBorder: 'rgba(24, 24, 27, 0.1)'
+          },
+          fontFamily: {
+            display: ['Syne', 'sans-serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- External Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- GSAP 3 & ScrollTrigger CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <!-- Lenis Smooth Scrolling CDN -->
+  <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+</head>
+<body class="bg-paper text-charcoal antialiased selection:bg-amberAccent/15 selection:text-amberAccent relative font-sans">
+
+  <!-- Subtle 35mm Film Grain Ambient Texture -->
+  <div class="fixed inset-0 film-grain-overlay z-50 pointer-events-none"></div>
+
+  <!-- =========================================================================
+       1. MINIMALIST ENTRANCE (1.2s FILM SLATE APERTURE DISSOLVE)
+       ========================================================================= -->
+  <div id="minimalEntrance" class="fixed inset-0 z-[100] bg-paper flex flex-col items-center justify-between p-8 sm:p-12 select-none border-b border-editorial">
+    <div class="w-full flex justify-between font-sans text-xs tracking-wider text-charcoalMuted uppercase font-medium">
+      <span>Strata Archive · Reel 01</span>
+      <span>Gombe, Nigeria · Digital Archive Experiment</span>
+    </div>
+
+    <div class="flex flex-col items-center justify-center my-auto text-center">
+      <div id="entranceSlateContainer" class="w-16 h-16 sm:w-20 sm:h-20 text-charcoal mb-4"></div>
+      <h2 class="font-display text-2xl sm:text-3xl font-bold tracking-tight text-charcoal uppercase">
+        Strata Archive
+      </h2>
+      <p class="font-sans text-xs tracking-widest text-amberAccent mt-1 uppercase font-semibold">
+        Speculative Case Study · Web Architecture
+      </p>
+    </div>
+
+    <div class="w-full flex justify-between font-sans text-xs tracking-wider text-charcoalMuted uppercase font-medium">
+      <span>Editorial Design System</span>
+      <span>Frontend Engineering</span>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       2. FIXED EDITORIAL HEADER (Responsive Balanced Layout)
+       ========================================================================= -->
+  <header id="mainHeader" class="fixed top-0 left-0 right-0 z-40 bg-paper/95 backdrop-blur-md border-b border-editorial transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- DESKTOP ROW (≥ 768px: Single Spacious Horizontal Bar) -->
+      <div class="hidden md:flex h-20 items-center justify-between gap-6">
+        
+        <!-- Desktop Left: Brand Identity -->
+        <a href="#hero" class="flex items-center space-x-3 group cursor-pointer shrink-0">
+          <div id="headerLogoMark" class="w-8 h-8 text-charcoal group-hover:text-amberAccent transition-colors"></div>
+          <span class="font-display font-bold text-xl tracking-tight text-charcoal uppercase group-hover:text-amberAccent transition-colors">
+            Strata Archive
+          </span>
+        </a>
+
+        <!-- Desktop Center: Studio Ethos Button + Location Pill -->
+        <div class="flex items-center space-x-3 lg:space-x-4">
+          <!-- Studio Ethos Trigger (Desktop) -->
+          <button id="ethosTriggerBtn" class="flex items-center px-3.5 py-1.5 border border-charcoal/20 hover:border-amberAccent rounded-full font-sans text-xs text-charcoal hover:text-amberAccent bg-parchment hover:bg-parchmentDark transition-all cursor-pointer font-medium shadow-sm">
+            <span class="w-2 h-2 rounded-full bg-amberAccent mr-2 shrink-0"></span>
+            <span>Studio Ethos</span>
+          </button>
+
+          <!-- Location Badge with Micro-Tooltip (Desktop) -->
+          <div class="relative group flex items-center">
+            <div class="flex items-center px-3.5 py-1.5 font-sans text-xs text-charcoalMuted border border-editorial rounded-full bg-parchment cursor-pointer hover:border-amberAccent transition-colors font-medium shadow-sm">
+              <span class="w-2 h-2 rounded-full bg-amberAccent animate-pulse mr-2 shrink-0"></span>
+              <span class="text-charcoal font-semibold">Gombe, NG</span>
+              <span class="mx-1.5 text-charcoalMuted">·</span>
+              <span>Digital Archive Experiment</span>
+            </div>
+            
+            <!-- Subtle Micro-Tooltip -->
+            <div class="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 px-3 py-1.5 bg-charcoal text-paper text-[10px] font-sans font-medium rounded-md shadow-md pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 whitespace-nowrap z-50">
+              Gombe, Nigeria · Speculative Web Architecture
+            </div>
+          </div>
+        </div>
+
+        <!-- Desktop Right: Actions -->
+        <div class="flex items-center space-x-3 shrink-0">
+          <a href="#contact-desk" id="headerDialogueBtn" class="inline-flex items-center px-4 py-2 border border-charcoal/20 hover:border-amberAccent rounded text-xs font-sans tracking-wider text-charcoal hover:text-amberAccent transition-all bg-white hover:bg-parchment cursor-pointer font-semibold uppercase">
+            <span>INITIATE DIALOGUE</span>
+          </a>
+
+          <button id="menuTrigger" class="flex items-center space-x-2 px-4 py-2 bg-charcoal text-paper hover:bg-charcoalLight rounded transition-colors group cursor-pointer focus:outline-none focus:ring-1 focus:ring-amberAccent" aria-label="Open Flyout Menu">
+            <span class="font-sans text-xs uppercase tracking-wider font-semibold">Menu</span>
+            <div id="menuIconContainer" class="w-4 h-4 text-paper/80 group-hover:text-paper transition-colors"></div>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- MOBILE DUAL ROW (< 768px: Spacious & Balanced Layout for Video Capture) -->
+      <div class="flex md:hidden flex-col py-2.5 space-y-2">
+        
+        <!-- Mobile Top Row: Brand on Left, Menu Button on Right -->
+        <div class="flex items-center justify-between w-full">
+          <a href="#hero" class="flex items-center space-x-2.5 group cursor-pointer">
+            <div id="mobileHeaderLogoMark" class="w-7 h-7 text-charcoal group-hover:text-amberAccent transition-colors"></div>
+            <span class="font-display font-bold text-lg tracking-tight text-charcoal uppercase group-hover:text-amberAccent transition-colors">
+              Strata Archive
+            </span>
+          </a>
+
+          <!-- Mobile Menu Trigger -->
+          <button id="mobileMenuTrigger" class="flex items-center space-x-1.5 px-3 py-1.5 bg-charcoal text-paper hover:bg-charcoalLight rounded transition-colors group cursor-pointer focus:outline-none" aria-label="Open Flyout Menu">
+            <span class="font-sans text-xs uppercase tracking-wider font-semibold">Menu</span>
+            <div id="mobileMenuIconContainer" class="w-3.5 h-3.5 text-paper/80 group-hover:text-paper transition-colors"></div>
+          </button>
+        </div>
+
+        <!-- Mobile Secondary Row: Studio Ethos & Gombe, NG Pills with Generous Spacing -->
+        <div class="flex items-center justify-start gap-2.5 pt-0.5">
+          <!-- Mobile Studio Ethos Button -->
+          <button id="mobileEthosTriggerBtn" class="flex items-center px-3 py-1.5 border border-charcoal/20 hover:border-amberAccent rounded-full font-sans text-xs text-charcoal hover:text-amberAccent bg-parchment active:bg-parchmentDark transition-all cursor-pointer font-medium shadow-xs shrink-0">
+            <span class="w-2 h-2 rounded-full bg-amberAccent mr-2 shrink-0"></span>
+            <span>Studio Ethos</span>
+          </button>
+
+          <!-- Mobile Gombe Location Badge -->
+          <div class="flex items-center px-3 py-1.5 font-sans text-xs text-charcoalMuted border border-editorial rounded-full bg-parchment font-medium shadow-xs shrink-0">
+            <span class="w-2 h-2 rounded-full bg-amberAccent animate-pulse mr-2 shrink-0"></span>
+            <span class="text-charcoal font-semibold">Gombe, NG</span>
+            <span class="mx-1 text-charcoalMuted">·</span>
+            <span class="text-[11px]">Digital Archive</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       3. TOP LEFT COMPACT DRAWER: STUDIO ETHOS (~42% Width)
+       ========================================================================= -->
+  <div id="ethosDrawer" class="fixed inset-0 z-50 pointer-events-none opacity-0 transition-opacity duration-300" role="dialog" aria-modal="true">
+    <div id="ethosBackdrop" class="absolute inset-0 non-covering-backdrop transition-opacity cursor-pointer"></div>
+
+    <div id="ethosPanel" data-lenis-prevent class="absolute top-0 left-0 bottom-0 w-[88%] lg:w-[42%] bg-paper border-r border-editorial shadow-2xl p-6 sm:p-10 flex flex-col justify-between overflow-y-auto transform -translate-x-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
+      
+      <div>
+        <div class="flex items-center justify-between border-b border-editorial pb-4 mb-6">
+          <div class="flex items-center space-x-2">
+            <span class="w-2 h-2 rounded-full bg-amberAccent"></span>
+            <span class="font-sans text-xs text-charcoal tracking-wider uppercase font-bold">STUDIO ETHOS & CONTEXT</span>
+          </div>
+          <button id="ethosCloseBtn" class="p-1 rounded hover:bg-parchment text-charcoal cursor-pointer" aria-label="Close Ethos Drawer">
+            <div id="ethosCloseIcon" class="w-5 h-5"></div>
+          </button>
+        </div>
+
+        <h3 class="font-display text-2xl sm:text-3xl font-bold text-charcoal leading-tight">
+          Crafting Digital Experience from the Northern Savannah
+        </h3>
+        <p class="font-sans text-xs text-amberAccent mt-2 uppercase tracking-wider font-semibold">
+          Independent Frontend Architecture & Design Experiment
+        </p>
+
+        <!-- Deep Thoughtful Narrative Without Dashes, Hyphens, or Slashes -->
+        <div class="mt-8 space-y-5 text-sm text-charcoalLight font-sans leading-relaxed">
+          
+          <div class="p-4 sm:p-5 bg-parchment rounded-xl border border-editorial">
+            <div class="font-sans text-xs font-bold text-charcoal uppercase mb-1.5">
+              01 · The Crossroads of Gombe
+            </div>
+            <p class="text-xs sm:text-sm font-normal leading-relaxed">
+              Rooted in Gombe, Nigeria, a serene geographic crossroads in the northeastern savannah where ancient trading pathways and regional communities converge. Inspired by the calm, unhurried cadence of northern landscapes and the profound oral history of regional performing arts, this project explores how cultural narrative can be preserved through disciplined digital craft.
+            </p>
+          </div>
+
+          <div class="p-4 sm:p-5 bg-parchment rounded-xl border border-editorial">
+            <div class="font-sans text-xs font-bold text-charcoal uppercase mb-1.5">
+              02 · Narrative Architecture & Speculative Design
+            </div>
+            <p class="text-xs sm:text-sm font-normal leading-relaxed">
+              Strata Archive is an independent exploration of digital editorial design and interactive storytelling. Instead of passive browsing, we treat digital platforms as tactile archival exhibitions. Typography, pacing, motion, and white space are orchestrated with the structural rigor of a cinematic shooting script.
+            </p>
+          </div>
+
+          <div class="p-4 sm:p-5 bg-parchment rounded-xl border border-editorial">
+            <div class="font-sans text-xs font-bold text-charcoal uppercase mb-1.5">
+              03 · Crafting Global Web Standards from Home
+            </div>
+            <p class="text-xs sm:text-sm font-normal leading-relaxed">
+              Built entirely from an independent workspace in Gombe, this archive demonstrates that award grade web engineering and avant garde visual direction can originate from anywhere. Operating with modern web APIs, 60fps momentum rendering, fluid typography, and glassmorphic micro interactions, the project honors global standards while remaining anchored in local calm.
+            </p>
+          </div>
+
+          <div class="p-4 sm:p-5 bg-parchment rounded-xl border border-editorial">
+            <div class="font-sans text-xs font-bold text-charcoal uppercase mb-1.5">
+              04 · Honest Creative Positioning
+            </div>
+            <p class="text-xs sm:text-sm font-normal leading-relaxed">
+              We deliberately avoid fictitious claims of commercial film production or overseas offices. Every component on this page is a transparent study in digital archiving, frontend performance, and visual communication. We welcome dialogue with curators, creative technologists, and designers worldwide.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="mt-8 pt-6 border-t border-editorial flex items-center justify-between font-sans text-xs">
+        <span class="text-charcoalMuted font-medium">Gombe, Nigeria · Independent Craft</span>
+        <button id="ethosInitiateBtn" class="px-4 py-2 bg-charcoal text-paper hover:bg-charcoalLight rounded-lg transition-colors cursor-pointer font-semibold uppercase">
+          INITIATE DIALOGUE →
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       4. RIGHT FLYOUT MENU (Slanted Left-Pivoting Cascade With 4-Pillar Rollup)
+       ========================================================================= -->
+  <div id="flyoutMenu" class="fixed inset-0 z-50 pointer-events-none opacity-0 transition-opacity duration-300" role="dialog" aria-modal="true">
+    <div id="menuBackdrop" class="absolute inset-0 non-covering-backdrop transition-opacity cursor-pointer"></div>
+
+    <div id="menuPanel" data-lenis-prevent class="absolute top-0 right-0 bottom-0 w-[88%] lg:w-[48%] bg-paper border-l border-editorial shadow-2xl p-6 sm:p-8 lg:p-10 pl-8 sm:pl-10 lg:pl-12 flex flex-col justify-between overflow-y-auto transform translate-x-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
+      
+      <div>
+        <div class="flex items-center justify-between border-b border-editorial pb-4 mb-8">
+          <div class="flex items-center space-x-2">
+            <div id="menuLogoMark" class="w-6 h-6 text-charcoal"></div>
+            <span class="font-sans text-xs text-charcoal tracking-wider uppercase font-bold">Studio Navigation Index</span>
+          </div>
+          <button id="menuCloseBtn" class="p-1 rounded hover:bg-parchment text-charcoal cursor-pointer" aria-label="Close Menu Drawer">
+            <div id="menuCloseIcon" class="w-5 h-5"></div>
+          </button>
+        </div>
+
+        <!-- Slanted Left-Pivoting Cascade Links -->
+        <nav class="flex flex-col space-y-3.5 my-2">
+          
+          <!-- 01 · Storyboard Archive (Baseline Position with Kinetic Quill) -->
+          <div class="slanted-cascade-item cascade-offset-0 cursor-pointer" data-preview-key="storyboard">
+            <a href="#storyboard-archive" class="cascading-menu-link font-display text-xl sm:text-2xl text-charcoal flex items-center space-x-3">
+              <span class="font-sans text-xs text-amberAccent font-bold">01 ·</span>
+              <span>Storyboard Archive</span>
+              <span id="menuQuillContainer" class="inline-flex items-center ml-2"></span>
+            </a>
+            <p class="font-sans text-xs text-charcoalMuted mt-1">4 interactive dossier pillars with continuous ambient kinetics</p>
+          </div>
+
+          <!-- 02 · Screenplay Catalogue (Indented -12px to the Left) -->
+          <div class="slanted-cascade-item cascade-offset-1 cursor-pointer" data-preview-key="productionSet">
+            <a href="#screenplay-catalogue" class="cascading-menu-link font-display text-xl sm:text-2xl text-charcoal flex items-center space-x-3">
+              <span class="font-sans text-xs text-amberAccent font-bold">02 ·</span>
+              <span>Screenplay Catalogue</span>
+            </a>
+            <p class="font-sans text-xs text-charcoalMuted mt-1">Direct editorial reader spreads for active projects</p>
+          </div>
+
+          <!-- 03 · Visual Direction & Frame Studies (Indented -24px to the Left) -->
+          <div class="slanted-cascade-item cascade-offset-2 cursor-pointer" data-preview-key="visual">
+            <a href="#visual-direction" class="cascading-menu-link font-display text-xl sm:text-2xl text-charcoal flex items-center space-x-3">
+              <span class="font-sans text-xs text-amberAccent font-bold">03 ·</span>
+              <span>Visual Direction & Frame Studies</span>
+            </a>
+            <p class="font-sans text-xs text-charcoalMuted mt-1">35mm aspect ratio studies, color timing swatches & LUT palettes</p>
+          </div>
+
+          <!-- 04 · Creative Dialogue Desk (Indented -36px to the Left) -->
+          <div class="slanted-cascade-item cascade-offset-3 cursor-pointer" data-preview-key="distribution">
+            <a href="#contact-desk" id="flyoutDialogueTrigger" class="cascading-menu-link font-display text-xl sm:text-2xl text-charcoal flex items-center space-x-3 text-left w-full cursor-pointer">
+              <span class="font-sans text-xs text-amberAccent font-bold">04 ·</span>
+              <span>Creative Dialogue Desk</span>
+            </a>
+            <p class="font-sans text-xs text-charcoalMuted mt-1">Collaborations, web design & creative consultation</p>
+          </div>
+
+        </nav>
+
+        <!-- Dynamic Floating Preview Area (Supports 4-Pillar Animated Rollup or Single Still) -->
+        <div id="flyoutPreviewContainer" class="mt-6 p-3 bg-parchment rounded-xl border border-editorial">
+          
+          <!-- Default 4-Pillar Rollup View (Active on Storyboard Archive hover) -->
+          <div id="rollupPillarsView" class="grid grid-cols-2 gap-2 text-xs font-sans">
+            <div class="pillar-rollup-card p-2.5 bg-paper rounded-lg border border-editorial">
+              <div class="text-[10px] text-amberAccent font-bold uppercase">PILLAR 01</div>
+              <div class="font-display font-bold text-charcoal text-xs mt-0.5">Screenplay Craft</div>
+              <div class="text-[10px] text-charcoalMuted mt-1">112 Page draft architectures</div>
+            </div>
+            <div class="pillar-rollup-card p-2.5 bg-paper rounded-lg border border-editorial">
+              <div class="text-[10px] text-amberAccent font-bold uppercase">PILLAR 02</div>
+              <div class="font-display font-bold text-charcoal text-xs mt-0.5">Cinematography</div>
+              <div class="text-[10px] text-charcoalMuted mt-1">35mm optics & 2.39:1 scope</div>
+            </div>
+            <div class="pillar-rollup-card p-2.5 bg-paper rounded-lg border border-editorial">
+              <div class="text-[10px] text-amberAccent font-bold uppercase">PILLAR 03</div>
+              <div class="font-display font-bold text-charcoal text-xs mt-0.5">Acoustic Montages</div>
+              <div class="text-[10px] text-charcoalMuted mt-1">Diegetic audio frequencies</div>
+            </div>
+            <div class="pillar-rollup-card p-2.5 bg-paper rounded-lg border border-editorial">
+              <div class="text-[10px] text-amberAccent font-bold uppercase">PILLAR 04</div>
+              <div class="font-display font-bold text-charcoal text-xs mt-0.5">Theatrical Activation</div>
+              <div class="text-[10px] text-charcoalMuted mt-1">Archival exhibition press</div>
+            </div>
+          </div>
+
+          <!-- Single Image Preview View (Shown on other link hovers) -->
+          <div id="singlePreviewView" class="hidden relative w-full aspect-[16/9] rounded-lg overflow-hidden border border-editorial bg-parchmentDark">
+            <img id="flyoutPreviewImg" src="https://images.unsplash.com/photo-1516962215378-7fa2e137ae93?auto=format&fit=crop&w=1200&q=85" 
+                 alt="Cinematic Screenplay Manuscript" 
+                 class="w-full h-full object-cover transition-opacity duration-300">
+            <div class="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-transparent to-transparent"></div>
+            <div class="absolute bottom-2.5 left-3 right-3 text-paper font-sans text-xs">
+              <div id="flyoutPreviewTitle" class="font-bold text-amberLight truncate font-display">Narrative Arc & Script Development</div>
+              <div id="flyoutPreviewDesc" class="text-[11px] text-paper/90 truncate font-normal">Screenplay manuscripts, structural treatments, and dialogue drafts.</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="mt-6 pt-4 border-t border-editorial flex flex-col sm:flex-row items-start sm:items-center justify-between font-sans text-xs text-charcoalMuted gap-2">
+        <div class="font-medium">Gombe, Nigeria · Digital Showcase</div>
+        <a href="https://wa.me/?text=Hello%20Strata%20Archive%20Designer%2C%20I%20am%20reaching%20out%20regarding%20your%20digital%20archival%20showcase." 
+           target="_blank" 
+           rel="noopener noreferrer" 
+           class="text-amberAccent hover:underline font-semibold">
+          WHATSAPP DIALOGUE ↗
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       5. KINETIC EDITORIAL HERO
+       ========================================================================= -->
+  <section id="hero" class="relative min-h-[85vh] flex flex-col justify-between pt-32 pb-16 border-b border-editorial overflow-hidden">
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full my-auto z-10">
+      
+      <div class="hero-meta flex flex-wrap items-center gap-2 mb-6 font-sans text-xs text-charcoalMuted font-medium">
+        <span class="px-3 py-1 bg-parchment rounded-full border border-editorial text-amberAccent font-semibold">
+          SPECULATIVE DIGITAL ARCHITECTURE & ARCHIVAL SHOWCASE
+        </span>
+        <span class="hidden sm:inline text-charcoalMuted">·</span>
+        <span>Gombe, Nigeria · Digital Archive Experiment</span>
+      </div>
+
+      <div class="hero-headline-box mb-8 max-w-5xl">
+        <h1 class="font-display text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-charcoal leading-[1.08]">
+          <span class="block text-mask"><span class="hero-line block">Stories written for the screen.</span></span>
+          <span class="block text-mask mt-1 text-amberAccent font-extrabold">
+            <span class="hero-line block">Crafted for memory.</span>
+          </span>
+        </h1>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-end pt-4">
+        <div class="md:col-span-8">
+          <p class="text-base sm:text-xl text-charcoalLight font-sans font-normal leading-relaxed max-w-2xl">
+            A speculative digital architecture and interactive archival showcase. Exploring narrative presentation, editorial design systems, and modern web engineering from Gombe, Nigeria.
+          </p>
+        </div>
+
+        <div class="md:col-span-4 flex flex-col sm:flex-row md:flex-col items-start gap-3">
+          <a href="#storyboard-archive" class="w-full sm:w-auto px-6 py-3.5 bg-charcoal hover:bg-charcoalLight text-paper font-sans text-xs uppercase tracking-wider rounded-lg transition-colors text-center flex items-center justify-center space-x-2 group cursor-pointer shadow-sm font-semibold">
+            <span>Explore Storyboard Archive</span>
+            <span class="transform group-hover:translate-y-0.5 transition-transform">↓</span>
+          </a>
+          <a href="#contact-desk" id="heroDialogueBtn" class="w-full sm:w-auto px-6 py-3.5 bg-white hover:bg-parchment border border-editorial hover:border-amberAccent text-charcoal hover:text-amberAccent font-sans text-xs uppercase tracking-wider rounded-lg transition-colors text-center flex items-center justify-center space-x-2 group cursor-pointer font-semibold">
+            <span>Initiate Dialogue</span>
+            <span class="transform group-hover:translate-x-0.5 transition-transform">→</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-16 pt-6 border-t border-editorial flex flex-col sm:flex-row items-start sm:items-center justify-between font-sans text-xs text-charcoalMuted gap-2 font-medium">
+      <div>ORIGIN: GOMBE, NIGERIA · INDEPENDENT FRONTEND & VISUAL EXPERIMENT</div>
+      <div class="flex items-center space-x-4">
+        <span>ARCHIVE FORMAT: 35MM OPTICS & 4K DCI</span>
+        <span>•</span>
+        <span>dispatch@stratafilm.studio</span>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- =========================================================================
+       SECTION 1: STORYBOARD ARCHIVE (#storyboard-archive)
+       Houses the 4 Interactive Dossier Pillars with Continuous Ambient Kinetics
+       ========================================================================= -->
+  <section id="storyboard-archive" class="py-24 sm:py-32 bg-paper relative border-b border-editorial">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 border-b border-editorial pb-6">
+        <div>
+          <div class="font-sans text-xs text-amberAccent tracking-widest uppercase mb-2 font-bold">
+            SECTION 01 · STORYBOARD ARCHIVE
+          </div>
+          <h2 class="font-display text-3xl sm:text-5xl font-bold tracking-tight text-charcoal">
+            Storyboard Archive
+          </h2>
+          <p class="text-sm sm:text-base text-charcoalLight font-sans font-normal mt-3 max-w-xl leading-relaxed">
+            Analytical dossier pillars detailing screenplay architecture, optical cinematography, acoustic soundscapes, and theatrical exhibition.
+          </p>
+        </div>
+        <div class="mt-4 md:mt-0 flex flex-col items-start md:items-end">
+          <div class="flex items-center space-x-2 font-sans text-xs font-semibold text-amberAccent mb-1">
+            <span class="w-2 h-2 rounded-full bg-amberAccent animate-pulse"></span>
+            <span>4 INTERACTIVE PILLARS ACTIVE</span>
+          </div>
+          <p class="text-xs font-sans text-charcoalMuted uppercase font-medium">
+            Select any dossier card to inspect complete records
+          </p>
+        </div>
+      </div>
+
+      <!-- 4 Interactive Dossier Cards Grid With Continuous Ambient Kinetics -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10">
+        
+        <!-- Dossier 01: Ambient Drafting Nib & Stroke Loop -->
+        <article class="story-dossier-card bg-card-bg rounded-xl border border-editorial overflow-hidden flex flex-col relative" data-dossier-key="narrative">
+          <div class="relative w-full aspect-[16/10] overflow-hidden bg-parchmentDark">
+            <img src="https://images.unsplash.com/photo-1516962215378-7fa2e137ae93?auto=format&fit=crop&w=1600&q=85" 
+                 alt="Vintage Screenplay Manuscript on Typewriter" 
+                 loading="lazy"
+                 class="card-img w-full h-full object-cover">
+            
+            <!-- Continuous Ambient Kinetic Overlay: Drafting Nib & Script Wave -->
+            <div class="ambient-overlay-screenplay absolute inset-0 pointer-events-none flex items-center justify-center">
+              <div class="ambient-drafting-nib relative flex items-center space-x-2 bg-paper/90 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-editorial shadow-md">
+                <svg class="w-4 h-4 text-amberAccent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+                  <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+                </svg>
+                <span class="font-sans text-[10px] text-charcoal font-bold tracking-wider uppercase">DRAFTING SCRIPT</span>
+                <svg class="w-16 h-3 text-amberAccent" viewBox="0 0 60 10" fill="none">
+                  <path class="ambient-drafting-line" d="M2 5 Q 15 0, 30 5 T 58 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+            </div>
+
+            <div class="absolute top-3 left-3 px-3 py-1 bg-paper/90 backdrop-blur-md rounded-md text-[11px] font-sans text-amberAccent border border-editorial uppercase font-bold tracking-wider">
+              PILLAR 01 · SCREENPLAY DEVELOPMENT
+            </div>
+            <div class="absolute bottom-3 right-3 px-3 py-1 bg-charcoal text-paper rounded-md text-[11px] font-sans uppercase tracking-wider font-semibold">
+              INSPECT DOSSIER ↗
+            </div>
+          </div>
+          <div class="p-6 sm:p-8 flex-1 flex flex-col justify-between">
+            <div>
+              <div class="font-sans text-xs text-amberAccent mb-2 uppercase font-bold tracking-wider">DRAMATIC STRUCTURE</div>
+              <h3 class="font-display text-2xl font-bold text-charcoal group-hover:text-amberAccent transition-colors">
+                Narrative Arc & Script Development
+              </h3>
+              <p class="text-sm text-charcoalLight font-sans font-normal mt-3 leading-relaxed">
+                Comprehensive screenplay architecture from initial logline and character psychology to multi draft structural treatments and rhythmic scene dialogue.
+              </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-editorial flex items-center justify-between font-sans text-xs text-charcoalMuted font-medium">
+              <span>DELIVERABLE: 112 PAGE SHOOTING SCRIPT</span>
+              <span class="text-amberAccent font-bold">OPEN DOSSIER →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Dossier 02: Ambient Volumetric Projector Beam & Drifting Smoke Haze -->
+        <article class="story-dossier-card bg-card-bg rounded-xl border border-editorial overflow-hidden flex flex-col relative" data-dossier-key="visual">
+          <div class="relative w-full aspect-[16/10] overflow-hidden bg-parchmentDark">
+            <img src="https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=1600&q=85" 
+                 alt="Cinema Lens and Optical Moodboards" 
+                 loading="lazy"
+                 class="card-img w-full h-full object-cover">
+            
+            <!-- Continuous Ambient Kinetic Overlay: Volumetric Projector Beam & Smoke Haze -->
+            <div class="ambient-overlay-cinematography absolute inset-0 pointer-events-none overflow-hidden">
+              <div class="ambient-volumetric-beam"></div>
+              <div class="ambient-smoke-haze"></div>
+              <div class="absolute bottom-3 left-3 flex items-center space-x-2 bg-charcoal/85 text-paper px-2.5 py-1 rounded text-[10px] font-sans font-medium backdrop-blur-sm border border-white/10">
+                <span class="w-2 h-2 rounded-full bg-amberAccent animate-ping"></span>
+                <span>VOLUMETRIC 35MM BEAM & HAZE</span>
+              </div>
+            </div>
+
+            <div class="absolute top-3 left-3 px-3 py-1 bg-paper/90 backdrop-blur-md rounded-md text-[11px] font-sans text-amberAccent border border-editorial uppercase font-bold tracking-wider">
+              PILLAR 02 · CINEMATOGRAPHY & OPTICS
+            </div>
+            <div class="absolute bottom-3 right-3 px-3 py-1 bg-charcoal text-paper rounded-md text-[11px] font-sans uppercase tracking-wider font-semibold">
+              INSPECT DOSSIER ↗
+            </div>
+          </div>
+          <div class="p-6 sm:p-8 flex-1 flex flex-col justify-between">
+            <div>
+              <div class="font-sans text-xs text-amberAccent mb-2 uppercase font-bold tracking-wider">OPTICS & LIGHTING</div>
+              <h3 class="font-display text-2xl font-bold text-charcoal group-hover:text-amberAccent transition-colors">
+                Visual Direction & Scene Moodboards
+              </h3>
+              <p class="text-sm text-charcoalLight font-sans font-normal mt-3 leading-relaxed">
+                Anamorphic 2.39:1 scope framing, vintage glass selection, lighting choreographies, and Kodak Vision3 35mm emulsion grain testing.
+              </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-editorial flex items-center justify-between font-sans text-xs text-charcoalMuted font-medium">
+              <span>OPTICS: COOKE PANCHRO PRIMES</span>
+              <span class="text-amberAccent font-bold">OPEN DOSSIER →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Dossier 03: Ambient Slow-Panning Sky & Dancing Audio Spectrum Visualizer -->
+        <article class="story-dossier-card bg-card-bg rounded-xl border border-editorial overflow-hidden flex flex-col relative" data-dossier-key="soundscape">
+          <div class="relative w-full aspect-[16/10] overflow-hidden bg-parchmentDark">
+            <img src="https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?auto=format&fit=crop&w=1600&q=85" 
+                 alt="Soundscapes and Kinetic Editing" 
+                 loading="lazy"
+                 class="card-img w-full h-full object-cover">
+            
+            <!-- Continuous Ambient Kinetic Overlay: Slow Panning Sky & 8-Bar Audio Spectrum -->
+            <div class="ambient-overlay-acoustics absolute inset-0 pointer-events-none overflow-hidden">
+              <div class="ambient-sky-pan"></div>
+              <div class="absolute inset-0 flex items-center justify-center">
+                <div class="bg-charcoal/90 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10 flex items-end space-x-1.5 h-12 shadow-lg">
+                  <span class="eq-bar-1 w-1.5 bg-amberLight rounded-full"></span>
+                  <span class="eq-bar-2 w-1.5 bg-amberAccent rounded-full"></span>
+                  <span class="eq-bar-3 w-1.5 bg-amberLight rounded-full"></span>
+                  <span class="eq-bar-4 w-1.5 bg-amberAccent rounded-full"></span>
+                  <span class="eq-bar-5 w-1.5 bg-amberLight rounded-full"></span>
+                  <span class="eq-bar-6 w-1.5 bg-amberAccent rounded-full"></span>
+                  <span class="eq-bar-7 w-1.5 bg-amberLight rounded-full"></span>
+                  <span class="eq-bar-8 w-1.5 bg-amberAccent rounded-full"></span>
+                  <span class="font-sans text-[10px] text-paper font-bold ml-2 uppercase">DIEGETIC SPECTRUM</span>
+                </div>
+              </div>
+              <div class="absolute bottom-3 left-3 flex items-center space-x-2 bg-charcoal/85 text-paper px-2.5 py-1 rounded text-[10px] font-sans font-medium backdrop-blur-sm border border-white/10">
+                <span class="w-2 h-2 rounded-full bg-amberAccent animate-pulse"></span>
+                <span>SLOW PAN & 7.1.4 SPECTRUM</span>
+              </div>
+            </div>
+
+            <div class="absolute top-3 left-3 px-3 py-1 bg-paper/90 backdrop-blur-md rounded-md text-[11px] font-sans text-amberAccent border border-editorial uppercase font-bold tracking-wider">
+              PILLAR 03 · ACOUSTIC MONTAGE & EDITING
+            </div>
+            <div class="absolute bottom-3 right-3 px-3 py-1 bg-charcoal text-paper rounded-md text-[11px] font-sans uppercase tracking-wider font-semibold">
+              INSPECT DOSSIER ↗
+            </div>
+          </div>
+          <div class="p-6 sm:p-8 flex-1 flex flex-col justify-between">
+            <div>
+              <div class="font-sans text-xs text-amberAccent mb-2 uppercase font-bold tracking-wider">DIEGETIC SOUND & CUT</div>
+              <h3 class="font-display text-2xl font-bold text-charcoal group-hover:text-amberAccent transition-colors">
+                Post Production Soundscapes & Kinetic Editing
+              </h3>
+              <p class="text-sm text-charcoalLight font-sans font-normal mt-3 leading-relaxed">
+                Subtle diegetic soundscapes, quarter inch analog magnetic tape transfers, spatial sound positioning, and contemplative rhythmic picture assembly.
+              </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-editorial flex items-center justify-between font-sans text-xs text-charcoalMuted font-medium">
+              <span>AUDIO: DOLBY ATMOS 7.1.4</span>
+              <span class="text-amberAccent font-bold">OPEN DOSSIER →</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Dossier 04: Ambient Flickering Screen Light & Projector Seat Sweep -->
+        <article class="story-dossier-card bg-card-bg rounded-xl border border-editorial overflow-hidden flex flex-col relative" data-dossier-key="distribution">
+          <div class="relative w-full aspect-[16/10] overflow-hidden bg-parchmentDark">
+            <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1600&q=85" 
+                 alt="Festival Distribution and Theatrical Screening" 
+                 loading="lazy"
+                 class="card-img w-full h-full object-cover">
+            
+            <!-- Continuous Ambient Kinetic Overlay: Cinematic Flickering Screen & Sweep -->
+            <div class="ambient-overlay-theatrical absolute inset-0 pointer-events-none overflow-hidden">
+              <div class="ambient-screen-flicker"></div>
+              <div class="ambient-projector-sweep"></div>
+              <div class="absolute bottom-3 left-3 flex items-center space-x-2 bg-charcoal/85 text-paper px-2.5 py-1 rounded text-[10px] font-sans font-medium backdrop-blur-sm border border-white/10">
+                <span class="w-2 h-2 rounded-full bg-amberAccent animate-pulse"></span>
+                <span>CINEMATIC SCREEN FLICKER</span>
+              </div>
+            </div>
+
+            <div class="absolute top-3 left-3 px-3 py-1 bg-paper/90 backdrop-blur-md rounded-md text-[11px] font-sans text-amberAccent border border-editorial uppercase font-bold tracking-wider">
+              PILLAR 04 · THEATRICAL EXHIBITION & PRESS
+            </div>
+            <div class="absolute bottom-3 right-3 px-3 py-1 bg-charcoal text-paper rounded-md text-[11px] font-sans uppercase tracking-wider font-semibold">
+              INSPECT DOSSIER ↗
+            </div>
+          </div>
+          <div class="p-6 sm:p-8 flex-1 flex flex-col justify-between">
+            <div>
+              <div class="font-sans text-xs text-amberAccent mb-2 uppercase font-bold tracking-wider">ARCHIVAL EXHIBITION</div>
+              <h3 class="font-display text-2xl font-bold text-charcoal group-hover:text-amberAccent transition-colors">
+                Festival Distribution & Archive Press
+              </h3>
+              <p class="text-sm text-charcoalLight font-sans font-normal mt-3 leading-relaxed">
+                Theatrical rollout planning across international auteur film festivals, 4K DCI master archives, and high standard physical monograph editions.
+              </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-editorial flex items-center justify-between font-sans text-xs text-charcoalMuted font-medium">
+              <span>OUTPUT: 4K DCP & 35MM PRINTS</span>
+              <span class="text-amberAccent font-bold">OPEN DOSSIER →</span>
+            </div>
+          </div>
+        </article>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       SECTION 2: VISUAL DIRECTION & FRAME STUDIES (#visual-direction)
+       Dedicated Showcase: 35mm Aspect Ratios, Color Timing Swatches & Optics
+       ========================================================================= -->
+  <section id="visual-direction" class="py-24 sm:py-32 bg-parchment relative border-b border-editorial">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="max-w-3xl mb-16">
+        <div class="font-sans text-xs text-amberAccent tracking-widest uppercase mb-2 font-bold">
+          SECTION 02 · VISUAL DIRECTION & OPTICAL GRAMMAR
+        </div>
+        <h2 class="font-display text-3xl sm:text-5xl font-bold tracking-tight text-charcoal">
+          Visual Direction & Frame Studies
+        </h2>
+        <p class="text-base sm:text-lg text-charcoalLight font-sans font-normal mt-4 leading-relaxed">
+          Analytical exploration of theatrical aspect ratios, photochemical color science, and lighting choreography engineered from the northern savannah.
+        </p>
+      </div>
+
+      <!-- 1. Theatrical 35mm Aspect Ratio Studies -->
+      <div class="mb-20">
+        <div class="flex items-center justify-between mb-8 pb-3 border-b border-editorial">
+          <h3 class="font-display text-xl sm:text-2xl font-bold text-charcoal">
+            Theatrical Frame Aspect Ratio Studies
+          </h3>
+          <span class="font-sans text-xs text-charcoalMuted uppercase font-semibold">
+            35mm Photochemical Scope Standards
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          <!-- Scope Frame 01: 2.39:1 Anamorphic Scope -->
+          <div class="aspect-scope-box p-5 bg-paper rounded-2xl border border-editorial flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between font-sans text-xs mb-3">
+                <span class="font-bold text-charcoal">2.39:1 ANAMORPHIC SCOPE</span>
+                <span class="text-amberAccent font-semibold">CINEMA WIDE</span>
+              </div>
+              <div class="relative w-full aspect-[2.39/1] bg-charcoal rounded-lg overflow-hidden border border-editorial shadow-inner">
+                <img src="https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=1200&q=85" 
+                     alt="2.39:1 Anamorphic Scope Frame" 
+                     class="w-full h-full object-cover">
+                <div class="absolute inset-x-0 top-0 h-2 bg-charcoal"></div>
+                <div class="absolute inset-x-0 bottom-0 h-2 bg-charcoal"></div>
+              </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-editorial text-xs font-sans text-charcoalLight leading-relaxed">
+              <div class="font-semibold text-charcoal mb-1">Panavision C Series Glass</div>
+              <p>Horizontal field compression expands peripheral drama, creating monumental horizon tension across landscape compositions.</p>
+            </div>
+          </div>
+
+          <!-- Scope Frame 02: 1.85:1 Flat Widescreen -->
+          <div class="aspect-scope-box p-5 bg-paper rounded-2xl border border-editorial flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between font-sans text-xs mb-3">
+                <span class="font-bold text-charcoal">1.85:1 FLAT WIDESCREEN</span>
+                <span class="text-amberAccent font-semibold">ACADEMY RATIO</span>
+              </div>
+              <div class="relative w-full aspect-[1.85/1] bg-charcoal rounded-lg overflow-hidden border border-editorial shadow-inner">
+                <img src="https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1200&q=85" 
+                     alt="1.85:1 Flat Widescreen Frame" 
+                     class="w-full h-full object-cover">
+              </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-editorial text-xs font-sans text-charcoalLight leading-relaxed">
+              <div class="font-semibold text-charcoal mb-1">Cooke Panchro 32mm Primes</div>
+              <p>Naturalistic human eye proportions. Ideal for chamber intimacy, interior confrontation, and nuanced facial micro gestures.</p>
+            </div>
+          </div>
+
+          <!-- Scope Frame 03: 1.33:1 Silent Archive -->
+          <div class="aspect-scope-box p-5 bg-paper rounded-2xl border border-editorial flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between font-sans text-xs mb-3">
+                <span class="font-bold text-charcoal">1.33:1 SILENT ARCHIVE</span>
+                <span class="text-amberAccent font-semibold">HISTORICAL MONUMENT</span>
+              </div>
+              <div class="relative w-full aspect-[1.33/1] bg-charcoal rounded-lg overflow-hidden border border-editorial shadow-inner">
+                <img src="https://images.unsplash.com/photo-1516962215378-7fa2e137ae93?auto=format&fit=crop&w=1200&q=85" 
+                     alt="1.33:1 Archival Nitrate Frame" 
+                     class="w-full h-full object-cover">
+              </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-editorial text-xs font-sans text-charcoalLight leading-relaxed">
+              <div class="font-semibold text-charcoal mb-1">Nitrate Emulsion Format</div>
+              <p>Square archival framing evoking historic silent film manuscripts, emphasizing vertical balance and intense spatial containment.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 2. Kodak Vision3 Photochemical Color Timing Swatches -->
+      <div class="mb-16">
+        <div class="flex items-center justify-between mb-8 pb-3 border-b border-editorial">
+          <h3 class="font-display text-xl sm:text-2xl font-bold text-charcoal">
+            Kodak Vision3 Photochemical Color Palette
+          </h3>
+          <span class="font-sans text-xs text-charcoalMuted uppercase font-semibold">
+            Color Science & Emulsion Tuning
+          </span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+          
+          <!-- Swatch 01 -->
+          <div class="p-4 bg-paper rounded-xl border border-editorial">
+            <div class="w-full h-16 rounded-lg bg-[#FAF8F5] border border-editorial mb-3 shadow-inner"></div>
+            <div class="font-sans text-xs font-bold text-charcoal">Bone Highlight</div>
+            <div class="font-sans text-[11px] text-amberAccent font-semibold mt-0.5">#FAF8F5 · BASE</div>
+            <p class="font-sans text-[11px] text-charcoalMuted mt-1.5 leading-snug">Daylight reflecting off limestone architecture and paper stock.</p>
+          </div>
+
+          <!-- Swatch 02 -->
+          <div class="p-4 bg-paper rounded-xl border border-editorial">
+            <div class="w-full h-16 rounded-lg bg-[#D97706] mb-3 shadow-inner"></div>
+            <div class="font-sans text-xs font-bold text-charcoal">Amber Tungsten</div>
+            <div class="font-sans text-[11px] text-amberAccent font-semibold mt-0.5">#D97706 · PRACTICAL</div>
+            <p class="font-sans text-[11px] text-charcoalMuted mt-1.5 leading-snug">3200 Kelvin incandescent practical lamps and dusk ambient warmth.</p>
+          </div>
+
+          <!-- Swatch 03 -->
+          <div class="p-4 bg-paper rounded-xl border border-editorial">
+            <div class="w-full h-16 rounded-lg bg-[#18181B] mb-3 shadow-inner"></div>
+            <div class="font-sans text-xs font-bold text-charcoal">Charcoal Shadow</div>
+            <div class="font-sans text-[11px] text-amberAccent font-semibold mt-0.5">#18181B · OBSIDIAN</div>
+            <p class="font-sans text-[11px] text-charcoalMuted mt-1.5 leading-snug">Deep dynamic range preserving natural emulsion grain density.</p>
+          </div>
+
+          <!-- Swatch 04 -->
+          <div class="p-4 bg-paper rounded-xl border border-editorial">
+            <div class="w-full h-16 rounded-lg bg-[#71717A] mb-3 shadow-inner"></div>
+            <div class="font-sans text-xs font-bold text-charcoal">Oxidized Silver</div>
+            <div class="font-sans text-[11px] text-amberAccent font-semibold mt-0.5">#71717A · HALIDE</div>
+            <p class="font-sans text-[11px] text-charcoalMuted mt-1.5 leading-snug">Silver halide chemical base found in preserved nitrate archives.</p>
+          </div>
+
+          <!-- Swatch 05 -->
+          <div class="p-4 bg-paper rounded-xl border border-editorial">
+            <div class="w-full h-16 rounded-lg bg-[#9A3412] mb-3 shadow-inner"></div>
+            <div class="font-sans text-xs font-bold text-charcoal">Terracotta Sienna</div>
+            <div class="font-sans text-[11px] text-amberAccent font-semibold mt-0.5">#9A3412 · SAVANNAH</div>
+            <p class="font-sans text-[11px] text-charcoalMuted mt-1.5 leading-snug">Northern savannah clay minerals and late evening horizon glow.</p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 3. Lighting Choreography & Optical Notes -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 text-xs font-sans">
+        <div class="p-5 bg-paper rounded-xl border border-editorial">
+          <div class="text-amberAccent font-bold uppercase mb-1">01 · NATURAL LIGHT CHOREOGRAPHY</div>
+          <p class="text-charcoalLight leading-relaxed">Diffused natural daylight passing through unbleached linen scrims, prioritizing soft contrast transitions over harsh artificial stage lighting.</p>
+        </div>
+        <div class="p-5 bg-paper rounded-xl border border-editorial">
+          <div class="text-amberAccent font-bold uppercase mb-1">02 · PHOTOCHEMICAL GRAIN STRUCTURE</div>
+          <p class="text-charcoalLight leading-relaxed">Emulsion characteristics modeled after Kodak Vision3 250D film stock, retaining organic tactile granularity across 4K digital projection masters.</p>
+        </div>
+        <div class="p-5 bg-paper rounded-xl border border-editorial">
+          <div class="text-amberAccent font-bold uppercase mb-1">03 · OPTICAL FLARE & EDGE DISPERSION</div>
+          <p class="text-charcoalLight leading-relaxed">Vintage Cooke Panchro optical characteristics with subtle peripheral astigmatism, producing intimate focus falloff in widescreen compositions.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       SECTION 3: STREAMLINED SCREENPLAY CATALOGUE (#screenplay-catalogue)
+       Pure In-Page Reader Spreads for Active Projects
+       ========================================================================= -->
+  <section id="screenplay-catalogue" class="py-24 sm:py-32 bg-paper border-b border-editorial">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="max-w-3xl mb-16">
+        <div class="font-sans text-xs text-amberAccent tracking-widest uppercase mb-2 font-bold">
+          SECTION 03 · SCREENPLAY CATALOGUE
+        </div>
+        <h2 class="font-display text-3xl sm:text-5xl font-bold tracking-tight text-charcoal">
+          Active Production Slate
+        </h2>
+        <p class="text-base sm:text-lg text-charcoalLight font-sans font-normal mt-4 leading-relaxed">
+          Pure editorial reader spreads detailing dramatic architectures, thematic treatments, and scene progressions directly on the page.
+        </p>
+      </div>
+
+      <!-- High-Contrast Reader Spreads (No Modal Popups Required) -->
+      <div class="space-y-12">
+        
+        <!-- Reader Spread 01: The Sound Cartographer -->
+        <article class="p-8 sm:p-12 bg-parchment rounded-2xl border border-editorial shadow-sm">
+          <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-6 pb-6 border-b border-editorial">
+            <div>
+              <div class="font-sans text-xs text-amberAccent font-bold uppercase tracking-wider mb-2">
+                PROJECT 01 · FEATURE DRAMA · 108 MINUTES
+              </div>
+              <h3 class="font-display text-3xl sm:text-4xl font-bold text-charcoal">
+                The Sound Cartographer
+              </h3>
+            </div>
+            <div class="flex items-center space-x-3 font-sans text-xs font-semibold">
+              <span class="px-3 py-1 bg-white rounded-full border border-editorial text-charcoal">35MM ANAMORPHIC</span>
+              <span class="px-3 py-1 bg-amberAccent/15 text-amberAccent rounded-full border border-amberAccent/30">DRAFT THREE POLISH</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-8">
+            <div class="lg:col-span-4">
+              <h4 class="font-sans text-xs text-charcoal font-bold uppercase tracking-wider mb-2">Dramatic Premise</h4>
+              <p class="font-sans text-sm text-charcoal leading-relaxed font-medium bg-white p-4 rounded-xl border border-editorial italic">
+                “An aging acoustic engineer in an isolated valley isolates an uncatalogued harmonic frequency in historical field tape recordings, uncovering an abandoned settlement erased from official regional cartography.”
+              </p>
+            </div>
+
+            <div class="lg:col-span-8 space-y-4">
+              <h4 class="font-sans text-xs text-charcoal font-bold uppercase tracking-wider mb-2">Thematic Breakdown and Progression</h4>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-sans">
+                <div class="p-4 bg-white rounded-xl border border-editorial">
+                  <div class="text-amberAccent font-bold mb-1">ACT I · ACOUSTIC ISOLATION</div>
+                  <p class="text-charcoalLight leading-relaxed">The researcher catalogs natural subterranean resonance patterns until anomalous human voices appear encoded within water flows.</p>
+                </div>
+                <div class="p-4 bg-white rounded-xl border border-editorial">
+                  <div class="text-amberAccent font-bold mb-1">ACT II · UNRECORDED SETTLEMENT</div>
+                  <p class="text-charcoalLight leading-relaxed">Journeys into unmapped terrain guided solely by binaural audio cues, confronting bureaucratic resistance and personal memory collapse.</p>
+                </div>
+                <div class="p-4 bg-white rounded-xl border border-editorial">
+                  <div class="text-amberAccent font-bold mb-1">ACT III · HARMONIC RESOLUTION</div>
+                  <p class="text-charcoalLight leading-relaxed">Discovers the physical remnants preserved within limestone acoustics, producing a permanent public sonic archive.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Reader Spread 02: Limestone & Silver -->
+        <article class="p-8 sm:p-12 bg-parchment rounded-2xl border border-editorial shadow-sm">
+          <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-6 pb-6 border-b border-editorial">
+            <div>
+              <div class="font-sans text-xs text-amberAccent font-bold uppercase tracking-wider mb-2">
+                PROJECT 02 · PSYCHOLOGICAL CHAMBER PIECE · 94 MINUTES
+              </div>
+              <h3 class="font-display text-3xl sm:text-4xl font-bold text-charcoal">
+                Limestone & Silver
+              </h3>
+            </div>
+            <div class="flex items-center space-x-3 font-sans text-xs font-semibold">
+              <span class="px-3 py-1 bg-white rounded-full border border-editorial text-charcoal">CHAMBER ENSEMBLE</span>
+              <span class="px-3 py-1 bg-amberAccent/15 text-amberAccent rounded-full border border-amberAccent/30">PACKAGING PHASE</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-8">
+            <div class="lg:col-span-4">
+              <h4 class="font-sans text-xs text-charcoal font-bold uppercase tracking-wider mb-2">Dramatic Premise</h4>
+              <p class="font-sans text-sm text-charcoal leading-relaxed font-medium bg-white p-4 rounded-xl border border-editorial italic">
+                “During an electrical blackout in an archival preservation facility, an archivist and an estranged restorationist race against rising summer heat to salvage rare silent film nitrate negatives before chemical combustion.”
+              </p>
+            </div>
+
+            <div class="lg:col-span-8 space-y-4">
+              <h4 class="font-sans text-xs text-charcoal font-bold uppercase tracking-wider mb-2">Thematic Breakdown and Progression</h4>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-sans">
+                <div class="p-4 bg-white rounded-xl border border-editorial">
+                  <div class="text-amberAccent font-bold mb-1">ACT I · CHEMICAL CLOCK</div>
+                  <p class="text-charcoalLight leading-relaxed">Air conditioning fails as temperatures climb toward 38 degrees Celsius, threatening volatile silver nitrate negatives.</p>
+                </div>
+                <div class="p-4 bg-white rounded-xl border border-editorial">
+                  <div class="text-amberAccent font-bold mb-1">ACT II · REPRESSED GUILT</div>
+                  <p class="text-charcoalLight leading-relaxed">Trapped in the vault corridors, unspoken estrangement erupts while delicate emulsion frames must be manually cooled.</p>
+                </div>
+                <div class="p-4 bg-white rounded-xl border border-editorial">
+                  <div class="text-amberAccent font-bold mb-1">ACT III · SACRIFICE & LIGHT</div>
+                  <p class="text-charcoalLight leading-relaxed">A choice between preserving the sole existing negative or saving their shared humanity as the first morning light strikes.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       SECTION 4: DIRECT DIALOGUE & COLLABORATION DESK (#contact-desk)
+       Dedicated In-Page Collaboration Desk with Direct Form & WhatsApp Link
+       ========================================================================= -->
+  <section id="contact-desk" class="py-24 sm:py-32 bg-parchment relative border-b border-editorial">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="max-w-3xl mb-16">
+        <div class="font-sans text-xs text-amberAccent tracking-widest uppercase mb-2 font-bold">
+          SECTION 04 · COLLABORATION & INQUIRY
+        </div>
+        <h2 class="font-display text-3xl sm:text-5xl font-bold tracking-tight text-charcoal">
+          Direct Dialogue Desk
+        </h2>
+        <p class="text-base sm:text-lg text-charcoalLight font-sans font-normal mt-4 leading-relaxed">
+          Open for frontend architecture collaboration, digital archival platform design, narrative layout systems, or speculative creative consultation.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        
+        <!-- Left: Studio Details & Direct Channels -->
+        <div class="lg:col-span-5 flex flex-col justify-between space-y-8">
+          <div>
+            <div class="font-sans text-xs font-bold text-charcoal uppercase tracking-wider mb-3">
+              STUDIO LOCATION & OPERATIONAL SCOPE
+            </div>
+            <div class="p-6 bg-paper rounded-2xl border border-editorial space-y-4 text-xs font-sans">
+              <div class="flex items-center space-x-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="font-semibold text-charcoal">Gombe, Nigeria · Operating Digitally Worldwide</span>
+              </div>
+              <p class="text-charcoalLight leading-relaxed font-normal">
+                Independent workspace practicing high standard web engineering, editorial UI systems, and cultural preservation architectures.
+              </p>
+              <div class="pt-3 border-t border-editorial flex items-center justify-between text-charcoalMuted">
+                <span>LOCAL TIMEZONE</span>
+                <span class="font-semibold text-charcoal">WAT (UTC+1)</span>
+              </div>
+              <div class="flex items-center justify-between text-charcoalMuted">
+                <span>OFFICIAL DISPATCH</span>
+                <span class="font-semibold text-charcoal">dispatch@stratafilm.studio</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="font-sans text-xs font-bold text-charcoal uppercase tracking-wider mb-3">
+              DIRECT WHATSAPP DESK
+            </div>
+            <a href="https://wa.me/?text=Hello%20Strata%20Archive%20Designer%2C%20I%20am%20reaching%20out%20regarding%20your%20digital%20archival%20showcase." 
+               target="_blank" 
+               rel="noopener noreferrer" 
+               class="w-full p-4 bg-paper hover:bg-white border border-editorial rounded-xl font-sans text-xs text-amberAccent transition-all flex items-center justify-between font-semibold shadow-sm group">
+              <div class="flex items-center space-x-3">
+                <span class="w-2.5 h-2.5 rounded-full bg-amberAccent"></span>
+                <span class="text-charcoal group-hover:text-amberAccent transition-colors">START ENCRYPTED WHATSAPP CHAT</span>
+              </div>
+              <span class="transform group-hover:translate-x-1 transition-transform">↗</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Right: In-Page Collaboration Form -->
+        <div class="lg:col-span-7">
+          <div class="p-8 sm:p-10 bg-paper rounded-2xl border border-editorial shadow-sm">
+            <h3 class="font-display text-2xl font-bold text-charcoal mb-2">
+              Send Project Dispatch
+            </h3>
+            <p class="font-sans text-xs text-charcoalMuted mb-6 leading-relaxed">
+              Fill out this transmission form to connect directly with the independent designer in Gombe.
+            </p>
+
+            <form id="inpageDialogueForm" class="space-y-4 font-sans text-xs">
+              
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="inpageDialogueName" class="block text-charcoal uppercase tracking-wider mb-1 font-semibold">
+                    Your Name or Studio
+                  </label>
+                  <input type="text" id="inpageDialogueName" required placeholder="e.g. Amina Bello" 
+                         class="w-full px-4 py-2.5 bg-parchment border border-editorial focus:border-amberAccent rounded-lg text-charcoal placeholder-charcoalMuted/60 focus:outline-none focus:ring-1 focus:ring-amberAccent transition-colors font-medium">
+                </div>
+
+                <div>
+                  <label for="inpageDialogueRole" class="block text-charcoal uppercase tracking-wider mb-1 font-semibold">
+                    Role or Focus Area
+                  </label>
+                  <input type="text" id="inpageDialogueRole" required placeholder="e.g. Creative Lead, Curator" 
+                         class="w-full px-4 py-2.5 bg-parchment border border-editorial focus:border-amberAccent rounded-lg text-charcoal placeholder-charcoalMuted/60 focus:outline-none focus:ring-1 focus:ring-amberAccent transition-colors font-medium">
+                </div>
+              </div>
+
+              <div>
+                <label for="inpageDialogueType" class="block text-charcoal uppercase tracking-wider mb-1 font-semibold">
+                  Collaboration Scope
+                </label>
+                <select id="inpageDialogueType" required 
+                        class="w-full px-4 py-2.5 bg-parchment border border-editorial focus:border-amberAccent rounded-lg text-charcoal focus:outline-none focus:ring-1 focus:ring-amberAccent transition-colors font-medium">
+                  <option value="" disabled selected>Select Scope...</option>
+                  <option value="frontend">Frontend Architecture and Kinetic Web Systems</option>
+                  <option value="editorial">Digital Editorial and Archival Platform Design</option>
+                  <option value="narrative">Narrative Presentation and Screenplay Layout</option>
+                  <option value="general">Creative Consultation</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="inpageDialogueNotes" class="block text-charcoal uppercase tracking-wider mb-1 font-semibold">
+                  Project Context and Inquiries
+                </label>
+                <textarea id="inpageDialogueNotes" rows="4" required placeholder="Share details about your project, timeline, or design goals..." 
+                          class="w-full px-4 py-2.5 bg-parchment border border-editorial focus:border-amberAccent rounded-lg text-charcoal placeholder-charcoalMuted/60 focus:outline-none focus:ring-1 focus:ring-amberAccent transition-colors resize-none font-medium"></textarea>
+              </div>
+
+              <button type="submit" id="inpageDialogueSubmitBtn" class="w-full py-3 bg-charcoal hover:bg-charcoalLight text-paper font-sans font-semibold text-xs uppercase tracking-wider rounded-lg transition-colors flex items-center justify-center space-x-2 cursor-pointer shadow-sm">
+                <span>TRANSMIT PROJECT INQUIRY</span>
+                <span>→</span>
+              </button>
+
+              <div id="inpageDialogueFeedback" class="hidden p-3 rounded-lg font-sans text-xs leading-relaxed"></div>
+
+            </form>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       AUTHENTIC EDITORIAL FOOTER
+       ========================================================================= -->
+  <footer class="bg-parchment py-16 sm:py-24 border-t border-editorial relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-12 pb-16 border-b border-editorial">
+        
+        <div class="md:col-span-5 flex flex-col space-y-4">
+          <div class="flex items-center space-x-3">
+            <div id="footerLogoMark" class="w-7 h-7 text-charcoal"></div>
+            <span class="font-display font-bold text-2xl tracking-tight text-charcoal uppercase">
+              Strata Archive
+            </span>
+          </div>
+          <p class="text-sm text-charcoalLight max-w-sm leading-relaxed font-sans font-normal">
+            A speculative digital architecture and interactive archival showcase. Built with love and disciplined craft by an independent frontend and visual designer based in Gombe, Nigeria.
+          </p>
+          <div class="font-sans text-xs text-charcoal font-semibold tracking-wider uppercase">
+            Location: Gombe, Nigeria · Digital Archive Experiment
+          </div>
+        </div>
+
+        <div class="md:col-span-3 font-sans text-xs flex flex-col space-y-3 font-medium">
+          <div class="text-charcoal font-bold uppercase tracking-wider mb-1 font-sans">Index Sections</div>
+          <a href="#storyboard-archive" class="text-charcoalMuted hover:text-amberAccent transition-colors">01 · Storyboard Archive</a>
+          <a href="#visual-direction" class="text-charcoalMuted hover:text-amberAccent transition-colors">02 · Visual Direction & Frame Studies</a>
+          <a href="#screenplay-catalogue" class="text-charcoalMuted hover:text-amberAccent transition-colors">03 · Screenplay Catalogue</a>
+          <a href="#contact-desk" class="text-charcoalMuted hover:text-amberAccent transition-colors">04 · Creative Dialogue Desk</a>
+          <button id="footerEthosLink" class="text-left text-charcoalMuted hover:text-amberAccent transition-colors cursor-pointer">05 · Studio Ethos Drawer</button>
+        </div>
+
+        <div class="md:col-span-4 flex flex-col space-y-4">
+          <div class="text-charcoal font-sans text-xs font-bold uppercase tracking-wider">
+            Direct Dialogue Desk
+          </div>
+          <p class="text-xs text-charcoalLight font-sans leading-relaxed">
+            Open for creative collaboration, web engineering, UI UX architecture, or archival presentation consultation:
+          </p>
+          <div class="flex flex-wrap gap-3">
+            <a href="#contact-desk" class="px-4 py-2.5 bg-charcoal hover:bg-charcoalLight text-paper rounded-lg font-sans text-xs tracking-wider transition-colors cursor-pointer font-semibold uppercase flex items-center space-x-1.5">
+              <span>DISPATCH INQUIRY</span>
+              <span>↓</span>
+            </a>
+            <a href="https://wa.me/?text=Hello%20Strata%20Archive%20Designer%2C%20I%20am%20reaching%20out%20regarding%20your%20digital%20archival%20showcase." 
+               target="_blank" 
+               rel="noopener noreferrer" 
+               class="px-4 py-2.5 bg-white hover:bg-parchmentDark border border-editorial rounded-lg font-sans text-xs text-amberAccent transition-colors flex items-center space-x-1.5 font-semibold">
+              <span>WHATSAPP DESK</span>
+              <span>↗</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="pt-8 flex flex-col sm:flex-row items-center justify-between font-sans text-xs text-charcoalMuted gap-4 font-medium">
+        <div>© 2026 Strata Archive · Independent Frontend & Visual Showcase · Gombe, Nigeria.</div>
+        <div class="flex items-center space-x-4">
+          <span>Digital Architecture Case Study</span>
+          <span>•</span>
+          <button id="jumpToTopBtn" class="hover:text-amberAccent transition-colors cursor-pointer font-semibold">
+            [ BACK TO TOP ↑ ]
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- =========================================================================
+       INTERACTIVE DETAIL DRAWER (With Continuous Ambient Kinetics)
+       ========================================================================= -->
+  <div id="dossierDrawer" class="fixed inset-0 z-50 pointer-events-none opacity-0 transition-opacity duration-300" role="dialog" aria-modal="true">
+    <div id="dossierBackdrop" class="absolute inset-0 non-covering-backdrop transition-opacity cursor-pointer"></div>
+
+    <div id="dossierPanel" data-lenis-prevent class="absolute top-0 right-0 bottom-0 w-[88%] lg:w-[48%] bg-paper border-l border-editorial shadow-2xl p-6 sm:p-10 flex flex-col justify-between overflow-y-auto transform translate-x-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
+      
+      <div>
+        <div class="flex items-center justify-between border-b border-editorial pb-4 mb-6">
+          <span id="dossierBadge" class="font-sans text-xs text-amberAccent uppercase tracking-widest font-bold">
+            SCREENPLAY DEVELOPMENT
+          </span>
+          <button id="dossierCloseBtn" class="p-1 rounded hover:bg-parchment text-charcoal cursor-pointer" aria-label="Close Dossier">
+            <div id="dossierCloseIcon" class="w-5 h-5"></div>
+          </button>
+        </div>
+
+        <h3 id="dossierTitle" class="font-display text-2xl sm:text-3xl font-bold text-charcoal">
+          Dossier Title
+        </h3>
+        
+        <div class="relative w-full aspect-[16/9] rounded-xl overflow-hidden my-6 border border-editorial bg-parchmentDark">
+          <img id="dossierImage" src="" alt="Dossier Visual" class="w-full h-full object-cover">
+          <!-- Continuous Ambient Kinetic Overlay Rendered Inside Log Drawer -->
+          <div id="dossierAmbientOverlay" class="absolute inset-0 pointer-events-none"></div>
+        </div>
+
+        <div class="space-y-6 text-sm text-charcoalLight font-sans">
+          <div>
+            <h4 class="font-sans text-xs text-charcoal uppercase tracking-wider mb-1 font-bold">Logline & Dramatic Premise</h4>
+            <p id="dossierLogline" class="leading-relaxed bg-parchment p-4 rounded-xl border border-editorial font-sans text-sm italic text-charcoal">
+              Logline goes here...
+            </p>
+          </div>
+
+          <div>
+            <h4 class="font-sans text-xs text-charcoal uppercase tracking-wider mb-1 font-bold">Cinematic Treatment & Scope</h4>
+            <p id="dossierTreatment" class="leading-relaxed font-normal">
+              Treatment goes here...
+            </p>
+          </div>
+
+          <div>
+            <h4 class="font-sans text-xs text-charcoal uppercase tracking-wider mb-2 font-bold">Archival Deliverables</h4>
+            <ul id="dossierDeliverables" class="list-disc list-inside space-y-1 font-sans text-xs text-charcoalMuted font-medium"></ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8 pt-6 border-t border-editorial flex items-center justify-between font-sans text-xs">
+        <span class="text-charcoalMuted font-medium">Gombe, Nigeria · Digital Showcase</span>
+        <button id="dossierInquireBtn" class="px-4 py-2 bg-charcoal text-paper hover:bg-charcoalLight rounded-lg transition-colors cursor-pointer font-semibold uppercase">
+          DISCUSS THIS PHASE →
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       11. CONTACT DIALOGUE DRAWER
+       ========================================================================= -->
+  <div id="contactDrawer" class="fixed inset-0 z-50 pointer-events-none opacity-0 transition-opacity duration-300" role="dialog" aria-modal="true">
+    <div id="contactBackdrop" class="absolute inset-0 non-covering-backdrop transition-opacity cursor-pointer"></div>
+
+    <div id="contactPanel" data-lenis-prevent class="absolute top-0 right-0 bottom-0 w-[88%] lg:w-[48%] bg-paper border-l border-editorial p-6 sm:p-10 shadow-2xl flex flex-col justify-between overflow-y-auto transform translate-x-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
+      
+      <div>
+        <div class="flex items-center justify-between border-b border-editorial pb-4 mb-6">
+          <div class="flex items-center space-x-2">
+            <span class="w-2 h-2 rounded-full bg-amberAccent"></span>
+            <span class="font-sans text-xs text-charcoal tracking-wider uppercase font-bold">Strata Dialogue Desk</span>
+          </div>
+          <button id="contactCloseBtn" class="p-1 rounded hover:bg-parchment text-charcoal cursor-pointer" aria-label="Close Drawer">
+            <div id="contactCloseIcon" class="w-5 h-5"></div>
+          </button>
+        </div>
+
+        <h3 class="font-display text-2xl sm:text-3xl font-bold text-charcoal">
+          Initiate Dialogue
+        </h3>
+        <p class="text-sm text-charcoalMuted font-sans font-normal mt-2 leading-relaxed">
+          Reach out for frontend development collaboration, digital archive design, visual systems, or general project consultation.
+        </p>
+
+        <form id="dialogueForm" class="mt-8 space-y-4 font-sans text-xs">
+          
+          <div>
+            <label for="dialogueName" class="block text-charcoal uppercase tracking-wider mb-1 font-semibold">
+              Your Name or Studio
+            </label>
+            <input type="text" id="dialogueName" name="name" required placeholder="e.g. Amina Bello" 
+                   class="w-full px-4 py-2.5 bg-parchment border border-editorial focus:border-amberAccent rounded-lg text-charcoal placeholder-charcoalMuted/60 focus:outline-none focus:ring-1 focus:ring-amberAccent transition-colors font-medium">
+          </div>
+
+          <div>
+            <label for="dialogueRole" class="block text-charcoal uppercase tracking-wider mb-1 font-semibold">
+              Role or Focus Area
+            </label>
+            <input type="text" id="dialogueRole" name="role" required placeholder="e.g. Creative Director, Curator, Engineering Lead" 
+                   class="w-full px-4 py-2.5 bg-parchment border border-editorial focus:border-amberAccent rounded-lg text-charcoal placeholder-charcoalMuted/60 focus:outline-none focus:ring-1 focus:ring-amberAccent transition-colors font-medium">
+          </div>
+
+          <div>
+            <label for="dialogueType" class="block text-charcoal uppercase tracking-wider mb-1 font-semibold">
+              Collaboration Scope
+            </label>
+            <select id="dialogueType" name="type" required 
+                    class="w-full px-4 py-2.5 bg-parchment border border-editorial focus:border-amberAccent rounded-lg text-charcoal focus:outline-none focus:ring-1 focus:ring-amberAccent transition-colors font-medium">
+              <option value="" disabled selected>Select Scope...</option>
+              <option value="frontend">Frontend Architecture and Animation Systems</option>
+              <option value="editorial">Digital Editorial and Archival Platform Design</option>
+              <option value="narrative">Narrative Presentation and Screenplay Layout</option>
+              <option value="general">Creative Consultation</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="dialogueNotes" class="block text-charcoal uppercase tracking-wider mb-1 font-semibold">
+              Project Context and Inquiries
+            </label>
+            <textarea id="dialogueNotes" name="notes" rows="3" required placeholder="Share details about your project, timeline, or design goals..." 
+                      class="w-full px-4 py-2.5 bg-parchment border border-editorial focus:border-amberAccent rounded-lg text-charcoal placeholder-charcoalMuted/60 focus:outline-none focus:ring-1 focus:ring-amberAccent transition-colors resize-none font-medium"></textarea>
+          </div>
+
+          <button type="submit" id="dialogueSubmitBtn" class="w-full py-3 bg-charcoal hover:bg-charcoalLight text-paper font-sans font-semibold text-xs uppercase tracking-wider rounded-lg transition-colors flex items-center justify-center space-x-2 cursor-pointer shadow-sm">
+            <span>TRANSMIT INQUIRY</span>
+            <span>→</span>
+          </button>
+
+          <div id="dialogueFeedback" class="hidden p-3 rounded-lg font-sans text-xs leading-relaxed"></div>
+
+        </form>
+      </div>
+
+      <div class="mt-8 pt-6 border-t border-editorial">
+        <div class="font-sans text-xs text-charcoalMuted uppercase tracking-wider mb-2 font-semibold">
+          Direct WhatsApp Desk · Gombe to Worldwide
+        </div>
+        <a id="whatsappBtn" 
+           href="https://wa.me/?text=Hello%20Strata%20Archive%20Designer%2C%20I%20am%20reaching%20out%20regarding%20your%20digital%20archival%20showcase." 
+           target="_blank" 
+           rel="noopener noreferrer" 
+           class="w-full py-2.5 px-4 bg-parchment hover:bg-parchmentDark border border-editorial rounded-lg font-sans text-xs text-amberAccent transition-colors flex items-center justify-between font-semibold">
+          <span class="flex items-center space-x-2">
+            <span class="w-2 h-2 rounded-full bg-amberAccent"></span>
+            <span>DIRECT TO WHATSAPP DIALOGUE</span>
+          </span>
+          <span>↗</span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Main JavaScript Application Module -->
+  <script type="module" src="main.js"></script>
+</body>
+</html>
