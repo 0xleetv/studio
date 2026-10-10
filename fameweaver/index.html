@@ -1,0 +1,1903 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FameWeaver — Your Story Deserves to Be Read</title>
+  <meta name="description" content="From First Draft to Book or Screen · Score your manuscript across 22 craft blocks, master the craft, and get discovered by publishers and producers.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            parchment: {
+              DEFAULT: '#F8F6F1',
+              white: '#FFFFFF',
+              darker: '#ECE6D9',
+              border: '#E8E2D5',
+            },
+            obsidian: {
+              DEFAULT: '#161120',
+              card: '#20192E',
+              border: '#2D2340',
+              deep: '#0F0B17',
+            },
+            purple: {
+              DEFAULT: '#4D2C6D',
+              deep: '#2A163D',
+              dark: '#371E4F',
+              light: '#6A3E96',
+              surface: 'rgba(77, 44, 109, 0.05)',
+              border: 'rgba(77, 44, 109, 0.15)',
+            },
+            gold: {
+              DEFAULT: '#C8A962',
+              light: '#DEBE7B',
+              dark: '#A3843F',
+              surface: 'rgba(200, 169, 98, 0.12)',
+            },
+            slate: {
+              charcoal: '#2B2735',
+              muted: '#6B6476',
+              light: '#9B93A8',
+            }
+          },
+          fontFamily: {
+            cinzel: ['"Cinzel Decorative"', 'Georgia', 'serif'],
+            serifHeader: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- GSAP 3 & ScrollTrigger via CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-parchment text-slate-charcoal font-sans min-h-screen selection:bg-gold/30 selection:text-purple-deep relative">
+
+  <!-- =========================================================================
+       GLOBAL: TOP NOTIFICATION STRIP
+       ========================================================================= -->
+  <aside aria-label="Announcement" class="relative z-40 bg-gradient-to-r from-obsidian-deep via-purple-deep to-obsidian-deep text-gold-light px-4 py-2.5 text-center text-xs sm:text-sm font-semibold tracking-wide shadow-sm border-b border-gold/30">
+    <div class="max-w-7xl mx-auto flex items-center justify-center gap-2">
+      <span class="inline-block w-2 h-2 rounded-full bg-gold animate-ping"></span>
+      <p class="leading-tight">
+        <strong class="text-white font-bold">Great news!</strong> All free trials have been extended to 90 days. Existing trial members, your end date has been updated automatically.
+      </p>
+    </div>
+  </aside>
+
+  <!-- =========================================================================
+       GLOBAL: HEADER & KINETIC POP-UP MENU
+       ========================================================================= -->
+  <header class="sticky top-0 z-40 bg-[#F8F6F1]/95 backdrop-blur-md border-b border-parchment-border transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Brand Logo Mark -->
+      <a href="#home" data-view="home" class="view-nav-trigger flex items-center gap-3 group focus:outline-none">
+        <div class="w-10 h-10 rounded-xl bg-purple flex items-center justify-center shadow-md border border-gold/40 group-hover:scale-105 transition-transform duration-300">
+          <span class="font-cinzel text-gold text-xl font-black">F</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-cinzel text-lg sm:text-xl font-bold tracking-[0.2em] text-purple group-hover:text-purple-dark transition-colors">
+            FAME WEAVER
+          </span>
+          <span class="text-[9px] uppercase tracking-[0.3em] text-slate-muted font-semibold -mt-1">
+            Editorial Platform
+          </span>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation Links -->
+      <nav class="hidden lg:flex items-center space-x-8 text-sm font-semibold text-slate-muted tracking-wide" aria-label="Main Navigation">
+        <a href="#how-it-works" class="nav-section-link hover:text-purple transition-colors py-1">How It Works</a>
+        <a href="#simulator" class="nav-section-link hover:text-purple transition-colors py-1">Product Demos</a>
+        <a href="#our-story" class="nav-section-link hover:text-purple transition-colors py-1">Our Story</a>
+        <a href="#pricing" class="nav-section-link hover:text-purple transition-colors py-1">Pricing</a>
+        <a href="#contests" class="nav-section-link hover:text-purple transition-colors py-1">Contests</a>
+      </nav>
+
+      <!-- Desktop Action CTAs -->
+      <div class="hidden lg:flex items-center space-x-5 text-sm font-semibold">
+        <a href="#three-paths" class="nav-section-link text-slate-charcoal hover:text-purple transition-colors">Read for Free</a>
+        <a href="#signin" class="text-slate-muted hover:text-purple transition-colors">Sign In</a>
+        <a href="#pricing" class="nav-section-link btn-gold px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider">
+          Start Writing Free
+        </a>
+      </div>
+
+      <!-- Mobile Hamburger Toggle Button -->
+      <button id="mobile-menu-toggle-btn" type="button" aria-label="Toggle mobile menu" class="lg:hidden p-2.5 rounded-xl border border-parchment-border bg-white text-purple hover:bg-purple-surface transition-colors focus:outline-none focus:ring-2 focus:ring-purple/20">
+        <svg id="hamburger-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+        <svg id="close-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Kinetic Frosted-Glass Card Menu -->
+    <div id="mobile-popup-backdrop" class="fixed inset-0 bg-black/40 backdrop-blur-xs z-40 hidden"></div>
+    <div id="mobile-popup-menu" class="hidden absolute top-20 right-4 sm:right-6 w-80 max-w-[calc(100vw-2rem)] z-50 backdrop-blur-xl bg-[#1a1424]/95 border border-amber-500/20 shadow-2xl rounded-2xl p-6 text-white">
+      <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
+        <span class="font-cinzel text-xs tracking-widest text-gold uppercase font-bold">FameWeaver Menu</span>
+        <button id="mobile-popup-close" class="text-slate-light hover:text-white p-1">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      <div class="flex flex-col space-y-3 font-semibold text-sm">
+        <a href="#how-it-works" class="mobile-link py-1.5 hover:text-gold transition-colors">How It Works</a>
+        <a href="#simulator" class="mobile-link py-1.5 hover:text-gold transition-colors">Product Demos</a>
+        <a href="#our-story" class="mobile-link py-1.5 hover:text-gold transition-colors">Our Story</a>
+        <a href="#pricing" class="mobile-link py-1.5 hover:text-gold transition-colors">Pricing</a>
+        <a href="#contests" class="mobile-link py-1.5 hover:text-gold transition-colors">Contests</a>
+        <a href="#not-ai" data-view="not-ai" class="view-nav-trigger mobile-link py-1.5 text-gold hover:underline">This is NOT AI</a>
+        <a href="#compare" data-view="compare" class="view-nav-trigger mobile-link py-1.5 text-gold hover:underline">Compare the Difference</a>
+        <a href="#contact" data-view="contact" class="view-nav-trigger mobile-link py-1.5 hover:text-gold transition-colors">Help & Contact</a>
+      </div>
+      <div class="mt-6 pt-5 border-t border-white/10 flex flex-col space-y-3">
+        <a href="#three-paths" class="mobile-link text-center py-2.5 rounded-xl border border-white/20 text-xs font-bold hover:bg-white/10 transition-colors">
+          Read for Free
+        </a>
+        <a href="#signin" class="mobile-link text-center py-2 text-xs font-semibold text-slate-light hover:text-white transition-colors">
+          Sign In
+        </a>
+        <a href="#pricing" class="mobile-link btn-gold text-center py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider text-obsidian">
+          Start Writing Free
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       VIEW A: HOME (Complete Editorial Landing Page)
+       ========================================================================= -->
+  <main id="view-home" class="app-view active">
+    
+    <!-- 1. HERO & INTERACTIVE STORYSENSE ENGINE -->
+    <section class="relative bg-gradient-to-b from-[#381F51] via-obsidian to-obsidian text-white pt-16 pb-24 overflow-hidden border-b-4 border-gold">
+      <div class="absolute inset-0 opacity-15 pointer-events-none mix-blend-overlay" style="background-image: radial-gradient(#C8A962 1px, transparent 1px); background-size: 28px 28px;"></div>
+      
+      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <!-- Tagline Ribbon -->
+        <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/10 border border-gold/30 text-xs sm:text-sm font-black uppercase tracking-[0.2em] text-gold mb-8 shadow-inner backdrop-blur-md">
+          <span class="text-gold">Writers Create.</span>
+          <span class="text-white">Readers Discover.</span>
+          <span class="text-gold">Industry Finds Talent.</span>
+        </div>
+
+        <!-- Headline & Subheadline -->
+        <h1 class="font-cinzel text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.15] max-w-4xl mx-auto text-white">
+          Your Story Deserves to Be <span class="text-gold italic font-serifHeader">Read</span>
+        </h1>
+        <p class="font-serifHeader text-lg sm:text-2xl text-purple-200 italic font-semibold mt-3 max-w-2xl mx-auto">
+          From First Draft to Book or Screen
+        </p>
+        <p class="mt-4 text-sm sm:text-base text-white/80 max-w-xl mx-auto font-medium leading-relaxed">
+          Score your manuscript. Master the craft. Get discovered by publishers and producers.
+        </p>
+
+        <!-- Hero CTAs -->
+        <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <a href="#simulator" class="btn-gold px-8 py-4 rounded-xl text-sm sm:text-base font-black tracking-wide shadow-xl min-w-[220px]">
+            See It in Action ✦
+          </a>
+          <a href="#contests" class="px-8 py-4 rounded-xl text-sm sm:text-base font-black text-gold border-2 border-gold hover:bg-gold/15 transition-all min-w-[220px]">
+            View Live Contests
+          </a>
+        </div>
+
+        <!-- Metrics Ribbon -->
+        <div id="metric-ribbon" class="max-w-5xl mx-auto mt-16 p-5 sm:p-6 rounded-2xl bg-obsidian-card/85 border border-gold/25 backdrop-blur-md shadow-2xl">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center divide-y md:divide-y-0 md:divide-x divide-white/10">
+            <div class="pt-2 md:pt-0">
+              <span id="ribbon-awards" class="font-cinzel text-2xl sm:text-3xl lg:text-4xl font-black text-gold block">89,976</span>
+              <span class="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-subtle mt-1 block">Accolades Recovered</span>
+            </div>
+            <div class="pt-4 md:pt-0">
+              <span id="ribbon-blocks" class="font-cinzel text-2xl sm:text-3xl lg:text-4xl font-black text-gold block">22</span>
+              <span class="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-subtle mt-1 block">Story Building Blocks</span>
+            </div>
+            <div class="pt-4 md:pt-0">
+              <span id="ribbon-techniques" class="font-cinzel text-2xl sm:text-3xl lg:text-4xl font-black text-gold block">16</span>
+              <span class="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-subtle mt-1 block">Coaching Techniques</span>
+            </div>
+            <div class="pt-4 md:pt-0">
+              <span id="ribbon-competitions" class="font-cinzel text-2xl sm:text-3xl lg:text-4xl font-black text-gold block">1,135</span>
+              <span class="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-subtle mt-1 block">Competitions Tracked</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- StorySense 87 Diagnostic Interactive Simulator -->
+        <div id="simulator" class="scroll-mt-28 max-w-5xl mx-auto mt-14 text-left">
+          <div class="obsidian-card rounded-3xl p-6 sm:p-8 lg:p-10 border border-gold/40 relative">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-white/10 gap-4">
+              <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold/20 border border-gold/40 text-[10px] sm:text-xs font-black uppercase tracking-wider text-gold-light mb-1">
+                  StorySense™ Live Engine
+                </div>
+                <h2 class="font-cinzel text-xl sm:text-2xl font-black text-white">
+                  Manuscript Diagnostic Simulator
+                </h2>
+                <p class="text-xs sm:text-sm text-slate-subtle mt-0.5">
+                  Select any craft dimension to inspect real-time diagnostics and coaching tips.
+                </p>
+              </div>
+              <div class="flex items-center gap-4 bg-white/5 px-4 py-2 rounded-2xl border border-white/10 self-start sm:self-auto">
+                <div class="text-right">
+                  <span class="text-[10px] uppercase font-bold text-slate-subtle block">Overall Score</span>
+                  <span class="text-xs font-semibold text-emerald-400">Top 6% Industry</span>
+                </div>
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center font-cinzel text-2xl font-black text-white shadow-lg shadow-emerald-900/50">
+                  <span id="storysense-score-num">0</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dynamic Metric Bars -->
+            <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-3" id="metric-bars-wrapper">
+              
+              <!-- Character (91) -->
+              <div class="metric-row active" data-metric="character">
+                <div class="flex justify-between items-center text-xs sm:text-sm font-bold text-white mb-1.5">
+                  <span class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Character Arc & Interiority
+                  </span>
+                  <span class="text-gold font-mono">91</span>
+                </div>
+                <div class="progress-track"><div class="progress-bar-fill" style="width: 91%"></div></div>
+              </div>
+
+              <!-- Structure (89) -->
+              <div class="metric-row" data-metric="structure">
+                <div class="flex justify-between items-center text-xs sm:text-sm font-bold text-white mb-1.5">
+                  <span class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Narrative Structure & Beats
+                  </span>
+                  <span class="text-gold font-mono">89</span>
+                </div>
+                <div class="progress-track"><div class="progress-bar-fill" style="width: 89%"></div></div>
+              </div>
+
+              <!-- Dialogue (85) -->
+              <div class="metric-row" data-metric="dialogue">
+                <div class="flex justify-between items-center text-xs sm:text-sm font-bold text-white mb-1.5">
+                  <span class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Dialogue, Voice & Subtext
+                  </span>
+                  <span class="text-gold font-mono">85</span>
+                </div>
+                <div class="progress-track"><div class="progress-bar-fill" style="width: 85%"></div></div>
+              </div>
+
+              <!-- World (84) -->
+              <div class="metric-row" data-metric="world">
+                <div class="flex justify-between items-center text-xs sm:text-sm font-bold text-white mb-1.5">
+                  <span class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Worldbuilding & Sensory Texture
+                  </span>
+                  <span class="text-gold font-mono">84</span>
+                </div>
+                <div class="progress-track"><div class="progress-bar-fill" style="width: 84%"></div></div>
+              </div>
+
+              <!-- Uniqueness (82) -->
+              <div class="metric-row" data-metric="uniqueness">
+                <div class="flex justify-between items-center text-xs sm:text-sm font-bold text-white mb-1.5">
+                  <span class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Originality & High-Concept Angle
+                  </span>
+                  <span class="text-gold font-mono">82</span>
+                </div>
+                <div class="progress-track"><div class="progress-bar-fill" style="width: 82%"></div></div>
+              </div>
+
+              <!-- Tension (78) -->
+              <div class="metric-row" data-metric="tension">
+                <div class="flex justify-between items-center text-xs sm:text-sm font-bold text-white mb-1.5">
+                  <span class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-amber-400"></span> Tension & Micro-Stakes Rhythm
+                  </span>
+                  <span class="text-gold font-mono">78</span>
+                </div>
+                <div class="progress-track"><div class="progress-bar-fill" style="width: 78%"></div></div>
+              </div>
+            </div>
+
+            <!-- Interactive Coaching & Boost-It Panel -->
+            <div id="coaching-panel" class="mt-7 pt-6 border-t border-gold/30 bg-black/40 rounded-2xl p-5 sm:p-6 fluid-transition">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <div class="flex items-center gap-3">
+                  <span class="w-2.5 h-2.5 rounded-full bg-gold"></span>
+                  <h3 id="coach-metric-title" class="font-serifHeader text-base sm:text-lg font-bold text-white">
+                    Character Arc & Interiority
+                  </h3>
+                </div>
+                <div class="text-xs">
+                  <span id="coach-metric-rank" class="text-gold font-semibold">Top 4% of Scored Manuscripts</span>
+                  <span id="coach-metric-score" class="ml-2 px-2 py-0.5 rounded bg-white/10 font-bold text-white">91/100</span>
+                </div>
+              </div>
+
+              <div class="space-y-3 text-xs sm:text-sm">
+                <div>
+                  <strong class="text-gold text-[10px] sm:text-xs uppercase tracking-wider block mb-0.5">Strength Diagnostic:</strong>
+                  <p id="coach-diagnosis" class="text-white leading-relaxed">
+                    Protagonist Elias demonstrates compelling moral friction and distinct voice rhythm in Act II.
+                  </p>
+                </div>
+                <div>
+                  <strong class="text-amber-300 text-[10px] sm:text-xs uppercase tracking-wider block mb-0.5">Friction Point:</strong>
+                  <p id="coach-finding" class="text-slate-light leading-relaxed">
+                    Secondary relationship with Miriam in Chapter 4 shows slight empathy drop due to compressed backstory.
+                  </p>
+                </div>
+                <div class="p-3 sm:p-4 rounded-xl bg-purple-deep/70 border border-gold/30 mt-3">
+                  <strong class="text-gold-light text-[10px] sm:text-xs uppercase tracking-wider block mb-1 flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-gold" fill="currentColor" viewBox="0 0 20 20"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14H8a4 4 0 01-.82-7.915 4.962 4.962 0 017.64 0A4 4 0 0112 14z"/></svg>
+                    Actionable Boost-It Coaching Recommendation:
+                  </strong>
+                  <p id="coach-tip" class="text-white text-xs leading-relaxed">
+                    Ground Chapter 4 dialogue in a tangible physical micro-conflict (e.g. withholding the ledger key) to heighten immediate emotional stakes without adding exposition.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 2. THREE PATHS: WRITERS | READERS | INDUSTRY -->
+    <section id="three-paths" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <p class="font-cinzel text-xs uppercase tracking-widest text-purple font-black">For Everyone</p>
+        <h2 class="font-cinzel text-3xl sm:text-4xl font-black text-slate-charcoal mt-1">
+          One Platform. <span class="text-purple">Three Paths.</span>
+        </h2>
+        <p class="text-sm sm:text-base text-slate-muted font-medium mt-3">
+          Whether you write stories, read them, or produce them &mdash; FameWeaver has a place for you.
+        </p>
+
+        <!-- Mobile Segment Switcher -->
+        <div class="md:hidden flex items-center justify-center gap-2 p-1.5 rounded-2xl bg-parchment-border/50 max-w-xs mx-auto mt-6">
+          <button type="button" class="tab-btn active flex-1 py-2 text-xs font-bold rounded-xl" data-target="path-writers">Writers</button>
+          <button type="button" class="tab-btn flex-1 py-2 text-xs font-bold rounded-xl" data-target="path-readers">Readers</button>
+          <button type="button" class="tab-btn flex-1 py-2 text-xs font-bold rounded-xl" data-target="path-industry">Industry</button>
+        </div>
+      </div>
+
+      <!-- Desktop 3-Column / Mobile Tabbed Layout -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <!-- WRITERS -->
+        <div id="path-writers" class="path-card card-lift bg-white rounded-3xl p-8 border-4 border-purple shadow-sm flex flex-col justify-between">
+          <div>
+            <h3 class="font-cinzel text-2xl font-black text-purple text-center">Writers</h3>
+            <p class="text-xs font-bold italic text-slate-muted text-center mt-1 mb-6">Create & Get Discovered</p>
+            <ul class="space-y-3.5 text-xs sm:text-sm font-semibold text-slate-charcoal divide-y divide-parchment-border">
+              <li class="pt-2 flex items-start gap-2.5">
+                <span class="w-2 h-2 rounded-full bg-purple mt-1.5 flex-shrink-0"></span>
+                Score your manuscript across 22 building blocks
+              </li>
+              <li class="pt-2 flex items-start gap-2.5">
+                <span class="w-2 h-2 rounded-full bg-purple mt-1.5 flex-shrink-0"></span>
+                Get actionable coaching to strengthen every weakness
+              </li>
+              <li class="pt-2 flex items-start gap-2.5">
+                <span class="w-2 h-2 rounded-full bg-purple mt-1.5 flex-shrink-0"></span>
+                Convert your story into a professional screenplay
+              </li>
+              <li class="pt-2 flex items-start gap-2.5">
+                <span class="w-2 h-2 rounded-full bg-purple mt-1.5 flex-shrink-0"></span>
+                Enter writing contests with real cash prizes
+              </li>
+              <li class="pt-2 flex items-start gap-2.5">
+                <span class="w-2 h-2 rounded-full bg-purple mt-1.5 flex-shrink-0"></span>
+                Get discovered by publishers and producers
+              </li>
+            </ul>
+          </div>
+          <div class="mt-8">
+            <a href="#pricing" class="btn-purple w-full py-3.5 rounded-xl text-center text-xs font-bold uppercase tracking-wider block">
+              Start Writing Free
+            </a>
+          </div>
+        </div>
+
+        <!-- READERS -->
+        <div id="path-readers" class="path-card card-lift bg-white rounded-3xl p-8 border-4 border-gold shadow-sm flex flex-col justify-between md:block">
+          <div>
+            <h3 class="font-cinzel text-2xl font-black text-gold text-center">Readers</h3>
+            <p class="text-xs font-bold italic text-slate-muted text-center mt-1 mb-6">Discover & Earn Rewards</p>
+            <ul class="space-y-3.5 text-xs sm:text-sm font-semibold text-slate-charcoal divide-y divide-parchment-border">
+              <li class="pt-2 flex items-start gap-2.5">
+                <span class="w-2 h-2 rounded-full bg-gold mt-1.5 flex-shrink-0"></span>
+                Discover stories matched to your reading preferences
+              </li>
+              <li class="pt-2 flex items-start gap-2.5">
+                <span class="w-2 h-2 rounded-full bg-gold mt-1.5 flex-shrink-0"></span>
+                Read with our Kindle-style reader &mdash; swipe, themes, chapters
+              </li>
+              <li class="pt-2 flex items-start gap-2.5">
+                <span class="w-2 h-2 rounded-full bg-gold mt-1.5 flex-shrink-0"></span>
+                Earn Felix Star rewards for reading and reviewing
+              </li>
+              <li class="pt-2 flex items-start gap-2.5">
+                <span class="w-2 h-2 rounded-full bg-gold mt-1.5 flex-shrink-0"></span>
+                Vote in contests and help decide which stories win
+              </li>
+              <li class="pt-2 flex items-start gap-2.5">
+                <span class="w-2 h-2 rounded-full bg-gold mt-1.5 flex-shrink-0"></span>
+                Join a community of writers and readers who love stories
+              </li>
+            </ul>
+          </div>
+          <div class="mt-8">
+            <a href="#reader-signup" class="btn-gold w-full py-3.5 rounded-xl text-center text-xs font-bold uppercase tracking-wider block text-obsidian">
+              Read for Free
+            </a>
+          </div>
+        </div>
+
+        <!-- INDUSTRY -->
+        <div id="path-industry" class="path-card card-lift bg-white rounded-3xl p-8 border-4 border-purple-light shadow-sm flex flex-col justify-between md:block">
+          <div>
+            <h3 class="font-cinzel text-2xl font-black text-purple text-center">Industry</h3>
+            <p class="text-xs font-bold italic text-slate-muted text-center mt-1 mb-6">Find Emerging Talent</p>
+            <ul class="space-y-3.5 text-xs sm:text-sm font-semibold text-slate-charcoal divide-y divide-parchment-border">
+              <li class="pt-2 flex items-start gap-2.5">
+                <span class="w-2 h-2 rounded-full bg-purple mt-1.5 flex-shrink-0"></span>
+                Search writers by StorySense score and genre
+              </li>
+              <li class="pt-2 flex items-start gap-2.5">
+                <span class="w-2 h-2 rounded-full bg-purple mt-1.5 flex-shrink-0"></span>
+                View full manuscript evaluations across 22 dimensions
+              </li>
+              <li class="pt-2 flex items-start gap-2.5">
+                <span class="w-2 h-2 rounded-full bg-purple mt-1.5 flex-shrink-0"></span>
+                Filter by contest performance and awards
+              </li>
+              <li class="pt-2 flex items-start gap-2.5">
+                <span class="w-2 h-2 rounded-full bg-purple mt-1.5 flex-shrink-0"></span>
+                Manage your scout pipeline
+              </li>
+              <li class="pt-2 flex items-start gap-2.5">
+                <span class="w-2 h-2 rounded-full bg-purple mt-1.5 flex-shrink-0"></span>
+                Free for publishers, producers, and agents
+              </li>
+            </ul>
+          </div>
+          <div class="mt-8">
+            <a href="#industry-signup" class="border-2 border-purple text-purple hover:bg-purple hover:text-white w-full py-3.5 rounded-xl text-center text-xs font-bold uppercase tracking-wider block transition-colors">
+              Join Free
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 3. THE 1-2-3 WORKFLOW -->
+    <section id="how-it-works" class="py-20 parchment-pattern border-y border-parchment-border">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto mb-14">
+          <p class="font-cinzel text-xs uppercase tracking-widest text-purple font-black">Simple, Actionable, Transparent</p>
+          <h2 class="font-cinzel text-3xl sm:text-4xl font-black text-slate-charcoal mt-1">
+            How FameWeaver Works
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="card-lift text-center border-4 border-purple rounded-2xl p-8 bg-white">
+            <div class="font-cinzel text-4xl font-black text-purple mb-3">1</div>
+            <h3 class="font-cinzel text-xl font-bold mb-2">Write</h3>
+            <p class="text-xs sm:text-sm text-slate-charcoal font-semibold leading-relaxed">
+              Upload your story or write it in our editor.
+            </p>
+          </div>
+          <div class="card-lift text-center border-4 border-purple rounded-2xl p-8 bg-white">
+            <div class="font-cinzel text-4xl font-black text-purple mb-3">2</div>
+            <h3 class="font-cinzel text-xl font-bold mb-2">Improve</h3>
+            <p class="text-xs sm:text-sm text-slate-charcoal font-semibold leading-relaxed">
+              Get scored. Get coached. Fix every weakness.
+            </p>
+          </div>
+          <div class="card-lift text-center border-4 border-purple rounded-2xl p-8 bg-white">
+            <div class="font-cinzel text-4xl font-black text-purple mb-3">3</div>
+            <h3 class="font-cinzel text-xl font-bold mb-2">Launch</h3>
+            <p class="text-xs sm:text-sm text-slate-charcoal font-semibold leading-relaxed">
+              Enter contests. Get discovered. Build your career.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. MANIFESTO: WRITERS DESERVE BETTER THAN DUCT TAPE -->
+    <section id="manifesto" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-14">
+        <h2 class="font-cinzel text-3xl sm:text-4xl font-black text-slate-charcoal">
+          Writers Deserve Better Than <span class="text-slate-muted">Duct Tape</span>
+        </h2>
+        <p class="text-sm sm:text-base text-slate-charcoal font-bold mt-3">
+          You shouldn't need five different apps, three subscriptions, and a prayer to get your story noticed.
+        </p>
+      </div>
+
+      <!-- 6 Authentic Cards Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div class="card-lift border-4 border-gold rounded-2xl p-6 bg-white">
+          <div class="w-12 h-12 rounded-xl border-2 border-gold flex items-center justify-center text-gold mb-4">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+          </div>
+          <h3 class="font-cinzel text-base font-bold text-purple mb-2">Platforms Die. Careers Die With Them.</h3>
+          <p class="text-xs sm:text-sm text-slate-charcoal font-semibold leading-relaxed">
+            5 major writing platforms shut down in 2025 alone. Award histories vanished overnight. No backups. No portability.
+          </p>
+        </div>
+
+        <div class="card-lift border-4 border-gold rounded-2xl p-6 bg-white">
+          <div class="w-12 h-12 rounded-xl border-2 border-gold flex items-center justify-center text-gold mb-4">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
+          </div>
+          <h3 class="font-cinzel text-base font-bold text-purple mb-2">6+ Tools That Don't Talk</h3>
+          <p class="text-xs sm:text-sm text-slate-charcoal font-semibold leading-relaxed">
+            One app for writing. Another for submissions. A third for tracking. None of them connect. You are the integration layer.
+          </p>
+        </div>
+
+        <div class="card-lift border-4 border-gold rounded-2xl p-6 bg-white">
+          <div class="w-12 h-12 rounded-xl border-2 border-gold flex items-center justify-center text-gold mb-4">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          </div>
+          <h3 class="font-cinzel text-base font-bold text-purple mb-2">Industry Gatekeeping</h3>
+          <p class="text-xs sm:text-sm text-slate-charcoal font-semibold leading-relaxed">
+            Producers need writers. Writers need producers. No efficient marketplace connects them. The people who could greenlight your project have no way to find you.
+          </p>
+        </div>
+
+        <div class="card-lift border-4 border-purple rounded-2xl p-6 bg-white">
+          <div class="w-12 h-12 rounded-xl border-2 border-purple flex items-center justify-center text-purple mb-4">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-width="2" d="M12 16v-4m0-4h.01"/></svg>
+          </div>
+          <h3 class="font-cinzel text-base font-bold text-gold-dark mb-2">"Is My Story Good Enough?"</h3>
+          <p class="text-xs sm:text-sm text-slate-charcoal font-semibold leading-relaxed">
+            Every writer asks this. Without objective feedback, you're left guessing. That doubt kills more careers than rejection ever will.
+          </p>
+        </div>
+
+        <div class="card-lift border-4 border-purple rounded-2xl p-6 bg-white">
+          <div class="w-12 h-12 rounded-xl border-2 border-purple flex items-center justify-center text-purple mb-4">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>
+          </div>
+          <h3 class="font-cinzel text-base font-bold text-gold-dark mb-2">"Nobody Will Ever Read This"</h3>
+          <p class="text-xs sm:text-sm text-slate-charcoal font-semibold leading-relaxed">
+            You wrote something you're proud of. But visibility is broken. Shadow banning, paywalled discovery, gutted communities. Your work gets buried.
+          </p>
+        </div>
+
+        <div class="card-lift border-4 border-purple rounded-2xl p-6 bg-white">
+          <div class="w-12 h-12 rounded-xl border-2 border-purple flex items-center justify-center text-purple mb-4">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          </div>
+          <h3 class="font-cinzel text-base font-bold text-gold-dark mb-2">Writers Shouldn't Need Permission</h3>
+          <p class="text-xs sm:text-sm text-slate-charcoal font-semibold leading-relaxed">
+            A great story shouldn't need a gatekeeper's blessing to reach an audience. The system is broken. Writers deserve a platform that works for them.
+          </p>
+        </div>
+      </div>
+
+      <!-- Action Buttons Distinctly Linking to VIEW B ("This is NOT AI") and VIEW C ("Compare the Difference") -->
+      <div class="flex flex-wrap items-center justify-center gap-4 mt-12">
+        <button type="button" data-view="not-ai" class="view-nav-trigger btn-purple px-8 py-3.5 rounded-xl text-sm font-black shadow-md min-w-[220px]">
+          This is NOT AI
+        </button>
+        <button type="button" data-view="compare" class="view-nav-trigger border-2 border-purple text-purple hover:bg-purple hover:text-white px-8 py-3.5 rounded-xl text-sm font-black transition-colors min-w-[220px]">
+          Compare the Difference
+        </button>
+      </div>
+    </section>
+
+    <!-- 5. TWO FUTURES. YOU CHOOSE. -->
+    <section id="comparison" class="py-20 parchment-pattern border-y-4 border-purple">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="font-cinzel text-3xl sm:text-4xl font-black text-center text-slate-charcoal mb-12">
+          Two Futures. <span class="text-purple">You Choose.</span>
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Without FameWeaver -->
+          <div class="card-lift rounded-2xl p-8 bg-white border-2 border-purple/40 shadow-sm">
+            <h3 class="font-cinzel text-xl font-black text-slate-charcoal mb-6 pb-2 border-b border-parchment-border">
+              Without FameWeaver
+            </h3>
+            <ul class="space-y-4 text-xs sm:text-sm font-bold text-slate-muted">
+              <li class="flex items-center gap-3">
+                <span class="text-rose-500 font-bold">✕</span> Your manuscript sits in a drawer, unread
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="text-rose-500 font-bold">✕</span> You wonder if it's good enough but never know
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="text-rose-500 font-bold">✕</span> You enter contests blind, with no feedback loop
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="text-rose-500 font-bold">✕</span> Platforms shut down and your history vanishes
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="text-rose-500 font-bold">✕</span> Producers and publishers never find you
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="text-rose-500 font-bold">✕</span> Your writing career stays a dream
+              </li>
+            </ul>
+          </div>
+
+          <!-- With FameWeaver -->
+          <div class="card-lift rounded-2xl p-8 bg-white border-4 border-gold shadow-lg">
+            <h3 class="font-cinzel text-xl font-black text-purple mb-6 pb-2 border-b border-gold/30">
+              With FameWeaver
+            </h3>
+            <ul class="space-y-4 text-xs sm:text-sm font-extrabold text-slate-charcoal">
+              <li class="flex items-center gap-3">
+                <span class="text-emerald-500 font-bold">✓</span> Your manuscript has a professional score
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="text-emerald-500 font-bold">✓</span> You know exactly what to improve and how
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="text-emerald-500 font-bold">✓</span> Contests, leaderboards, and community discovery
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="text-emerald-500 font-bold">✓</span> Your career history is permanent and portable
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="text-emerald-500 font-bold">✓</span> Industry pros search by score, genre, and quality
+              </li>
+              <li class="flex items-center gap-3 text-gold font-black">
+                <span class="text-gold font-bold">★</span> From aspiring writer to published author
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. TWO PATHS: STORY TO BOOK OR STORY TO SCREEN -->
+    <section id="pipeline" class="py-20 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <p class="font-cinzel text-xs uppercase tracking-widest text-gold font-black">Two Paths</p>
+        <h2 class="font-cinzel text-3xl sm:text-4xl font-black text-slate-charcoal mt-1">
+          Story to <span class="text-gold">Book</span> or Story to <span class="text-gold">Screen</span>
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-muted font-bold mt-2">
+          Every great story starts the same way. Where it goes next is up to you.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Story to Book Column -->
+        <div class="space-y-4">
+          <div class="text-center py-3.5 px-6 rounded-xl border-4 border-gold bg-purple text-white font-cinzel text-xl font-black shadow-md">
+            Story to <span class="text-gold">Book</span>
+          </div>
+
+          <div class="card-lift border-4 border-gold rounded-2xl p-6 bg-white">
+            <span class="text-[10px] font-black uppercase text-purple bg-purple-surface px-2.5 py-1 rounded-md">Live</span>
+            <h4 class="font-cinzel text-base font-black mt-2 mb-1">Manuscript Presentation</h4>
+            <p class="text-xs sm:text-sm text-slate-charcoal font-semibold leading-relaxed">
+              Polished manuscript + score + pitch + carousel cover placed on the Discover Page for industry pros to find.
+            </p>
+          </div>
+
+          <div class="w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-purple mx-auto"></div>
+
+          <div class="card-lift border-4 border-gold rounded-2xl p-6 bg-white">
+            <span class="text-[10px] font-black uppercase text-purple bg-purple-surface px-2.5 py-1 rounded-md">Live</span>
+            <h4 class="font-cinzel text-base font-black mt-2 mb-1">Writing Contests</h4>
+            <p class="text-xs sm:text-sm text-slate-charcoal font-semibold leading-relaxed">
+              Win cash prizes, industry and reader exposure, and publishing deals for qualifying stories.
+            </p>
+          </div>
+
+          <div class="w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-purple mx-auto"></div>
+
+          <div class="card-lift border-4 border-purple rounded-2xl p-6 bg-white">
+            <span class="text-[10px] font-black uppercase text-gold bg-gold-surface px-2.5 py-1 rounded-md">In Development</span>
+            <h4 class="font-cinzel text-base font-black mt-2 mb-1">Book Distribution</h4>
+            <p class="text-xs sm:text-sm text-slate-charcoal font-semibold leading-relaxed">
+              In-house and through-network publishing deals as well as tools and marketing to take your career to the next level.
+            </p>
+          </div>
+        </div>
+
+        <!-- Story to Screen Column -->
+        <div class="space-y-4">
+          <div class="text-center py-3.5 px-6 rounded-xl border-4 border-gold bg-purple text-white font-cinzel text-xl font-black shadow-md">
+            Story to <span class="text-gold">Screen</span>
+          </div>
+
+          <div class="card-lift border-4 border-gold rounded-2xl p-6 bg-white">
+            <span class="text-[10px] font-black uppercase text-purple bg-purple-surface px-2.5 py-1 rounded-md">Live</span>
+            <h4 class="font-cinzel text-base font-black mt-2 mb-1">Screenplay Conversion</h4>
+            <p class="text-xs sm:text-sm text-slate-charcoal font-semibold leading-relaxed">
+              One-click Scriptify transforms your prose story into a production-ready screenplay format.
+            </p>
+          </div>
+
+          <div class="w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-purple mx-auto"></div>
+
+          <div class="card-lift border-4 border-gold rounded-2xl p-6 bg-white">
+            <span class="text-[10px] font-black uppercase text-purple bg-purple-surface px-2.5 py-1 rounded-md">Live</span>
+            <h4 class="font-cinzel text-base font-black mt-2 mb-1">Screenplay Contests</h4>
+            <p class="text-xs sm:text-sm text-slate-charcoal font-semibold leading-relaxed">
+              Win cash prizes, recognition, and pitch opportunities for qualifying screenplays.
+            </p>
+          </div>
+
+          <div class="w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-purple mx-auto"></div>
+
+          <div class="card-lift border-4 border-purple rounded-2xl p-6 bg-white">
+            <span class="text-[10px] font-black uppercase text-gold bg-gold-surface px-2.5 py-1 rounded-md">In Development</span>
+            <h4 class="font-cinzel text-base font-black mt-2 mb-1">Production & Streaming</h4>
+            <p class="text-xs sm:text-sm text-slate-charcoal font-semibold leading-relaxed">
+              Pilot production and streaming on FameStreamer if greenlit by the reader and scout community.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. OUR STORY: BUILT BY A FAMILY IN ENTERTAINMENT -->
+    <section id="our-story" class="py-20 bg-gradient-to-b from-[#381F51] to-obsidian text-white border-y-4 border-gold text-center">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <p class="font-cinzel text-xs uppercase tracking-widest text-gold font-black">Our Story</p>
+        <h2 class="font-cinzel text-2xl sm:text-4xl font-black mt-2 mb-6">
+          Built by a Family in the <span class="text-gold italic font-serifHeader">Entertainment Business</span>
+        </h2>
+        <p class="text-sm sm:text-base text-purple-200 leading-relaxed font-medium mb-8">
+          We've seen how hard it is for talented writers to get noticed. FameWeaver was built because writers deserve a real platform &mdash; one that coaches their craft, showcases their talent, and gives them a genuine path from first draft to the screen or to print.
+        </p>
+
+        <!-- Signature Quote -->
+        <div class="border-l-4 border-gold p-4 sm:p-5 text-sm sm:text-base font-extrabold text-purple bg-white rounded-r-2xl max-w-xl mx-auto text-left shadow-lg mb-10">
+          "We teach you to fish &mdash; then we introduce you to the people who own the boats."
+        </div>
+
+        <!-- Badges -->
+        <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+          <div class="text-center px-6 py-4 rounded-xl bg-gold text-obsidian min-w-[150px] shadow-md">
+            <div class="font-black text-sm">Trustpilot</div>
+            <div class="text-[11px] font-bold text-obsidian/80">Reviews coming soon</div>
+          </div>
+          <div class="text-center px-6 py-4 rounded-xl bg-gold text-obsidian min-w-[150px] shadow-md">
+            <div class="font-black text-sm">Capterra</div>
+            <div class="text-[11px] font-bold text-obsidian/80">Reviews coming soon</div>
+          </div>
+          <div class="text-center px-6 py-4 rounded-xl bg-gold text-obsidian min-w-[150px] shadow-md">
+            <div class="font-black text-sm">G2</div>
+            <div class="text-[11px] font-bold text-obsidian/80">Reviews coming soon</div>
+          </div>
+        </div>
+
+        <p class="text-xs text-purple-300 italic mt-6">
+          We're brand new and haven't borrowed anyone's words. Be one of the first to review us.
+        </p>
+      </div>
+    </section>
+
+    <!-- 8. LIVE SCREENPLAY ANALYZER DEMO CARDS (HIGH-END EDITORIAL CONTAINERS) -->
+    <section class="py-20 parchment-pattern border-b border-parchment-border">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <p class="font-cinzel text-xs uppercase tracking-widest text-purple font-black">See It in Action</p>
+        <h2 class="font-cinzel text-3xl sm:text-4xl font-black text-slate-charcoal mt-1 mb-4">
+          Interactive Product <span class="text-purple">Demonstrations</span>
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-charcoal font-semibold max-w-xl mx-auto mb-10">
+          Click any preview to launch the full-motion breakdown demo.
+        </p>
+
+        <!-- 2 Video Containers Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+          
+          <!-- Video 1: Screenplay Breakdown -->
+          <div class="video-demo-card video-trigger rounded-2xl overflow-hidden border-4 border-purple group"
+               data-video-url="https://www.fameweaver.com/static/library/a7b010e38780_screenplay%20breakdown.mp4?v=3"
+               data-video-title="Let's Analyze a Screenplay: Full Walkthrough (2:34)">
+            <div class="relative aspect-video bg-obsidian-deep overflow-hidden">
+              <img src="https://www.fameweaver.com/static/library/poster_storysense.jpg" alt="Screenplay Breakdown Demo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90">
+              <div class="absolute top-3 left-3 bg-purple/90 border border-gold/40 text-gold-light text-[10px] font-black uppercase px-3 py-1 rounded-full backdrop-blur-md">
+                Interactive Demo Preview
+              </div>
+              <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                <div class="play-btn-pulse w-16 h-16 rounded-full bg-white text-purple flex items-center justify-center shadow-2xl">
+                  <svg class="w-7 h-7 ml-1" fill="currentColor" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21"/></svg>
+                </div>
+              </div>
+            </div>
+            <div class="bg-purple text-white p-4">
+              <h3 class="font-cinzel text-sm font-black text-gold">Let's Analyze a Screenplay</h3>
+              <p class="text-[11px] text-purple-200 mt-0.5">Write it. Score it. See exactly where you stand. (2:34)</p>
+            </div>
+          </div>
+
+          <!-- Video 2: Boost-It Coaching -->
+          <div class="video-demo-card video-trigger rounded-2xl overflow-hidden border-4 border-gold group"
+               data-video-url="https://www.fameweaver.com/static/library/c769603f4cba_boost%20its%20screenplay.mp4?v=3"
+               data-video-title="Boost-It Coaching: Real Techniques, Not Rewrites (1:08)">
+            <div class="relative aspect-video bg-obsidian-deep overflow-hidden">
+              <img src="https://www.fameweaver.com/static/library/poster_coaching.jpg" alt="Boost-It Coaching Demo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90">
+              <div class="absolute top-3 left-3 bg-obsidian-card/90 border border-gold/40 text-gold-light text-[10px] font-black uppercase px-3 py-1 rounded-full backdrop-blur-md">
+                Interactive Demo Preview
+              </div>
+              <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                <div class="play-btn-pulse w-16 h-16 rounded-full bg-gold text-obsidian flex items-center justify-center shadow-2xl">
+                  <svg class="w-7 h-7 ml-1" fill="currentColor" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21"/></svg>
+                </div>
+              </div>
+            </div>
+            <div class="bg-obsidian text-white p-4 border-t border-gold/30">
+              <h3 class="font-cinzel text-sm font-black text-gold">Boost-It Craft Coaching</h3>
+              <p class="text-[11px] text-slate-subtle mt-0.5">Real feedback. Named techniques. Concrete examples. (1:08)</p>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="mt-10">
+          <a href="#pricing" class="btn-purple px-10 py-4 rounded-xl text-sm font-bold shadow-md">
+            Start Your Free Trial
+          </a>
+          <p class="text-xs text-slate-muted font-bold mt-2">Full Professional access for 90 days.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. REAL WRITERS. REAL REVIEWS. (UNEDITED 8-CARD GRID) -->
+    <section class="py-20 bg-white border-b-4 border-purple">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto mb-14">
+          <h2 class="font-cinzel text-3xl sm:text-4xl font-black text-slate-charcoal">
+            Real Writers. <span class="text-purple">Real Reviews.</span>
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-charcoal font-bold mt-2">
+            From first-time writers to working producers. Unedited.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <!-- Kylie L. (Purple Border) -->
+          <div class="card-lift border-4 border-purple rounded-2xl p-6 bg-white shadow-sm flex flex-col justify-between">
+            <p class="text-xs sm:text-sm text-slate-charcoal font-semibold italic leading-relaxed mb-4">
+              “Honestly wasn't expecting much. I uploaded a draft I'd been sitting on and it told me my middle kind of falls apart -- which, yeah, I already knew deep down but nobody had actually said it. First feedback I've gotten that wasn't just 'it's good!'”
+            </p>
+            <p class="text-xs font-black text-purple">-- Kylie L.</p>
+          </div>
+
+          <!-- Nolan K. (Gold Border) -->
+          <div class="card-lift border-4 border-gold rounded-2xl p-6 bg-white shadow-sm flex flex-col justify-between">
+            <p class="text-xs sm:text-sm text-slate-charcoal font-semibold italic leading-relaxed mb-4">
+              “I'm not really a 'writer,' I just had this idea in my head forever. Put my notes in and it spit out an actual screenplay. I sat there for a sec like wait, that's it? The hardest part for me was always just starting and it kind of skipped me past that.”
+            </p>
+            <p class="text-xs font-black text-gold-dark">-- Nolan K.</p>
+          </div>
+
+          <!-- Alexander H. (Gold Border) -->
+          <div class="card-lift border-4 border-gold rounded-2xl p-6 bg-white shadow-sm flex flex-col justify-between">
+            <p class="text-xs sm:text-sm text-slate-charcoal font-semibold italic leading-relaxed mb-4">
+              “I've used a couple of the pricier breakdown tools for my shoots. This did the whole thing -- schedule, budget, flagged my scenes with a minor in them -- and I didn't have to fight it. Not gonna lie I've already put my current project through it.”
+            </p>
+            <p class="text-xs font-black text-gold-dark">-- Alexander H.</p>
+          </div>
+
+          <!-- Jack K. (Purple Border) -->
+          <div class="card-lift border-4 border-purple rounded-2xl p-6 bg-white shadow-sm flex flex-col justify-between">
+            <p class="text-xs sm:text-sm text-slate-charcoal font-semibold italic leading-relaxed mb-4">
+              “Weirdest part was talking to my own character. I asked her something and the answer she gave me was better than what I had written. Kind of changed the scene. Still think about that.”
+            </p>
+            <p class="text-xs font-black text-purple">-- Jack K.</p>
+          </div>
+
+          <!-- Donna N. (Purple Border) -->
+          <div class="card-lift border-4 border-purple rounded-2xl p-6 bg-white shadow-sm flex flex-col justify-between">
+            <p class="text-xs sm:text-sm text-slate-charcoal font-semibold italic leading-relaxed mb-4">
+              “I've sent stuff to more agents than I want to admit and mostly just get silence. What got me here is it doesn't care who you know, it just looks at the writing. That's all I ever wanted honestly.”
+            </p>
+            <p class="text-xs font-black text-purple">-- Donna N.</p>
+          </div>
+
+          <!-- Alexis L. (Gold Border) -->
+          <div class="card-lift border-4 border-gold rounded-2xl p-6 bg-white shadow-sm flex flex-col justify-between">
+            <p class="text-xs sm:text-sm text-slate-charcoal font-semibold italic leading-relaxed mb-4">
+              “I was paying for like three different things that didn't talk to each other and I was copy-pasting my script back and forth constantly. This just does it in one spot. Cancelled the others, felt great.”
+            </p>
+            <p class="text-xs font-black text-gold-dark">-- Alexis L.</p>
+          </div>
+
+          <!-- Phillip S. (Gold Border) -->
+          <div class="card-lift border-4 border-gold rounded-2xl p-6 bg-white shadow-sm flex flex-col justify-between">
+            <p class="text-xs sm:text-sm text-slate-charcoal font-semibold italic leading-relaxed mb-4">
+              “It's ten bucks a month. I've paid way, way more than that for coverage that told me less. Kind of don't get how that math works but I'm not complaining.”
+            </p>
+            <p class="text-xs font-black text-gold-dark">-- Phillip S.</p>
+          </div>
+
+          <!-- Scott H. (Purple Border) -->
+          <div class="card-lift border-4 border-purple rounded-2xl p-6 bg-white shadow-sm flex flex-col justify-between">
+            <p class="text-xs sm:text-sm text-slate-charcoal font-semibold italic leading-relaxed mb-4">
+              “I mostly just read, I'm not writing anything. It actually surfaces stuff I'm into instead of the same recycled stories, and I like that I can vote things up. Found a couple I'm genuinely hooked on.”
+            </p>
+            <p class="text-xs font-black text-purple">-- Scott H.</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. CONTEST RADAR -->
+    <section id="contests" class="py-20 parchment-pattern border-b border-parchment-border">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto mb-14">
+          <p class="font-cinzel text-xs uppercase tracking-widest text-purple font-black">Live Radar</p>
+          <h2 class="font-cinzel text-3xl sm:text-4xl font-black text-slate-charcoal mt-1">
+            Featured Writing Contests
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-muted font-bold mt-2">
+            Real cash prizes, industry judging panels, and reader voting.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          
+          <!-- Fade In, Stand Out -->
+          <div class="card-lift rounded-2xl overflow-hidden border-4 border-gold bg-white shadow-xl flex flex-col justify-between">
+            <div>
+              <div class="relative aspect-[16/9] overflow-hidden bg-obsidian-deep">
+                <img src="https://www.fameweaver.com/media/contests/02d6298047eb49ed.png" alt="Fade In, Stand Out Contest Banner" class="w-full h-full object-cover">
+                <span class="absolute top-3 right-3 bg-purple text-gold font-cinzel text-xs font-black px-3 py-1.5 rounded-full shadow-lg border border-gold/40">
+                  $4,000 Prize Pool
+                </span>
+              </div>
+              <div class="p-6">
+                <h3 class="font-cinzel text-xl font-black text-purple mb-2">Fade In, Stand Out</h3>
+                <p class="text-xs sm:text-sm text-slate-charcoal font-semibold leading-relaxed mb-4">
+                  Open screenplay competition celebrating bold, original screen stories. Finalists evaluated by accredited indie film producers.
+                </p>
+                <div class="flex items-center gap-3 text-xs font-bold text-slate-muted">
+                  <span class="flex items-center gap-1 text-gold"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg> Submissions Open</span>
+                  <span>·</span>
+                  <span>Early Deadline: June 30</span>
+                </div>
+              </div>
+            </div>
+            <div class="p-6 pt-0">
+              <a href="#contest-details" class="btn-purple w-full py-3 rounded-xl text-center text-xs font-bold uppercase tracking-wider block">
+                Enter Contest
+              </a>
+            </div>
+          </div>
+
+          <!-- Hook, Line & Story -->
+          <div class="card-lift rounded-2xl overflow-hidden border-4 border-gold bg-white shadow-xl flex flex-col justify-between">
+            <div>
+              <div class="relative aspect-[16/9] overflow-hidden bg-obsidian-deep">
+                <img src="https://www.fameweaver.com/media/contests/4fb497c8ad2b4431.png" alt="Hook, Line & Story Contest Banner" class="w-full h-full object-cover">
+                <span class="absolute top-3 right-3 bg-purple text-gold font-cinzel text-xs font-black px-3 py-1.5 rounded-full shadow-lg border border-gold/40">
+                  $4,000 Prize Pool
+                </span>
+              </div>
+              <div class="p-6">
+                <h3 class="font-cinzel text-xl font-black text-purple mb-2">Hook, Line & Story</h3>
+                <p class="text-xs sm:text-sm text-slate-charcoal font-semibold leading-relaxed mb-4">
+                  Manuscript & novel chapter challenge. Grabs readers from page one with community judging and editorial scout reviews.
+                </p>
+                <div class="flex items-center gap-3 text-xs font-bold text-slate-muted">
+                  <span class="flex items-center gap-1 text-gold"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg> Submissions Open</span>
+                  <span>·</span>
+                  <span>Early Deadline: July 15</span>
+                </div>
+              </div>
+            </div>
+            <div class="p-6 pt-0">
+              <a href="#contest-details" class="btn-gold w-full py-3 rounded-xl text-center text-xs font-bold uppercase tracking-wider block text-obsidian">
+                Enter Contest
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 11. PRICING GRID -->
+    <section id="pricing" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-14">
+        <p class="font-cinzel text-xs uppercase tracking-widest text-purple font-black">Fair, Transparent, Writer-First</p>
+        <h2 class="font-cinzel text-3xl sm:text-4xl font-black text-slate-charcoal mt-1">
+          Simple Pricing for Every Role
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-muted font-bold mt-2">
+          Start risk-free with our extended 90-day trial.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        
+        <!-- Reader Plan ($0) -->
+        <div class="card-lift border-2 border-parchment-border rounded-3xl p-8 bg-white flex flex-col justify-between shadow-sm">
+          <div>
+            <h3 class="font-cinzel text-xl font-bold text-slate-charcoal">Reader</h3>
+            <div class="mt-4 flex items-baseline gap-1">
+              <span class="font-cinzel text-4xl font-black text-slate-charcoal">$0</span>
+              <span class="text-xs font-bold text-slate-muted">/ forever</span>
+            </div>
+            <p class="text-xs text-slate-muted mt-2 mb-6">Discover stories, vote on submissions, and earn rewards.</p>
+            <ul class="space-y-3 text-xs font-semibold text-slate-charcoal">
+              <li class="flex items-center gap-2"><span class="text-emerald-500 font-bold">✓</span> Full reader mode with clean reader UI</li>
+              <li class="flex items-center gap-2"><span class="text-emerald-500 font-bold">✓</span> Community contest voting rights</li>
+              <li class="flex items-center gap-2"><span class="text-emerald-500 font-bold">✓</span> Felix Star reward points for reviews</li>
+            </ul>
+          </div>
+          <div class="mt-8">
+            <a href="#reader-signup" class="border-2 border-slate-charcoal text-slate-charcoal hover:bg-slate-charcoal hover:text-white w-full py-3 rounded-xl text-center text-xs font-bold uppercase tracking-wider block transition-colors">
+              Read for Free
+            </a>
+          </div>
+        </div>
+
+        <!-- Writer Plan ($12/mo) - Highlighted -->
+        <div class="card-lift border-4 border-gold rounded-3xl p-8 bg-white relative flex flex-col justify-between shadow-xl">
+          <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold text-obsidian font-cinzel text-[10px] font-black uppercase px-4 py-1 rounded-full shadow-md">
+            90-Day Free Trial
+          </span>
+          <div>
+            <h3 class="font-cinzel text-xl font-black text-purple">Writer Pro</h3>
+            <div class="mt-4 flex items-baseline gap-1">
+              <span class="font-cinzel text-4xl font-black text-purple">$12</span>
+              <span class="text-xs font-bold text-slate-muted">/ month after trial</span>
+            </div>
+            <p class="text-xs text-slate-muted mt-2 mb-6">Everything you need to write, score, coach, and submit.</p>
+            <ul class="space-y-3 text-xs font-bold text-slate-charcoal">
+              <li class="flex items-center gap-2"><span class="text-emerald-500 font-bold">✓</span> Unlimited StorySense manuscript scores</li>
+              <li class="flex items-center gap-2"><span class="text-emerald-500 font-bold">✓</span> 22-block craft diagnostic breakdown</li>
+              <li class="flex items-center gap-2"><span class="text-emerald-500 font-bold">✓</span> Actionable Boost-It craft coaching</li>
+              <li class="flex items-center gap-2"><span class="text-emerald-500 font-bold">✓</span> One-click Scriptify screenplay conversion</li>
+              <li class="flex items-center gap-2"><span class="text-emerald-500 font-bold">✓</span> Contest entry & industry portfolio placement</li>
+            </ul>
+          </div>
+          <div class="mt-8">
+            <a href="#writer-signup" class="btn-gold w-full py-3.5 rounded-xl text-center text-xs font-bold uppercase tracking-wider block text-obsidian">
+              Start Writing Free
+            </a>
+          </div>
+        </div>
+
+        <!-- Industry Pro ($0) -->
+        <div class="card-lift border-2 border-parchment-border rounded-3xl p-8 bg-white flex flex-col justify-between shadow-sm">
+          <div>
+            <h3 class="font-cinzel text-xl font-bold text-slate-charcoal">Industry Scout</h3>
+            <div class="mt-4 flex items-baseline gap-1">
+              <span class="font-cinzel text-4xl font-black text-slate-charcoal">$0</span>
+              <span class="text-xs font-bold text-slate-muted">/ verified pros</span>
+            </div>
+            <p class="text-xs text-slate-muted mt-2 mb-6">For accredited publishers, producers, and literary agents.</p>
+            <ul class="space-y-3 text-xs font-semibold text-slate-charcoal">
+              <li class="flex items-center gap-2"><span class="text-emerald-500 font-bold">✓</span> Scout database filtered by StorySense score</li>
+              <li class="flex items-center gap-2"><span class="text-emerald-500 font-bold">✓</span> Full 22-block radar cards on candidates</li>
+              <li class="flex items-center gap-2"><span class="text-emerald-500 font-bold">✓</span> Direct talent messaging & options pipeline</li>
+            </ul>
+          </div>
+          <div class="mt-8">
+            <a href="#industry-signup" class="border-2 border-purple text-purple hover:bg-purple hover:text-white w-full py-3 rounded-xl text-center text-xs font-bold uppercase tracking-wider block transition-colors">
+              Request Scout Access
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 12. EMBEDDED HELP CENTER ACCORDION STRIP -->
+    <section id="help-center" class="py-20 parchment-pattern border-t border-parchment-border">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto mb-12">
+          <p class="font-cinzel text-xs uppercase tracking-widest text-purple font-black">Help Center</p>
+          <h2 class="font-cinzel text-2xl sm:text-3xl font-black text-slate-charcoal mt-1">
+            Frequently Asked Questions
+          </h2>
+        </div>
+
+        <div class="space-y-4" id="faq-accordion-group">
+          
+          <!-- Accordion 1 -->
+          <div class="faq-accordion-item">
+            <button type="button" class="faq-trigger w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-bold text-sm sm:text-base text-slate-charcoal">
+              <span>What is the Write Hub and how do I use it?</span>
+              <svg class="chevron-icon w-5 h-5 text-purple flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="faq-content px-6 pb-5 text-xs sm:text-sm text-slate-muted leading-relaxed">
+              The Write Hub is your centralized, cloud-synced drafting suite. You can type directly in the distraction-free editor, import standard `.docx`, `.pdf`, or Fountain files, run automatic chapter beat checks, and trigger instantaneous StorySense scores without leaving the tab.
+            </div>
+          </div>
+
+          <!-- Accordion 2 -->
+          <div class="faq-accordion-item">
+            <button type="button" class="faq-trigger w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-bold text-sm sm:text-base text-slate-charcoal">
+              <span>How does StorySense calculate my 87 score?</span>
+              <svg class="chevron-icon w-5 h-5 text-purple flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="faq-content px-6 pb-5 text-xs sm:text-sm text-slate-muted leading-relaxed">
+              Unlike generic LLM chatbots that produce speculative text, StorySense is an algorithmic diagnostic suite built on 22 classical dramaturgical building blocks (Character Arc, Moral Argument, Revelation, Midpoint Reversal, etc.). It scans sentence density, subtext ratio, and structural pacing against genre conventions to give an objective score out of 100.
+            </div>
+          </div>
+
+          <!-- Accordion 3 -->
+          <div class="faq-accordion-item">
+            <button type="button" class="faq-trigger w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-bold text-sm sm:text-base text-slate-charcoal">
+              <span>What are Felix Stars and how do I earn Crates?</span>
+              <svg class="chevron-icon w-5 h-5 text-purple flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="faq-content px-6 pb-5 text-xs sm:text-sm text-slate-muted leading-relaxed">
+              Felix Stars are FameWeaver's native community achievement tokens. Readers earn them by reading chapters, leaving thoughtful critique reviews, and voting in monthly contest heats. Writers earn stars when manuscripts achieve milestone scores. Felix Stars unlock Mystery Crates containing platform credits, free contest entries, and custom badge art.
+            </div>
+          </div>
+
+          <!-- Accordion 4 -->
+          <div class="faq-accordion-item">
+            <button type="button" class="faq-trigger w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-bold text-sm sm:text-base text-slate-charcoal">
+              <span>Can I cancel anytime during the 90-day trial?</span>
+              <svg class="chevron-icon w-5 h-5 text-purple flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="faq-content px-6 pb-5 text-xs sm:text-sm text-slate-muted leading-relaxed">
+              Yes, absolutely. You can cancel your subscription at any time with a single click inside your account settings. You retain complete ownership and full export rights to all manuscripts and diagnostic score sheets.
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 13. ELEGANT CENTERED FOOTER -->
+    <footer class="bg-parchment-darker border-t border-parchment-border py-16 text-center">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Logo -->
+        <a href="#home" data-view="home" class="view-nav-trigger inline-flex flex-col items-center group mb-4">
+          <span class="font-cinzel text-2xl font-black tracking-[0.25em] text-purple group-hover:text-purple-dark transition-colors">
+            FAME WEAVER
+          </span>
+          <span class="text-[10px] uppercase tracking-[0.3em] text-slate-muted font-bold mt-1">
+            Editorial Platform
+          </span>
+        </a>
+
+        <!-- Tagline -->
+        <p class="font-serifHeader italic text-sm text-slate-charcoal font-semibold max-w-lg mx-auto mb-8">
+          "From Story to Book or Screen, With Actionable Steps In-Between"
+        </p>
+
+        <!-- Links Row 1 -->
+        <div class="flex flex-wrap items-center justify-center gap-6 text-xs sm:text-sm font-bold text-slate-charcoal mb-4">
+          <a href="#features" class="nav-section-link hover:text-purple transition-colors">Features</a>
+          <span>·</span>
+          <a href="#pricing" class="nav-section-link hover:text-purple transition-colors">Pricing</a>
+          <span>·</span>
+          <a href="#simulator" class="nav-section-link hover:text-purple transition-colors">See It</a>
+          <span>·</span>
+          <a href="#contests" class="nav-section-link hover:text-purple transition-colors">Media</a>
+          <span>·</span>
+          <a href="#not-ai" data-view="not-ai" class="view-nav-trigger hover:text-purple transition-colors text-purple">This is NOT AI</a>
+          <span>·</span>
+          <a href="#compare" data-view="compare" class="view-nav-trigger hover:text-purple transition-colors text-purple">Compare the Difference</a>
+        </div>
+
+        <!-- Links Row 2 -->
+        <div class="flex flex-wrap items-center justify-center gap-6 text-xs sm:text-sm font-semibold text-slate-muted mb-8">
+          <a href="#our-story" class="nav-section-link hover:text-purple transition-colors">About</a>
+          <span>·</span>
+          <a href="#contact" data-view="contact" class="view-nav-trigger hover:text-purple transition-colors font-bold text-purple">Contact</a>
+          <span>·</span>
+          <a href="#affiliate" class="hover:text-purple transition-colors">Become an Affiliate</a>
+          <span>·</span>
+          <a href="#privacy" class="hover:text-purple transition-colors">Privacy</a>
+          <span>·</span>
+          <a href="#terms" class="hover:text-purple transition-colors">Terms</a>
+        </div>
+
+        <!-- Baseline Copyright -->
+        <p class="text-xs text-slate-subtle font-medium border-t border-parchment-border pt-6">
+          &copy; 2026 FameWeaver. Career data belongs to writers, not platforms.
+        </p>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- =========================================================================
+       VIEW B: "THIS IS NOT AI" (Algorithm Mechanics & Foundations)
+       ========================================================================= -->
+  <section id="view-not-ai" class="app-view parchment-pattern py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-6xl mx-auto">
+      
+      <!-- Top Bar: Back to Home -->
+      <div class="mb-8 flex items-center justify-between flex-wrap gap-4">
+        <button type="button" data-view="home" class="view-nav-trigger inline-flex items-center gap-2 text-sm font-black text-purple hover:underline bg-white px-4 py-2 rounded-xl border border-parchment-border shadow-sm">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 12H5m7 7l-7-7 7-7"/></svg>
+          Back to Home
+        </button>
+        <button type="button" data-view="compare" class="view-nav-trigger text-xs font-bold text-gold-dark hover:underline flex items-center gap-1 bg-white px-4 py-2 rounded-xl border border-gold/40">
+          Compare Real Feedback Examples &rarr;
+        </button>
+      </div>
+
+      <!-- Header -->
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <h1 class="font-cinzel text-2xl sm:text-4xl font-black text-slate-charcoal leading-tight">
+          FameWeaver does <span class="underline decoration-gold decoration-4 underline-offset-4">NOT</span> use AI to Evaluate and Score your Story
+        </h1>
+        <h2 class="font-serifHeader text-xl sm:text-2xl font-bold text-purple mt-3">
+          How is FameWeaver Different from AI?
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-muted font-semibold mt-2">
+          Two completely different approaches to helping writers improve their stories.
+        </p>
+      </div>
+
+      <!-- Two-Column Comparison Grid -->
+      <div class="relative grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+        <div class="vs-circle hidden lg:flex">VS</div>
+
+        <!-- Column 1: Purpose-Built Writing Coach (FameWeaver) -->
+        <div class="card-lift border-4 border-purple rounded-3xl p-6 sm:p-8 bg-white shadow-xl flex flex-col justify-between">
+          <div>
+            <div class="text-[11px] font-black uppercase tracking-widest text-purple mb-1">Purpose-Built Writing Coach</div>
+            <h3 class="font-cinzel text-2xl sm:text-3xl font-black text-purple mb-3">FameWeaver</h3>
+            <p class="text-xs sm:text-sm font-semibold text-slate-charcoal mb-6 leading-relaxed">
+              A dedicated algorithm engine built exclusively for story analysis, using proven craft principles to coach you like a professional editor.
+            </p>
+
+            <!-- What Powers It -->
+            <div class="mb-6">
+              <h4 class="text-xs font-black uppercase tracking-wider text-purple pb-1 border-b border-parchment-border mb-3">
+                What Powers It
+              </h4>
+              <div class="space-y-2.5 text-xs sm:text-sm">
+                <div class="flex items-start gap-2.5 p-3 rounded-xl border-2 border-purple bg-purple-surface/30">
+                  <span class="w-5 h-5 rounded-md border-2 border-purple flex items-center justify-center font-bold text-xs text-purple flex-shrink-0">1</span>
+                  <div class="font-medium text-slate-charcoal"><strong>Proprietary Algorithm Engine</strong> &mdash; A multi-layered analysis system built from scratch specifically for creative writing.</div>
+                </div>
+                <div class="flex items-start gap-2.5 p-3 rounded-xl border-2 border-purple bg-purple-surface/30">
+                  <span class="w-5 h-5 rounded-md border-2 border-purple flex items-center justify-center font-bold text-xs text-purple flex-shrink-0">2</span>
+                  <div class="font-medium text-slate-charcoal"><strong>22 Story Building Blocks</strong> &mdash; Premise, Character Arc, Desire Line, Weakness, Moral Argument, Plot Structure, and more.</div>
+                </div>
+                <div class="flex items-start gap-2.5 p-3 rounded-xl border-2 border-purple bg-purple-surface/30">
+                  <span class="w-5 h-5 rounded-md border-2 border-purple flex items-center justify-center font-bold text-xs text-purple flex-shrink-0">3</span>
+                  <div class="font-medium text-slate-charcoal"><strong>Genre-Specific Arcs</strong> &mdash; Measured against the structural conventions of YOUR genre (thriller, romance, fantasy).</div>
+                </div>
+                <div class="flex items-start gap-2.5 p-3 rounded-xl border-2 border-purple bg-purple-surface/30">
+                  <span class="w-5 h-5 rounded-md border-2 border-purple flex items-center justify-center font-bold text-xs text-purple flex-shrink-0">4</span>
+                  <div class="font-medium text-slate-charcoal"><strong>Proven Craft Techniques</strong> &mdash; Suggestions come from established principles used by working authors and screenwriters.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 22 Story Building Blocks Chips -->
+            <div class="mb-6">
+              <h4 class="text-xs font-black uppercase tracking-wider text-purple pb-1 border-b border-parchment-border mb-3">
+                22 Story Building Blocks
+              </h4>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-center">
+                <span class="px-2 py-1.5 rounded-lg border border-purple font-bold text-[10px] text-purple bg-purple-surface">Premise</span>
+                <span class="px-2 py-1.5 rounded-lg border border-purple font-bold text-[10px] text-purple bg-purple-surface">Character Arc</span>
+                <span class="px-2 py-1.5 rounded-lg border border-purple font-bold text-[10px] text-purple bg-purple-surface">Desire Line</span>
+                <span class="px-2 py-1.5 rounded-lg border border-purple font-bold text-[10px] text-purple bg-purple-surface">Weakness</span>
+                <span class="px-2 py-1.5 rounded-lg border border-purple font-bold text-[10px] text-purple bg-purple-surface">Moral Argument</span>
+                <span class="px-2 py-1.5 rounded-lg border border-purple font-bold text-[10px] text-purple bg-purple-surface">Story World</span>
+                <span class="px-2 py-1.5 rounded-lg border border-purple font-bold text-[10px] text-purple bg-purple-surface">Opponent</span>
+                <span class="px-2 py-1.5 rounded-lg border border-purple font-bold text-[10px] text-purple bg-purple-surface">Plot Structure</span>
+                <span class="px-2 py-1.5 rounded-lg border border-purple font-bold text-[10px] text-purple bg-purple-surface">Dialogue</span>
+                <span class="px-2 py-1.5 rounded-lg border border-purple font-bold text-[10px] text-purple bg-purple-surface">Scene Design</span>
+                <span class="px-2 py-1.5 rounded-lg border border-purple font-bold text-[10px] text-purple bg-purple-surface">Revelation</span>
+                <span class="px-2 py-1.5 rounded-lg border border-purple font-bold text-[10px] text-purple bg-purple-surface">Theme</span>
+                <span class="px-2 py-1.5 rounded-lg border border-purple font-bold text-[10px] text-purple bg-purple-surface">Symbol Web</span>
+                <span class="px-2 py-1.5 rounded-lg border border-purple font-bold text-[10px] text-purple bg-purple-surface">Tone</span>
+                <span class="px-2 py-1.5 rounded-lg border border-purple font-bold text-[10px] text-purple bg-purple-surface">Genre Beats</span>
+                <span class="px-2 py-1.5 rounded-lg border border-purple font-bold text-[10px] text-purple bg-purple-surface">Pacing</span>
+                <span class="px-2 py-1.5 rounded-lg border border-purple font-bold text-[10px] text-purple bg-purple-surface">Conflict Layers</span>
+                <span class="px-2 py-1.5 rounded-lg border border-purple font-bold text-[10px] text-purple bg-purple-surface">Stakes</span>
+                <span class="px-2 py-1.5 rounded-lg border border-purple font-bold text-[10px] text-purple bg-purple-surface">Voice</span>
+                <span class="px-2 py-1.5 rounded-lg border border-purple font-bold text-[10px] text-purple bg-purple-surface">Subtext</span>
+                <span class="px-2 py-1.5 rounded-lg border border-purple font-bold text-[10px] text-purple bg-purple-surface">Opening Hook</span>
+                <span class="px-2 py-1.5 rounded-lg border border-purple font-bold text-[10px] text-purple bg-purple-surface">Resolution</span>
+              </div>
+            </div>
+
+            <!-- Pipeline: How It Analyzes -->
+            <div class="mb-6">
+              <h4 class="text-xs font-black uppercase tracking-wider text-purple pb-1 border-b border-parchment-border mb-3">
+                How It Analyzes Your Story
+              </h4>
+              <div class="space-y-2 text-xs sm:text-sm relative">
+                <div class="flex items-center gap-3 p-2">
+                  <span class="w-3 h-3 rounded-full bg-purple flex-shrink-0"></span>
+                  <div><strong>Your Story Goes In</strong> &mdash; <span class="text-slate-muted">Only YOUR words. Nothing from the internet.</span></div>
+                </div>
+                <div class="flex items-center gap-3 p-2">
+                  <span class="w-3 h-3 rounded-full bg-purple flex-shrink-0"></span>
+                  <div><strong>Algorithm Evaluates All 22 Blocks</strong> &mdash; <span class="text-slate-muted">Every layer measured independently.</span></div>
+                </div>
+                <div class="flex items-center gap-3 p-2">
+                  <span class="w-3 h-3 rounded-full bg-purple flex-shrink-0"></span>
+                  <div><strong>Scores 7 Categories</strong> &mdash; <span class="text-slate-muted">Character, Dialogue, Uniqueness, Marketability, Tension, Structure, World.</span></div>
+                </div>
+                <div class="flex items-center gap-3 p-2">
+                  <span class="w-3 h-3 rounded-full bg-purple flex-shrink-0"></span>
+                  <div><strong>Identifies Specific Weak Spots</strong> &mdash; <span class="text-slate-muted">Pinpoints the EXACT paragraphs that need work.</span></div>
+                </div>
+                <div class="flex items-center gap-3 p-2">
+                  <span class="w-3 h-3 rounded-full bg-purple flex-shrink-0"></span>
+                  <div><strong>Matches Craft Techniques to Each Problem</strong> &mdash; <span class="text-slate-muted">Teaches real writing principles.</span></div>
+                </div>
+                <div class="flex items-center gap-3 p-2">
+                  <span class="w-3 h-3 rounded-full bg-purple flex-shrink-0"></span>
+                  <div><strong>Delivers Actionable Coaching</strong> &mdash; <span class="text-slate-muted">Problem + Solution + Technique + Examples.</span></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Column 2: General-Purpose Chatbot (Generic AI) -->
+        <div class="card-lift border-4 border-gold rounded-3xl p-6 sm:p-8 bg-white shadow-xl flex flex-col justify-between">
+          <div>
+            <div class="text-[11px] font-black uppercase tracking-widest text-gold-dark mb-1">General-Purpose Chatbot</div>
+            <h3 class="font-cinzel text-2xl sm:text-3xl font-black text-gold-dark mb-3">Generic AI</h3>
+            <p class="text-xs sm:text-sm font-semibold text-slate-charcoal mb-6 leading-relaxed">
+              A language model trained on billions of web pages, designed to answer any question about anything &mdash; not built specifically for creative writing.
+            </p>
+
+            <!-- What Powers It -->
+            <div class="mb-6">
+              <h4 class="text-xs font-black uppercase tracking-wider text-gold-dark pb-1 border-b border-parchment-border mb-3">
+                What Powers It
+              </h4>
+              <div class="space-y-2.5 text-xs sm:text-sm">
+                <div class="flex items-start gap-2.5 p-3 rounded-xl border-2 border-gold bg-gold-surface/30">
+                  <span class="w-5 h-5 rounded-md border-2 border-gold flex items-center justify-center font-bold text-xs text-gold-dark flex-shrink-0">?</span>
+                  <div class="font-medium text-slate-charcoal"><strong>Language Prediction Model</strong> &mdash; Trained to predict the next word. Not designed to deeply analyze story craft.</div>
+                </div>
+                <div class="flex items-start gap-2.5 p-3 rounded-xl border-2 border-gold bg-gold-surface/30">
+                  <span class="w-5 h-5 rounded-md border-2 border-gold flex items-center justify-center font-bold text-xs text-gold-dark flex-shrink-0">?</span>
+                  <div class="font-medium text-slate-charcoal"><strong>Unknown Internet Sources</strong> &mdash; Compiled from billions of pages. No clear path to where advice comes from.</div>
+                </div>
+                <div class="flex items-start gap-2.5 p-3 rounded-xl border-2 border-gold bg-gold-surface/30">
+                  <span class="w-5 h-5 rounded-md border-2 border-gold flex items-center justify-center font-bold text-xs text-gold-dark flex-shrink-0">?</span>
+                  <div class="font-medium text-slate-charcoal"><strong>No Story Framework</strong> &mdash; No building blocks, no structural analysis, no genre arcs. Just text patterns.</div>
+                </div>
+                <div class="flex items-start gap-2.5 p-3 rounded-xl border-2 border-gold bg-gold-surface/30">
+                  <span class="w-5 h-5 rounded-md border-2 border-gold flex items-center justify-center font-bold text-xs text-gold-dark flex-shrink-0">?</span>
+                  <div class="font-medium text-slate-charcoal"><strong>No Craft Techniques</strong> &mdash; Suggestions don't teach established principles. Advice with no methodology.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- The Black Box -->
+            <div class="mb-6 p-5 rounded-2xl border-4 border-dashed border-gold text-center bg-gold-surface/20">
+              <h5 class="font-cinzel text-lg font-black text-gold-dark mb-1">The Black Box</h5>
+              <p class="text-xs text-slate-muted mb-3">Where do AI's writing suggestions actually come from?<br>Nobody knows. Not even the AI.</p>
+              <div class="flex flex-wrap items-center justify-center gap-2">
+                <span class="px-2.5 py-1 rounded-md border border-gold text-[10px] font-bold text-gold-dark bg-white">Reddit posts?</span>
+                <span class="px-2.5 py-1 rounded-md border border-gold text-[10px] font-bold text-gold-dark bg-white">Blog articles?</span>
+                <span class="px-2.5 py-1 rounded-md border border-gold text-[10px] font-bold text-gold-dark bg-white">Wikipedia?</span>
+                <span class="px-2.5 py-1 rounded-md border border-gold text-[10px] font-bold text-gold-dark bg-white">Fan fiction?</span>
+                <span class="px-2.5 py-1 rounded-md border border-gold text-[10px] font-bold text-gold-dark bg-white">Book reviews?</span>
+                <span class="px-2.5 py-1 rounded-md border border-gold text-[10px] font-bold text-gold-dark bg-white">Tweet threads?</span>
+              </div>
+            </div>
+
+            <!-- What You Actually Get from AI -->
+            <div class="mb-6">
+              <h4 class="text-xs font-black uppercase tracking-wider text-gold-dark pb-1 border-b border-parchment-border mb-3">
+                What You Actually Get from AI
+              </h4>
+              <div class="space-y-2 text-xs sm:text-sm">
+                <div class="p-3 rounded-xl border border-gold/40 bg-white">
+                  <em class="text-slate-charcoal font-bold">"Give Mia a subtle character arc."</em><br>
+                  <span class="text-[11px] text-slate-muted">How? What kind of arc? Where in the story? No answer.</span>
+                </div>
+                <div class="p-3 rounded-xl border border-gold/40 bg-white">
+                  <em class="text-slate-charcoal font-bold">"Smooth out repetitive passages."</em><br>
+                  <span class="text-[11px] text-slate-muted">Which passages? What's repetitive? No specifics.</span>
+                </div>
+                <div class="p-3 rounded-xl border border-gold/40 bg-white">
+                  <em class="text-slate-charcoal font-bold">"Tighten pacing throughout."</em><br>
+                  <span class="text-[11px] text-slate-muted">Throughout where? What technique fixes pacing? Silence.</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Punchline Summary Banner -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto mb-12">
+        <div class="card-lift border-4 border-purple rounded-3xl p-8 bg-white text-center shadow-lg">
+          <h3 class="font-cinzel text-xl font-black text-purple mb-1">Your AI bot can give you a fish.</h3>
+          <h3 class="font-cinzel text-xl font-black text-gold-dark mb-4">FameWeaver teaches you to fish.</h3>
+          <p class="text-xs sm:text-sm text-slate-charcoal font-semibold leading-relaxed">
+            Every suggestion comes with the craft technique behind it, a concrete example, and the exact spot in your story that needs attention. You become a better writer with every analysis.
+          </p>
+          <p class="text-xs sm:text-sm text-purple font-extrabold mt-3">
+            FameWeaver scores your fishing, enters you in fishing tournaments, and introduces you to the people who own the boats.
+          </p>
+        </div>
+
+        <div class="card-lift border-4 border-gold rounded-3xl p-8 bg-white text-center shadow-lg flex flex-col justify-center">
+          <h3 class="font-cinzel text-xl font-black text-slate-charcoal mb-1">AI chatbots can read your story and say:</h3>
+          <h3 class="font-cinzel text-xl font-black text-rose-600 mb-4">"Your pacing is off."</h3>
+          <p class="text-xs sm:text-sm text-slate-muted font-bold">That's where they stop.</p>
+          <p class="text-base sm:text-lg text-purple font-black mt-2">FameWeaver is where everything else begins.</p>
+        </div>
+      </div>
+
+      <!-- Bottom Return CTA -->
+      <div class="text-center pb-8 flex items-center justify-center gap-4">
+        <button type="button" data-view="home" class="view-nav-trigger btn-purple px-10 py-4 rounded-xl text-sm font-black shadow-xl">
+          Back to FameWeaver
+        </button>
+        <button type="button" data-view="compare" class="view-nav-trigger btn-gold px-10 py-4 rounded-xl text-sm font-black shadow-xl text-obsidian">
+          Compare Real Feedback &rarr;
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       VIEW C: "COMPARE THE DIFFERENCE" (Practical Feedback Benchmark)
+       ========================================================================= -->
+  <section id="view-compare" class="app-view parchment-pattern py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-6xl mx-auto">
+      
+      <!-- Top Bar: Back to Home -->
+      <div class="mb-8 flex items-center justify-between flex-wrap gap-4">
+        <button type="button" data-view="home" class="view-nav-trigger inline-flex items-center gap-2 text-sm font-black text-purple hover:underline bg-white px-4 py-2 rounded-xl border border-parchment-border shadow-sm">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 12H5m7 7l-7-7 7-7"/></svg>
+          Back to Home
+        </button>
+        <button type="button" data-view="not-ai" class="view-nav-trigger text-xs font-bold text-purple hover:underline flex items-center gap-1 bg-white px-4 py-2 rounded-xl border border-purple">
+          How the Algorithm Works &rarr;
+        </button>
+      </div>
+
+      <!-- Title & Benchmark Header -->
+      <div class="text-center max-w-3xl mx-auto mb-10">
+        <h1 class="font-cinzel text-2xl sm:text-4xl font-black text-slate-charcoal leading-tight">
+          AI is a Chatbot. <span class="text-purple">FameWeaver is a Writing Coach.</span>
+        </h1>
+        <p class="text-xs sm:text-sm text-slate-muted font-bold mt-2">
+          Here's what happens when you actually try using AI to improve your story.
+        </p>
+
+        <!-- Benchmark Story Banner -->
+        <div class="mt-6 p-4 rounded-2xl border-4 border-purple bg-white shadow-sm max-w-xl mx-auto">
+          <span class="text-[10px] font-black uppercase tracking-widest text-purple block">Real Story Benchmark</span>
+          <h2 class="font-cinzel text-lg font-black text-slate-charcoal mt-0.5">"Oliver and the Thunder Belly Beast"</h2>
+          <p class="text-xs text-slate-muted mt-1">We ran the same story through FameWeaver and through AI. Here's what each gave back.</p>
+        </div>
+      </div>
+
+      <!-- 3 Hard AI Limitations -->
+      <div class="max-w-5xl mx-auto mb-14">
+        <h3 class="text-center font-cinzel text-xl font-bold text-gold-dark mb-6">AI Has Hard Limits That Can't Be Fixed</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="card-lift border-4 border-gold rounded-2xl p-6 bg-white text-center">
+            <span class="font-cinzel text-3xl font-black text-gold-dark block mb-2">4K</span>
+            <h4 class="font-bold text-sm text-gold-dark mb-1">Word Count Cap</h4>
+            <p class="text-xs text-slate-muted leading-relaxed">AI can't process a full novel. Even a 4,000-word short story hits the response wall.</p>
+            <div class="mt-3 p-2.5 rounded-lg bg-gold-surface/40 text-[11px] italic font-semibold text-slate-charcoal text-left border-l-2 border-gold">
+              "Your story exceeds the maximum amount of text I can return in a single response."
+            </div>
+          </div>
+
+          <div class="card-lift border-4 border-gold rounded-2xl p-6 bg-white text-center">
+            <span class="font-cinzel text-3xl font-black text-gold-dark block mb-2">0</span>
+            <h4 class="font-bold text-sm text-gold-dark mb-1">Zero Techniques Taught</h4>
+            <p class="text-xs text-slate-muted leading-relaxed">AI never teaches you a craft principle. It tells you what's wrong without the tool to fix it.</p>
+            <div class="mt-3 p-2.5 rounded-lg bg-gold-surface/40 text-[11px] italic font-semibold text-slate-charcoal text-left border-l-2 border-gold">
+              "Tighten pacing throughout." &mdash; That's it. No technique. No method.
+            </div>
+          </div>
+
+          <div class="card-lift border-4 border-gold rounded-2xl p-6 bg-white text-center">
+            <span class="font-cinzel text-3xl font-black text-gold-dark block mb-2">??</span>
+            <h4 class="font-bold text-sm text-gold-dark mb-1">No Pinpointing</h4>
+            <p class="text-xs text-slate-muted leading-relaxed">AI can't show you WHERE in your story the issue is. No paragraph references or highlights.</p>
+            <div class="mt-3 p-2.5 rounded-lg bg-gold-surface/40 text-[11px] italic font-semibold text-slate-charcoal text-left border-l-2 border-gold">
+              "Smooth out repetitive passages." &mdash; Which passages? You're on your own.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 Live Concrete Side-by-Side Comparisons -->
+      <div class="max-w-5xl mx-auto space-y-10 mb-14">
+        
+        <!-- Comparison 1: Character -->
+        <div class="border-2 border-parchment-border rounded-3xl p-6 sm:p-8 bg-white shadow-lg">
+          <div class="flex items-center justify-between border-b border-parchment-border pb-3 mb-6">
+            <span class="text-xs font-black uppercase tracking-wider text-purple">Craft Dimension: Character & Interiority</span>
+            <span class="text-xs font-bold text-slate-muted">Benchmark Scene 1</span>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- FameWeaver Side -->
+            <div class="border-4 border-purple rounded-2xl p-6 bg-purple-surface/20 flex flex-col justify-between">
+              <div>
+                <span class="text-[10px] font-black uppercase text-purple block mb-1">What FameWeaver Delivers</span>
+                <h4 class="font-cinzel text-base font-black text-purple mb-3">Technique: Let the Body Speak</h4>
+                
+                <div class="space-y-3 text-xs">
+                  <div>
+                    <strong class="text-purple block mb-0.5">Problem Identified:</strong>
+                    <p class="text-slate-charcoal">Oliver's fear of thunder is stated, but never deepened. The reader sees the fear but doesn't feel it physically.</p>
+                  </div>
+                  <div>
+                    <strong class="text-purple block mb-0.5">The Craft Principle:</strong>
+                    <p class="text-slate-charcoal"><strong>Show internal emotion through physical sensation.</strong> Instead of telling the reader Oliver is scared, let his body reveal it &mdash; clenched fists, held breath, stomach drop.</p>
+                  </div>
+                  <div class="p-3 rounded-xl bg-white border border-purple/30">
+                    <p class="text-slate-muted line-through mb-1"><strong>Before:</strong> "Oliver was scared of the thunder."</p>
+                    <p class="text-purple font-semibold"><strong>After:</strong> "The first rumble hit and Oliver's fingers went white around the blanket's edge. His belly did that thing again &mdash; the cold, sinking thing &mdash; like swallowing a stone."</p>
+                  </div>
+                  <div class="text-[11px] text-slate-muted">
+                    <strong>Pinpoint:</strong> Highlighted directly in Chapter 1, Paragraph 3, lines 2-4.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Generic AI Side -->
+            <div class="border-4 border-gold rounded-2xl p-6 bg-gold-surface/20 flex flex-col justify-between">
+              <div>
+                <span class="text-[10px] font-black uppercase text-gold-dark block mb-1">What Generic AI Says</span>
+                <h4 class="font-cinzel text-base font-black text-gold-dark mb-3">Vague Chatbot Response</h4>
+                
+                <div class="p-4 rounded-xl bg-white border border-gold/40 text-xs text-slate-charcoal italic mb-4">
+                  "Give Oliver a more subtle character arc and make his reactions more emotional."
+                </div>
+                <div class="text-xs text-slate-muted space-y-2">
+                  <p><strong>The Breakdown:</strong> That's the entire suggestion. No explanation of what a character arc IS. No example of what "more subtle" looks like. No indication of where Oliver's arc falls flat.</p>
+                  <p class="font-bold text-rose-600">Result: You leave with the same question you started with.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comparison 2: Pacing -->
+        <div class="border-2 border-parchment-border rounded-3xl p-6 sm:p-8 bg-white shadow-lg">
+          <div class="flex items-center justify-between border-b border-parchment-border pb-3 mb-6">
+            <span class="text-xs font-black uppercase tracking-wider text-purple">Craft Dimension: Dramatic Pacing</span>
+            <span class="text-xs font-bold text-slate-muted">Benchmark Scene 2</span>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- FameWeaver Side -->
+            <div class="border-4 border-purple rounded-2xl p-6 bg-purple-surface/20 flex flex-col justify-between">
+              <div>
+                <span class="text-[10px] font-black uppercase text-purple block mb-1">What FameWeaver Delivers</span>
+                <h4 class="font-cinzel text-base font-black text-purple mb-3">Technique: Narrative Compression</h4>
+                
+                <div class="space-y-3 text-xs">
+                  <div>
+                    <strong class="text-purple block mb-0.5">Problem Identified:</strong>
+                    <p class="text-slate-charcoal">The middle section between Oliver hearing the thunder and discovering the beast has three descriptive paragraphs that kill velocity.</p>
+                  </div>
+                  <div>
+                    <strong class="text-purple block mb-0.5">The Craft Principle:</strong>
+                    <p class="text-slate-charcoal"><strong>Shorten the distance between tension and payoff.</strong> When stakes are high, cut atmospheric filler and accelerate physical action.</p>
+                  </div>
+                  <div class="p-3 rounded-xl bg-white border border-purple/30">
+                    <p class="text-slate-muted line-through mb-1"><strong>Before:</strong> 3 long paragraphs describing hallway shadows and rain against windows.</p>
+                    <p class="text-purple font-semibold"><strong>After:</strong> "The hallway stretched. Lightning flashed. Something growled from the basement."</p>
+                  </div>
+                  <div class="text-[11px] text-slate-muted">
+                    <strong>Pinpoint:</strong> Flagged at Paragraphs 7-9 with an inline "Where to Improve" marker.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Generic AI Side -->
+            <div class="border-4 border-gold rounded-2xl p-6 bg-gold-surface/20 flex flex-col justify-between">
+              <div>
+                <span class="text-[10px] font-black uppercase text-gold-dark block mb-1">What Generic AI Says</span>
+                <h4 class="font-cinzel text-base font-black text-gold-dark mb-3">Vague Chatbot Response</h4>
+                
+                <div class="p-4 rounded-xl bg-white border border-gold/40 text-xs text-slate-charcoal italic mb-4">
+                  "Tighten pacing throughout the middle."
+                </div>
+                <div class="text-xs text-slate-muted space-y-2">
+                  <p><strong>The Breakdown:</strong> Throughout... which chapter? Every paragraph? Where exactly is momentum lost? What does "tighten" mean in sentence construction? AI doesn't know.</p>
+                  <p class="font-bold text-rose-600">Result: Zero guidance on what to actually cut or rewrite.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comparison 3: The Reveal -->
+        <div class="border-2 border-parchment-border rounded-3xl p-6 sm:p-8 bg-white shadow-lg">
+          <div class="flex items-center justify-between border-b border-parchment-border pb-3 mb-6">
+            <span class="text-xs font-black uppercase tracking-wider text-purple">Craft Dimension: Climax & Discovery</span>
+            <span class="text-xs font-bold text-slate-muted">Benchmark Scene 3</span>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- FameWeaver Side -->
+            <div class="border-4 border-purple rounded-2xl p-6 bg-purple-surface/20 flex flex-col justify-between">
+              <div>
+                <span class="text-[10px] font-black uppercase text-purple block mb-1">What FameWeaver Delivers</span>
+                <h4 class="font-cinzel text-base font-black text-purple mb-3">Technique: The Delayed Reveal</h4>
+                
+                <div class="space-y-3 text-xs">
+                  <div>
+                    <strong class="text-purple block mb-0.5">Problem Identified:</strong>
+                    <p class="text-slate-charcoal">The moment Oliver discovers the "beast" arrives abruptly. The reader is robbed of the emotional shift from dread to delightful relief.</p>
+                  </div>
+                  <div>
+                    <strong class="text-purple block mb-0.5">The Craft Principle:</strong>
+                    <p class="text-slate-charcoal"><strong>Let the reader figure it out one beat before the character does.</strong> Plant a sensory clue (a rhythmic rumble, a familiar scent) so the reader clicks first.</p>
+                  </div>
+                  <div class="p-3 rounded-xl bg-white border border-purple/30">
+                    <p class="text-slate-muted line-through mb-1"><strong>Before:</strong> "Oliver saw it was just the vacuum cleaner."</p>
+                    <p class="text-purple font-semibold"><strong>After:</strong> "The growling had a rhythm to it. Back and forth. Back and forth. And there was that warm, dusty smell that always came on Saturday cleaning day."</p>
+                  </div>
+                  <div class="text-[11px] text-slate-muted">
+                    <strong>Pinpoint:</strong> Paragraph 14 reveal moment highlighted with inline before/after rewrite mechanics.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Generic AI Side -->
+            <div class="border-4 border-gold rounded-2xl p-6 bg-gold-surface/20 flex flex-col justify-between">
+              <div>
+                <span class="text-[10px] font-black uppercase text-gold-dark block mb-1">What Generic AI Says</span>
+                <h4 class="font-cinzel text-base font-black text-gold-dark mb-3">Vague Chatbot Response</h4>
+                
+                <div class="p-4 rounded-xl bg-white border border-gold/40 text-xs text-slate-charcoal italic mb-4">
+                  "Expand the realization that the vacuum is working, not hunting."
+                </div>
+                <div class="text-xs text-slate-muted space-y-2">
+                  <p><strong>The Breakdown:</strong> Expand... how? What sensory cues make this land? AI has no craft framework for theatrical reveals. Just a vague direction.</p>
+                  <p class="font-bold text-rose-600">Result: The writer must invent the technique from scratch.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Complete Comparison Checklists -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-14">
+        <div class="border-4 border-purple rounded-3xl p-8 bg-white shadow-xl">
+          <h3 class="font-cinzel text-2xl font-black text-purple mb-4">FameWeaver</h3>
+          <ul class="space-y-3 text-xs sm:text-sm font-semibold text-slate-charcoal">
+            <li class="flex items-start gap-2.5"><span class="text-purple font-black">✓</span> Handles stories of ANY length &mdash; short stories to full 100k novels</li>
+            <li class="flex items-start gap-2.5"><span class="text-purple font-black">✓</span> Scores your story across 7 categories with measurable ratings</li>
+            <li class="flex items-start gap-2.5"><span class="text-purple font-black">✓</span> Every suggestion teaches a real craft technique by name</li>
+            <li class="flex items-start gap-2.5"><span class="text-purple font-black">✓</span> Gives concrete before/after examples using YOUR actual prose</li>
+            <li class="flex items-start gap-2.5"><span class="text-purple font-black">✓</span> YOU write the fix &mdash; mastering the principle as you rewrite</li>
+            <li class="flex items-start gap-2.5"><span class="text-purple font-black">✓</span> Pinpoints the exact paragraphs and lines that need attention</li>
+            <li class="flex items-start gap-2.5"><span class="text-purple font-black">✓</span> Story is rescored so you see quantifiable craft progression</li>
+            <li class="flex items-start gap-2.5"><span class="text-purple font-black">✓</span> Uses ONLY your story &mdash; no outside internet data mixed in</li>
+          </ul>
+        </div>
+
+        <div class="border-4 border-gold rounded-3xl p-8 bg-white shadow-xl">
+          <h3 class="font-cinzel text-2xl font-black text-gold-dark mb-4">Generic AI</h3>
+          <ul class="space-y-3 text-xs sm:text-sm font-semibold text-slate-muted">
+            <li class="flex items-start gap-2.5"><span class="text-rose-500 font-black">✕</span> Cannot process manuscripts over 4,000 words</li>
+            <li class="flex items-start gap-2.5"><span class="text-rose-500 font-black">✕</span> No scoring system &mdash; just speculative opinions</li>
+            <li class="flex items-start gap-2.5"><span class="text-rose-500 font-black">✕</span> Never teaches a craft technique or named dramaturgical principle</li>
+            <li class="flex items-start gap-2.5"><span class="text-rose-500 font-black">✕</span> No concrete before/after examples grounded in your context</li>
+            <li class="flex items-start gap-2.5"><span class="text-rose-500 font-black">✕</span> Replaces your voice with generic chatbot prose</li>
+            <li class="flex items-start gap-2.5"><span class="text-rose-500 font-black">✕</span> Cannot point to specific paragraphs or lines in your draft</li>
+            <li class="flex items-start gap-2.5"><span class="text-rose-500 font-black">✕</span> No progress tracking or rescore validation</li>
+            <li class="flex items-start gap-2.5"><span class="text-rose-500 font-black">✕</span> No structural framework for screenplay or book publishing</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Return Button with Scroll Restoration -->
+      <div class="text-center pb-8 flex items-center justify-center gap-4">
+        <button type="button" data-view="home" class="view-nav-trigger btn-purple px-10 py-4 rounded-xl text-sm font-black shadow-xl">
+          Back to FameWeaver
+        </button>
+        <button type="button" data-view="not-ai" class="view-nav-trigger border-2 border-purple text-purple hover:bg-purple hover:text-white px-8 py-4 rounded-xl text-sm font-black transition-colors">
+          View Algorithm Foundations &rarr;
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       VIEW D: "GET IN TOUCH" (Contact Page)
+       ========================================================================= -->
+  <section id="view-contact" class="app-view parchment-pattern py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto">
+      
+      <!-- Top Bar: Back to Main -->
+      <div class="mb-8">
+        <button type="button" data-view="home" class="view-nav-trigger inline-flex items-center gap-2 text-sm font-black text-purple hover:underline bg-white px-4 py-2 rounded-xl border border-parchment-border shadow-sm">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 12H5m7 7l-7-7 7-7"/></svg>
+          Back to Main
+        </button>
+      </div>
+
+      <!-- Header -->
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <h1 class="font-cinzel text-3xl sm:text-4xl font-black text-slate-charcoal">
+          GET IN TOUCH
+        </h1>
+        <p class="text-xs sm:text-sm text-slate-muted font-semibold mt-2">
+          Have a question, suggestion, or want to partner with us? We'd love to hear from you.
+        </p>
+      </div>
+
+      <!-- 2-Column Contact Container -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-8 bg-white border-4 border-purple rounded-3xl p-6 sm:p-10 shadow-2xl">
+        
+        <!-- Left Column: Contact Information -->
+        <div class="md:col-span-5 border-b md:border-b-0 md:border-r border-parchment-border pb-8 md:pb-0 md:pr-8 flex flex-col justify-between">
+          <div>
+            <h2 class="font-cinzel text-lg font-black text-purple mb-4">Contact Information</h2>
+            
+            <div class="space-y-4 text-xs sm:text-sm">
+              <div>
+                <span class="text-[10px] uppercase font-bold text-slate-muted block">Direct Email</span>
+                <a href="mailto:contact@fameweaver.com" class="font-bold text-purple hover:underline">contact@fameweaver.com</a>
+              </div>
+              <div>
+                <span class="text-[10px] uppercase font-bold text-slate-muted block">Expected Turnaround</span>
+                <span class="font-bold text-slate-charcoal">24 &ndash; 48 business hours</span>
+              </div>
+              <div>
+                <span class="text-[10px] uppercase font-bold text-slate-muted block">Headquarters</span>
+                <span class="font-bold text-slate-charcoal">Raleigh, NC</span>
+              </div>
+            </div>
+
+            <!-- Follow Channels -->
+            <div class="mt-8">
+              <span class="text-[10px] uppercase font-bold text-slate-muted block mb-2">Official Channels</span>
+              <div class="flex items-center gap-3">
+                <a href="https://x.com/FameWeaverHQ" target="_blank" rel="noopener" class="w-9 h-9 rounded-xl bg-purple-surface border border-purple flex items-center justify-center text-purple hover:bg-purple hover:text-white transition-colors">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </a>
+                <a href="https://tiktok.com/@fameweaver" target="_blank" rel="noopener" class="w-9 h-9 rounded-xl bg-purple-surface border border-purple flex items-center justify-center text-purple hover:bg-purple hover:text-white transition-colors">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.24 1.07-.14 1.61.24 1.64 1.82 2.89 3.5 2.77 1.81-.03 3.33-1.61 3.39-3.42.06-2.58.02-5.16.03-7.74.01-4.88-.01-9.76.02-14.64z"/></svg>
+                </a>
+                <a href="https://instagram.com/fameweaver" target="_blank" rel="noopener" class="w-9 h-9 rounded-xl bg-purple-surface border border-purple flex items-center justify-center text-purple hover:bg-purple hover:text-white transition-colors">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Help Center Quick Link -->
+          <div class="mt-8 pt-6 border-t border-parchment-border">
+            <p class="text-xs text-slate-muted mb-2 font-medium">Looking for quick answers to common questions?</p>
+            <button type="button" data-view="home" data-scroll="help-center" class="view-nav-trigger text-xs font-black text-purple hover:underline flex items-center gap-1">
+              Visit Help Center &rarr;
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Column: Send Us a Message Form -->
+        <div class="md:col-span-7">
+          <h2 class="font-cinzel text-lg font-black text-slate-charcoal mb-4">Send Us a Message</h2>
+          
+          <form id="contact-form" class="space-y-4 text-xs sm:text-sm">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="contact-name" class="block font-bold text-slate-charcoal mb-1">Your Name *</label>
+                <input type="text" id="contact-name" required placeholder="Alex Mercer" class="w-full px-4 py-2.5 rounded-xl border border-parchment-border focus:ring-2 focus:ring-purple/20 focus:border-purple outline-none">
+              </div>
+              <div>
+                <label for="contact-email" class="block font-bold text-slate-charcoal mb-1">Your Email *</label>
+                <input type="email" id="contact-email" required placeholder="alex@storycraft.com" class="w-full px-4 py-2.5 rounded-xl border border-parchment-border focus:ring-2 focus:ring-purple/20 focus:border-purple outline-none">
+              </div>
+            </div>
+
+            <!-- Reason Selector Pills -->
+            <div>
+              <label class="block font-bold text-slate-charcoal mb-1.5">Reason for Contact</label>
+              <div class="flex flex-wrap gap-2" id="reason-pills-container">
+                <button type="button" class="reason-pill active px-3 py-1.5 rounded-lg border border-purple font-bold text-xs bg-purple text-white" data-reason="General Inquiry">General Inquiry</button>
+                <button type="button" class="reason-pill px-3 py-1.5 rounded-lg border border-parchment-border font-semibold text-xs bg-white text-slate-charcoal hover:border-purple" data-reason="Technical Support">Technical Support</button>
+                <button type="button" class="reason-pill px-3 py-1.5 rounded-lg border border-parchment-border font-semibold text-xs bg-white text-slate-charcoal hover:border-purple" data-reason="Partnership">Partnership</button>
+                <button type="button" class="reason-pill px-3 py-1.5 rounded-lg border border-parchment-border font-semibold text-xs bg-white text-slate-charcoal hover:border-purple" data-reason="Report a Bug">Report a Bug</button>
+                <button type="button" class="reason-pill px-3 py-1.5 rounded-lg border border-parchment-border font-semibold text-xs bg-white text-slate-charcoal hover:border-purple" data-reason="Feature Request">Feature Request</button>
+                <button type="button" class="reason-pill px-3 py-1.5 rounded-lg border border-parchment-border font-semibold text-xs bg-white text-slate-charcoal hover:border-purple" data-reason="Press Inquiry">Press Inquiry</button>
+              </div>
+              <input type="hidden" id="selected-reason" value="General Inquiry">
+            </div>
+
+            <div>
+              <label for="contact-subject" class="block font-bold text-slate-charcoal mb-1">Subject *</label>
+              <input type="text" id="contact-subject" required placeholder="Regarding manuscript evaluation..." class="w-full px-4 py-2.5 rounded-xl border border-parchment-border focus:ring-2 focus:ring-purple/20 focus:border-purple outline-none">
+            </div>
+
+            <div>
+              <label for="contact-message" class="block font-bold text-slate-charcoal mb-1">Message *</label>
+              <textarea id="contact-message" rows="4" required placeholder="How can we assist you?" class="w-full px-4 py-2.5 rounded-xl border border-parchment-border focus:ring-2 focus:ring-purple/20 focus:border-purple outline-none resize-none"></textarea>
+            </div>
+
+            <button type="submit" class="btn-gold w-full py-3.5 rounded-xl font-bold uppercase tracking-wider text-obsidian text-xs sm:text-sm">
+              Send Message
+            </button>
+          </form>
+
+          <!-- Feedback Toast / Alert -->
+          <div id="contact-success-alert" class="hidden mt-4 p-4 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-semibold">
+            Thank you! Your message has been sent to our editorial desk in Raleigh, NC. We'll reply within 24-48 business hours.
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       GLOBAL: INTERACTIVE VIDEO DEMO PREVIEW MODAL
+       ========================================================================= -->
+  <div id="video-demo-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md hidden">
+    <div class="modal-card relative w-full max-w-4xl bg-obsidian-deep rounded-3xl overflow-hidden border-2 border-gold shadow-2xl">
+      <div class="flex items-center justify-between px-5 py-3.5 bg-purple text-white border-b border-gold/30">
+        <div class="flex items-center gap-2.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span id="video-modal-title" class="font-cinzel text-xs sm:text-sm font-bold tracking-wide text-gold">Interactive Demo Preview</span>
+        </div>
+        <button id="close-video-modal" class="p-1.5 text-white/80 hover:text-gold hover:bg-white/10 rounded-lg transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="aspect-video bg-black flex items-center justify-center relative">
+        <video id="demo-video-player" controls playsinline class="w-full h-full object-contain">
+          <source id="demo-video-source" src="" type="video/mp4">
+        </video>
+      </div>
+    </div>
+  </div>
+
+  <!-- External Script -->
+  <script src="main.js"></script>
+</body>
+</html>
