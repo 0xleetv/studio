@@ -1,0 +1,2629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<!-- This site is hosted on Netlify. Anyone can build and deploy a site
+     like this one for free: https://netlify.new/?utm_campaign=loops&utm_source=ai-legible&utm_medium=owned&utm_content=comment&utm_id=67411841-5fe4-4fa4-95e0-f038e7d67a66
+     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <title>UNICON GLOBAL INVESTMENT NIG. LTD. | High Voltage Power and Civil Infrastructure</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Core 3D and Animation Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <style>
+    :root {
+      --bg_slate_gradient: radial-gradient(circle at 50% 15%, #0d1e38 0%, #060a12 100%);
+      --bg_glass: rgba(13, 27, 46, 0.65);
+      --border_glass: rgba(255, 255, 255, 0.08);
+      --border_gold_top: rgba(212, 175, 55, 0.4);
+      --border_gold: rgba(212, 175, 55, 0.45);
+      --gold_primary: #d4af37;
+      --gold_hover: #e8c85a;
+      --gold_glow: rgba(212, 175, 55, 0.28);
+      --blue_cobalt: #3b82f6;
+      --cyan_circuit: #38bdf8;
+      --cyan_glow: rgba(56, 189, 248, 0.25);
+      --text_primary: #ffffff;
+      --text_secondary: #e2e8f0;
+      --text_muted: #94a3b8;
+      --font_heading: 'Space Grotesk', sans-serif;
+      --font_body: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      background: var(--bg_slate_gradient);
+      background-attachment: fixed;
+      color: var(--text_secondary);
+      font-family: var(--font_body);
+      line-height: 1.65;
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Fixed Interactive 3D Electrical Canvas */
+    #canvas3d_container {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.9;
+    }
+
+    /* High Luxury Glassmorphic Containers */
+    .glass_card {
+      background: rgba(12, 24, 44, 0.42);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-top: 1px solid rgba(212, 175, 55, 0.35);
+      border-radius: 22px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      z-index: 10;
+    }
+
+    .glass_card:hover {
+      border-color: rgba(212, 175, 55, 0.6);
+      box-shadow: 0 32px 64px rgba(0, 0, 0, 0.8), 0 0 32px var(--gold_glow);
+      transform: translateY(-4px);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Ultra Transparent Glassmorphic Header */
+    .site_header {
+      position: fixed;
+      inset: 0 0 auto 0;
+      max-width: 1400px;
+      margin: 18px auto;
+      width: calc(100% - 2.5rem);
+      z-index: 1000;
+      border-radius: 999px;
+      background: rgba(10, 20, 36, 0.45);
+      backdrop-filter: blur(28px) saturate(190%);
+      -webkit-backdrop-filter: blur(28px) saturate(190%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-top: 1px solid rgba(212, 175, 55, 0.4);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .site_header.scrolled {
+      margin: 10px auto;
+      background: rgba(10, 20, 36, 0.75);
+      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.65);
+    }
+
+    .nav_container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 74px;
+      padding: 0 1.75rem;
+      transition: height 0.3s ease;
+    }
+
+    .site_header.scrolled .nav_container {
+      height: 66px;
+    }
+
+    .brand_identity {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-right: 48px;
+      flex-shrink: 0;
+    }
+
+    .brand_emblem_wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+    }
+
+    .gear_globe_emblem {
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle, rgba(212, 175, 55, 0.22) 0%, rgba(15, 30, 54, 0.9) 100%);
+      border: 1px solid var(--border_gold);
+      border-radius: 12px;
+      box-shadow: 0 0 14px var(--gold_glow);
+      flex-shrink: 0;
+    }
+
+    .gear_svg {
+      width: 24px;
+      height: 24px;
+      fill: var(--gold_primary);
+    }
+
+    .brand_title_group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand_name_text {
+      font-family: var(--font_heading);
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      color: var(--blue_cobalt);
+      text-transform: uppercase;
+      line-height: 1.2;
+    }
+
+    .brand_tag_text {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: #ffffff;
+      text-transform: uppercase;
+    }
+
+    .rc_pill {
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      padding: 4px 11px;
+      border-radius: 999px;
+      background: rgba(212, 175, 55, 0.14);
+      border: 1px solid var(--border_gold);
+      color: var(--gold_primary);
+      box-shadow: 0 0 12px rgba(212, 175, 55, 0.16);
+      white-space: nowrap;
+    }
+
+    .nav_menu {
+      display: flex;
+      align-items: center;
+      gap: 1.85rem;
+      list-style: none;
+    }
+
+    .nav_item a {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text_secondary);
+      text-decoration: none;
+      transition: color 0.25s ease;
+    }
+
+    .nav_item a:hover {
+      color: var(--gold_primary);
+    }
+
+    /* Buttons */
+    .btn_gold {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0.72rem 1.6rem;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: #ffffff;
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.45) 0%, rgba(184, 147, 39, 0.3) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 999px;
+      border: 1px solid rgba(212, 175, 55, 0.75);
+      box-shadow: 0 4px 20px rgba(212, 175, 55, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      white-space: nowrap;
+      touch-action: manipulation;
+    }
+
+    .btn_gold:hover {
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.65) 0%, rgba(212, 175, 55, 0.45) 100%);
+      border-color: rgba(255, 225, 100, 0.95);
+      box-shadow: 0 6px 26px rgba(212, 175, 55, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      transform: translateY(-2px);
+      color: #ffffff;
+    }
+
+    .btn_outline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0.75rem 1.65rem;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text_primary);
+      background: rgba(13, 27, 46, 0.6);
+      border: 1px solid var(--border_glass);
+      border-radius: 10px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      touch-action: manipulation;
+    }
+
+    .btn_outline:hover {
+      border-color: var(--cyan_circuit);
+      color: var(--cyan_circuit);
+      box-shadow: 0 0 20px var(--cyan_glow);
+      transform: translateY(-2px);
+    }
+
+    .btn_whatsapp {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      gap: 0.6rem;
+      padding: 0.75rem 1.5rem;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: #ffffff;
+      background: linear-gradient(135deg, rgba(37, 211, 102, 0.35) 0%, rgba(18, 140, 126, 0.35) 100%);
+      border: 1px solid rgba(37, 211, 102, 0.7);
+      border-radius: 10px;
+      backdrop-filter: blur(16px);
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      touch-action: manipulation;
+    }
+
+    .btn_whatsapp:hover {
+      background: linear-gradient(135deg, rgba(37, 211, 102, 0.55) 0%, rgba(18, 140, 126, 0.55) 100%);
+      box-shadow: 0 0 25px rgba(37, 211, 102, 0.45);
+      transform: translateY(-2px);
+    }
+
+    .mobile_toggle {
+      display: none;
+      background: transparent;
+      border: 1px solid var(--border_glass);
+      color: var(--text_primary);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 1.25rem;
+      cursor: pointer;
+    }
+
+    /* Hero Section */
+    .hero_section {
+      padding-top: 185px;
+      padding-bottom: 95px;
+      position: relative;
+    }
+
+    .hero_grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 3.5rem;
+      align-items: center;
+    }
+
+    .hero_badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 6px 16px;
+      background: rgba(212, 175, 55, 0.12);
+      border: 1px solid var(--border_gold);
+      border-radius: 999px;
+      margin-bottom: 1.5rem;
+    }
+
+    .pulse_dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--cyan_circuit);
+      box-shadow: 0 0 10px var(--cyan_circuit);
+      animation: pulse_glow 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse_glow {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(0.85); }
+    }
+
+    .hero_badge_text {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--gold_primary);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .hero_title {
+      font-family: var(--font_heading);
+      font-size: clamp(2.1rem, 5vw, 4.2rem);
+      line-height: 1.15;
+      font-weight: 700;
+      color: var(--text_primary);
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+      word-break: break-word;
+    }
+
+    .hero_title_highlight {
+      background: linear-gradient(135deg, #ffffff 20%, var(--gold_primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero_subhead {
+      font-size: clamp(1rem, 1.4vw, 1.25rem);
+      line-height: 1.7;
+      color: var(--text_secondary);
+      margin-bottom: 2.2rem;
+      max-width: 640px;
+    }
+
+    .hero_actions {
+      display: flex;
+      gap: 1.25rem;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 3rem;
+    }
+
+    .hero_stats_strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border_glass);
+    }
+
+    .stat_card_num {
+      font-family: var(--font_heading);
+      font-size: 1.95rem;
+      font-weight: 700;
+      color: var(--gold_primary);
+      margin-bottom: 0.2rem;
+    }
+
+    .stat_card_label {
+      font-size: 0.84rem;
+      color: var(--text_muted);
+      font-weight: 500;
+    }
+
+    .hero_visual_frame {
+      overflow: hidden;
+      border-radius: 20px;
+      position: relative;
+    }
+
+    .hero_img {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+      display: block;
+      border-radius: 20px;
+      filter: contrast(1.05) brightness(0.95);
+    }
+
+    .hero_img_overlay {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+      background: rgba(8, 13, 22, 0.88);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border_glass);
+      border-top: 1px solid var(--border_gold_top);
+      border-radius: 14px;
+      padding: 1.15rem 1.4rem;
+    }
+
+    .img_overlay_title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--gold_primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .img_overlay_desc {
+      font-size: 0.82rem;
+      color: var(--text_secondary);
+      line-height: 1.45;
+    }
+
+    /* Trust Credentials Bar */
+    .trust_bar {
+      padding: 2.2rem 0;
+      background: rgba(10, 18, 30, 0.65);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid var(--border_glass);
+      border-bottom: 1px solid var(--border_glass);
+      position: relative;
+      z-index: 10;
+    }
+
+    .trust_bar_inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .trust_item {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .trust_icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: rgba(212, 175, 55, 0.12);
+      border: 1px solid var(--border_gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold_primary);
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .trust_label_main {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text_primary);
+    }
+
+    .trust_label_sub {
+      font-size: 0.76rem;
+      color: var(--text_muted);
+    }
+
+    /* Section Styles */
+    .section_block {
+      padding: 105px 0;
+      position: relative;
+      z-index: 10;
+    }
+
+    .section_header {
+      text-align: center;
+      max-width: 740px;
+      margin: 0 auto 4.5rem auto;
+    }
+
+    .section_pill {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--cyan_circuit);
+      margin-bottom: 0.85rem;
+    }
+
+    .section_heading {
+      font-family: var(--font_heading);
+      font-size: clamp(1.85rem, 3.5vw, 2.75rem);
+      font-weight: 700;
+      color: var(--text_primary);
+      line-height: 1.25;
+      margin-bottom: 1.1rem;
+      word-break: break-word;
+    }
+
+    .section_subheading {
+      font-size: clamp(0.95rem, 1.3vw, 1.15rem);
+      color: var(--text_secondary);
+      line-height: 1.65;
+    }
+
+    /* Corporate Overview Card */
+    .overview_card {
+      padding: 3.5rem;
+    }
+
+    .overview_grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 3.5rem;
+      align-items: center;
+    }
+
+    .overview_title {
+      font-family: var(--font_heading);
+      font-size: clamp(1.5rem, 2.8vw, 2.2rem);
+      font-weight: 700;
+      color: var(--text_primary);
+      margin-bottom: 1.25rem;
+      line-height: 1.3;
+    }
+
+    .overview_paragraph {
+      color: var(--text_secondary);
+      font-size: 1.02rem;
+      line-height: 1.75;
+      margin-bottom: 1.5rem;
+    }
+
+    .mission_vision_box {
+      margin-top: 2rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .mv_card {
+      background: rgba(8, 13, 22, 0.7);
+      border: 1px solid var(--border_glass);
+      border-top: 1px solid var(--border_gold_top);
+      border-radius: 14px;
+      padding: 1.5rem;
+    }
+
+    .mv_heading {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--gold_primary);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .mv_text {
+      font-size: 0.88rem;
+      color: var(--text_secondary);
+      line-height: 1.55;
+    }
+
+    .overview_panel_side {
+      background: rgba(8, 13, 22, 0.75);
+      border: 1px solid var(--border_glass);
+      border-top: 1px solid var(--border_gold_top);
+      border-radius: 16px;
+      padding: 2.2rem;
+    }
+
+    .panel_badge_heading {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text_primary);
+      margin-bottom: 1.1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border_glass);
+    }
+
+    .compliance_list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1.15rem;
+    }
+
+    .compliance_item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.85rem;
+    }
+
+    .check_marker {
+      color: var(--gold_primary);
+      font-size: 1.15rem;
+      line-height: 1;
+      margin-top: 2px;
+    }
+
+    .compliance_title {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text_primary);
+    }
+
+    .compliance_desc {
+      font-size: 0.8rem;
+      color: var(--text_muted);
+    }
+
+    /* Capabilities Grid */
+    .capabilities_grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+    }
+
+    .capability_card {
+      padding: 2.6rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .cap_thumb {
+      width: 100%;
+      height: 190px;
+      object-fit: cover;
+      border-radius: 14px;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border_glass);
+    }
+
+    .cap_icon_wrap {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      background: rgba(212, 175, 55, 0.12);
+      border: 1px solid var(--border_gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold_primary);
+      font-size: 1.45rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .cap_title {
+      font-family: var(--font_heading);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text_primary);
+      margin-bottom: 0.85rem;
+      line-height: 1.3;
+    }
+
+    .cap_desc {
+      color: var(--text_secondary);
+      font-size: 0.94rem;
+      line-height: 1.65;
+      margin-bottom: 1.5rem;
+    }
+
+    .cap_features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      border-top: 1px solid var(--border_glass);
+      padding-top: 1.25rem;
+    }
+
+    .cap_features li {
+      font-size: 0.86rem;
+      color: var(--text_secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .cap_features li::before {
+      content: "•";
+      color: var(--cyan_circuit);
+      font-weight: bold;
+    }
+
+    /* Projects Track Record */
+    .projects_grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.85rem;
+    }
+
+    .project_card {
+      padding: 2.2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .project_client_badge {
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--gold_primary);
+      margin-bottom: 0.85rem;
+    }
+
+    .project_title {
+      font-family: var(--font_heading);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text_primary);
+      line-height: 1.35;
+      margin-bottom: 1rem;
+    }
+
+    .project_scope {
+      font-size: 0.88rem;
+      color: var(--text_secondary);
+      line-height: 1.55;
+      margin-bottom: 1.5rem;
+      flex-grow: 1;
+    }
+
+    .project_meta {
+      border-top: 1px solid var(--border_glass);
+      padding-top: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+    }
+
+    .project_location {
+      color: var(--text_primary);
+      font-weight: 600;
+    }
+
+    .project_status {
+      color: #34d399;
+      font-weight: 600;
+    }
+
+    /* Leadership Panel */
+    .leadership_grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.85rem;
+    }
+
+    .leader_card {
+      padding: 2.2rem;
+      position: relative;
+    }
+
+    .leader_avatar_placeholder {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: rgba(8, 13, 22, 0.85);
+      border: 2px solid var(--border_gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold_primary);
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 0 16px var(--gold_glow);
+    }
+
+    .leader_name {
+      font-family: var(--font_heading);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text_primary);
+      margin-bottom: 0.35rem;
+    }
+
+    .leader_role {
+      font-size: 0.86rem;
+      font-weight: 600;
+      color: var(--gold_primary);
+      margin-bottom: 0.75rem;
+    }
+
+    .leader_desc {
+      font-size: 0.84rem;
+      color: var(--text_secondary);
+      line-height: 1.5;
+    }
+
+    /* Headquarters & Contact Section */
+    .contact_wrapper {
+      padding: 3.5rem;
+    }
+
+    .contact_grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3.5rem;
+    }
+
+    .contact_info_block {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .contact_group_title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--gold_primary);
+      margin-bottom: 0.4rem;
+    }
+
+    .contact_group_val {
+      font-size: 1.05rem;
+      color: var(--text_primary);
+      line-height: 1.6;
+    }
+
+    .contact_quick_buttons {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 0.5rem;
+    }
+
+    /* Consultation Form & High Contrast Dropdown */
+    .consult_form {
+      background: rgba(8, 13, 22, 0.75);
+      border: 1px solid var(--border_glass);
+      border-top: 1px solid var(--border_gold_top);
+      border-radius: 16px;
+      padding: 2.25rem;
+    }
+
+    .form_title {
+      font-family: var(--font_heading);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text_primary);
+      margin-bottom: 0.4rem;
+    }
+
+    .form_subtitle {
+      font-size: 0.88rem;
+      color: var(--text_secondary);
+      margin-bottom: 1.5rem;
+    }
+
+    .form_row {
+      margin-bottom: 1.25rem;
+    }
+
+    .form_label {
+      display: block;
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--text_secondary);
+      margin-bottom: 0.4rem;
+    }
+
+    .form_control {
+      width: 100%;
+      min-height: 48px;
+      background: #0b1524 !important;
+      color: #f8fafc !important;
+      border: 1px solid var(--border_glass);
+      border-radius: 10px;
+      padding: 0.8rem 1rem;
+      font-family: var(--font_body);
+      font-size: 16px;
+      transition: all 0.25s ease;
+      touch-action: manipulation;
+    }
+
+    .form_control:focus {
+      outline: none;
+      border-color: var(--gold_primary);
+      box-shadow: 0 0 14px var(--gold_glow);
+    }
+
+    /* High contrast select and options */
+    select.form_control, select.form_control option {
+      background-color: #0b1524 !important;
+      color: #f8fafc !important;
+      font-size: 16px;
+      min-height: 48px;
+      padding: 12px;
+    }
+
+    textarea.form_control {
+      resize: vertical;
+      min-height: 120px;
+      font-size: 16px;
+    }
+
+    .form_submit_btn {
+      width: 100%;
+      margin-top: 0.5rem;
+      border-radius: 8px;
+    }
+
+    /* Modal Dual Channel Dispatch Feedback */
+    .receipt_modal_backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 7, 12, 0.88);
+      backdrop-filter: blur(14px);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .receipt_modal_box {
+      max-width: 540px;
+      width: 100%;
+      padding: 2.5rem;
+      text-align: center;
+    }
+
+    .receipt_icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(52, 211, 153, 0.15);
+      border: 2px solid #34d399;
+      color: #34d399;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      margin: 0 auto 1.25rem auto;
+      animation: pulse_glow 2s infinite ease-in-out;
+    }
+
+    .receipt_title {
+      font-family: var(--font_heading);
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--text_primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .receipt_detail {
+      font-size: 0.92rem;
+      color: var(--text_secondary);
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+    }
+
+    .receipt_ref_pill {
+      display: inline-block;
+      font-family: monospace;
+      font-size: 0.88rem;
+      font-weight: 700;
+      padding: 6px 14px;
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px solid var(--border_gold);
+      color: var(--gold_primary);
+      border-radius: 6px;
+      margin-bottom: 1.5rem;
+    }
+
+    .receipt_actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    /* Footer */
+    .site_footer {
+      background: #04060a;
+      border-top: 1px solid var(--border_glass);
+      padding: 50px 0;
+      text-align: center;
+      position: relative;
+      z-index: 10;
+    }
+
+    .footer_content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .footer_copy {
+      font-size: 0.86rem;
+      color: var(--text_muted);
+    }
+
+    .footer_badge {
+      font-size: 0.78rem;
+      color: var(--gold_primary);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    /* Responsive Adaptations Across Device Formats */
+    @media (max-width: 1200px) {
+      .site_header {
+        max-width: calc(100% - 2rem);
+      }
+      .nav_container {
+        padding: 0 1.25rem;
+      }
+      .brand_identity {
+        margin-right: 24px;
+      }
+      .hero_grid {
+        gap: 2.5rem;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .hero_grid,
+      .overview_grid,
+      .contact_grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+      .projects_grid,
+      .leadership_grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .capabilities_grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .site_header {
+        margin: 10px auto;
+        width: calc(100% - 1.5rem);
+      }
+
+      .nav_container {
+        height: 66px;
+        padding: 0 1rem;
+      }
+
+      .brand_identity {
+        margin-right: 0;
+        gap: 0.65rem;
+      }
+
+      .gear_globe_emblem {
+        width: 38px;
+        height: 38px;
+      }
+
+      .brand_name_text {
+        font-size: 0.88rem;
+      }
+
+      .brand_tag_text {
+        font-size: 0.62rem;
+      }
+
+      .rc_pill {
+        font-size: 0.68rem;
+        padding: 3px 8px;
+      }
+
+      .mobile_toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        min-height: 48px;
+        background: rgba(212, 175, 55, 0.12);
+        border: 1px solid var(--border_gold);
+        border-radius: 12px;
+        color: var(--gold_primary);
+        font-size: 1.45rem;
+        cursor: pointer;
+        touch-action: manipulation;
+      }
+
+      .nav_menu {
+        display: none;
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 0;
+        right: 0;
+        width: 100%;
+        background: rgba(10, 20, 36, 0.95);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-top: 1px solid rgba(212, 175, 55, 0.4);
+        border-radius: 20px;
+        padding: 1.5rem 1.25rem;
+        flex-direction: column;
+        gap: 0.85rem;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+        list-style: none;
+      }
+
+      .nav_menu.active {
+        display: flex;
+      }
+
+      .nav_item {
+        width: 100%;
+      }
+
+      .nav_item a {
+        width: 100%;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.05rem;
+        padding: 0.6rem 1rem;
+        border-radius: 10px;
+      }
+
+      .nav_item a:hover {
+        background: rgba(212, 175, 55, 0.1);
+      }
+
+      .nav_item a.btn_gold {
+        margin-top: 0.4rem;
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        padding: 0 1rem;
+      }
+
+      .site_header {
+        width: calc(100% - 1rem);
+        margin: 8px auto;
+      }
+
+      .nav_container {
+        padding: 0 0.75rem;
+        height: 60px;
+      }
+
+      .brand_emblem_wrap {
+        gap: 0.5rem;
+      }
+
+      .gear_globe_emblem {
+        width: 34px;
+        height: 34px;
+      }
+
+      .gear_svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      .brand_name_text {
+        font-size: 0.78rem;
+        letter-spacing: 0.01em;
+      }
+
+      .brand_tag_text {
+        display: none;
+      }
+
+      .rc_pill {
+        font-size: 0.65rem;
+        padding: 2px 7px;
+      }
+
+      .mobile_toggle {
+        width: 44px;
+        height: 44px;
+        min-height: 44px;
+        font-size: 1.25rem;
+      }
+
+      .hero_section {
+        padding-top: 135px;
+        padding-bottom: 55px;
+      }
+
+      .section_block {
+        padding: 55px 0;
+      }
+
+      .section_header {
+        margin-bottom: 2.5rem;
+      }
+
+      /* Stack all glass cards into a single column with balanced touch friendly padding */
+      .glass_card,
+      .overview_card,
+      .capability_card,
+      .project_card,
+      .leader_card,
+      .contact_wrapper,
+      .consult_form {
+        padding: 20px 16px;
+        border-radius: 18px;
+      }
+
+      .capabilities_grid,
+      .projects_grid,
+      .leadership_grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .hero_actions {
+        flex-direction: column;
+        gap: 0.85rem;
+        width: 100%;
+      }
+
+      .hero_actions a {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .hero_img {
+        height: 240px;
+      }
+
+      .hero_img_overlay {
+        bottom: 12px;
+        left: 12px;
+        right: 12px;
+        padding: 0.85rem 1rem;
+      }
+
+      .hero_stats_strip {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+      }
+
+      .trust_bar {
+        padding: 1.75rem 0;
+      }
+
+      .trust_bar_inner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.25rem;
+        padding: 0 0.5rem;
+      }
+
+      .mission_vision_box {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .overview_panel_side {
+        padding: 1.5rem 1.25rem;
+      }
+
+      .contact_quick_buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .contact_quick_buttons a {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .form_submit_btn {
+        width: 100%;
+      }
+
+      .receipt_modal_box {
+        padding: 24px 18px;
+        width: calc(100% - 2rem);
+      }
+    }
+
+    @media (max-width: 380px) {
+      .brand_name_text {
+        font-size: 0.72rem;
+      }
+
+      .rc_pill {
+        display: none;
+      }
+
+      .hero_badge_text {
+        font-size: 0.72rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Three.js Electrical Grid Canvas Container -->
+  <div id="canvas3d_container"></div>
+
+  <!-- Ultra Transparent Floating Responsive Header Pill -->
+  <header class="site_header" id="siteHeader">
+    <div class="nav_container">
+      <div class="brand_identity">
+        <a href="#hero" class="brand_emblem_wrap">
+          <div class="gear_globe_emblem">
+            <svg class="gear_svg" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+            </svg>
+          </div>
+          <div class="brand_title_group">
+            <span class="brand_name_text">UNICON GLOBAL INVESTMENT NIG. LTD.</span>
+            <span class="brand_tag_text">Power Systems and Civil Engineering</span>
+          </div>
+        </a>
+        <span class="rc_pill">RC 799708</span>
+      </div>
+
+      <button class="mobile_toggle" id="mobileToggle" aria-label="Toggle Navigation">☰</button>
+
+      <ul class="nav_menu" id="navMenu">
+        <li class="nav_item"><a href="#overview">About</a></li>
+        <li class="nav_item"><a href="#capabilities">Capabilities</a></li>
+        <li class="nav_item"><a href="#projects">Track Record</a></li>
+        <li class="nav_item"><a href="#leadership">Leadership</a></li>
+        <li class="nav_item"><a href="#contact">Contact</a></li>
+        <li class="nav_item">
+          <a href="#contact" class="btn_gold">Request Consultation</a>
+        </li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero_section" id="hero">
+    <div class="container hero_grid">
+      <div class="hero_content">
+        <div class="hero_badge">
+          <span class="pulse_dot"></span>
+          <span class="hero_badge_text">NEMSA Certified and COREN Compliant</span>
+        </div>
+
+        <h1 class="hero_title">
+          Engineering High Voltage Power Systems and Modern Civil Infrastructure <span class="hero_title_highlight">Across Nigeria</span>
+        </h1>
+
+        <p class="hero_subhead">
+          Incorporated in 2009. Delivering rural electrification, substation development, and structural engineering with safety and operational precision.
+        </p>
+
+        <div class="hero_actions">
+          <a href="#capabilities" class="btn_gold">Explore Capabilities</a>
+          <a href="#contact" class="btn_outline">Contact Headquarters</a>
+          <a href="https://wa.me/2348030663395?text=Hello%20Unicon%20Global%20Investment%2C%20I%20would%20like%20to%20request%20an%20engineering%20consultation." target="_blank" rel="noopener noreferrer" class="btn_whatsapp">
+            <span>WhatsApp Direct</span>
+          </a>
+        </div>
+
+        <div class="hero_stats_strip">
+          <div class="stat_card">
+            <div class="stat_card_num">15 Plus</div>
+            <div class="stat_card_label">Years Engineering Excellence</div>
+          </div>
+          <div class="stat_card">
+            <div class="stat_card_num">33kV / 11kV</div>
+            <div class="stat_card_label">Grid Substation Experience</div>
+          </div>
+          <div class="stat_card">
+            <div class="stat_card_num">100 Percent</div>
+            <div class="stat_card_label">Indigenous Technical Capacity</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero_visual_wrapper">
+        <div class="glass_card hero_visual_frame">
+          <img src="assets/cover_substation.jpeg" alt="Transmission Substation Switchyard" class="hero_img">
+          <div class="hero_img_overlay">
+            <div class="img_overlay_title">Substation Transmission Switchyard</div>
+            <div class="img_overlay_desc">High voltage busbars, step down transformers, and distribution engineering.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust Credentials Bar -->
+  <section class="trust_bar">
+    <div class="container trust_bar_inner">
+      <div class="trust_item">
+        <div class="trust_icon">✓</div>
+        <div>
+          <div class="trust_label_main">CAC Incorporated</div>
+          <div class="trust_label_sub">RC Number 799708 since 2009</div>
+        </div>
+      </div>
+      <div class="trust_item">
+        <div class="trust_icon">⚡</div>
+        <div>
+          <div class="trust_label_main">NEMSA Certified</div>
+          <div class="trust_label_sub">Electricity Management Services Agency</div>
+        </div>
+      </div>
+      <div class="trust_item">
+        <div class="trust_icon">⚙</div>
+        <div>
+          <div class="trust_label_main">COREN Engineers</div>
+          <div class="trust_label_sub">Council for Regulation of Engineering</div>
+        </div>
+      </div>
+      <div class="trust_item">
+        <div class="trust_icon">📋</div>
+        <div>
+          <div class="trust_label_main">BPP Registered</div>
+          <div class="trust_label_sub">Bureau of Public Procurement Compliant</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Corporate Overview Card -->
+  <section class="section_block" id="overview">
+    <div class="container">
+      <div class="glass_card overview_card">
+        <div class="overview_grid">
+          <div>
+            <span class="section_pill">Corporate Profile</span>
+            <h2 class="overview_title">Dedicated to National Infrastructure Development and Quality Execution</h2>
+            <p class="overview_paragraph">
+              Unicon Global Investment Nigeria Limited is an indigenous limited liability engineering firm and holding company of specialty contractors serving electric utility infrastructure, commercial, and industrial markets throughout Nigeria.
+            </p>
+            <p class="overview_paragraph">
+              We benchmark all project delivery to international best practices, deploying certified engineers and rigorous quality assurance systems to guarantee safety and hazard free operations in every site community.
+            </p>
+
+            <div class="mission_vision_box">
+              <div class="mv_card">
+                <div class="mv_heading">Corporate Mission</div>
+                <div class="mv_text">
+                  To optimally utilize local engineering capacities and capabilities to provide effective, qualitative cost, and timely construction work for complete client satisfaction.
+                </div>
+              </div>
+              <div class="mv_card">
+                <div class="mv_heading">Corporate Vision</div>
+                <div class="mv_text">
+                  To build a leading engineering construction company through our readily available indigenous expertise, continually engaging in building and developing our nation Nigeria.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="overview_panel_side">
+            <div class="panel_badge_heading">Accredited Compliance</div>
+            <ul class="compliance_list">
+              <li class="compliance_item">
+                <span class="check_marker">✓</span>
+                <div>
+                  <div class="compliance_title">Corporate Affairs Commission</div>
+                  <div class="compliance_desc">RC 799708 statutory annual filing current</div>
+                </div>
+              </li>
+              <li class="compliance_item">
+                <span class="check_marker">✓</span>
+                <div>
+                  <div class="compliance_title">Federal Inland Revenue Service</div>
+                  <div class="compliance_desc">Tax Clearance Certificate and VAT compliance</div>
+                </div>
+              </li>
+              <li class="compliance_item">
+                <span class="check_marker">✓</span>
+                <div>
+                  <div class="compliance_title">PENCOM and ITF Verification</div>
+                  <div class="compliance_desc">Pension Reform Act and Industrial Training Fund compliant</div>
+                </div>
+              </li>
+              <li class="compliance_item">
+                <span class="check_marker">✓</span>
+                <div>
+                  <div class="compliance_title">NSITF and SCUML Clearance</div>
+                  <div class="compliance_desc">Workplace compensation and statutory financial clearance</div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Core Capabilities Grid -->
+  <section class="section_block" id="capabilities">
+    <div class="container">
+      <div class="section_header">
+        <span class="section_pill">Technical Portfolio</span>
+        <h2 class="section_heading">Core Engineering Capabilities</h2>
+        <p class="section_subheading">
+          End to end engineering execution from high voltage transmission lines to structural civil development.
+        </p>
+      </div>
+
+      <div class="capabilities_grid">
+        <div class="glass_card capability_card">
+          <div>
+            <img src="assets/cover_substation.jpeg" alt="High Voltage Substation Engineering" class="cap_thumb">
+            <div class="cap_icon_wrap">⚡</div>
+            <h3 class="cap_title">High Voltage Substation Engineering</h3>
+            <p class="cap_desc">
+              Complete engineering design, procurement, and construction of transmission substations, distribution step down stations, and switchgear assemblies.
+            </p>
+          </div>
+          <ul class="cap_features">
+            <li>Transmission lines and distribution substations</li>
+            <li>Transformer setups up to 33kV and 11kV ratings</li>
+            <li>Power panel coupling and grid interconnection</li>
+          </ul>
+        </div>
+
+        <div class="glass_card capability_card">
+          <div>
+            <img src="assets/cover_showcase_trio.jpeg" alt="Rural and Urban Electrification" class="cap_thumb">
+            <div class="cap_icon_wrap">🌐</div>
+            <h3 class="cap_title">Rural and Urban Electrification</h3>
+            <p class="cap_desc">
+              Expanding community electricity access through high tension and low tension inter town connection line construction across diverse geopolitical regions.
+            </p>
+          </div>
+          <ul class="cap_features">
+            <li>Distribution networks and township power grids</li>
+            <li>Pole line hardware installation and line stringing</li>
+            <li>Community electrification across multiple local government councils</li>
+          </ul>
+        </div>
+
+        <div class="glass_card capability_card">
+          <div>
+            <div class="cap_icon_wrap">☀</div>
+            <h3 class="cap_title">Commercial Solar and Renewable Microgrids</h3>
+            <p class="cap_desc">
+              Sustainable captive power installations, industrial photovoltaic arrays, intelligent battery storage banks, and public street lighting systems.
+            </p>
+          </div>
+          <ul class="cap_features">
+            <li>Solar street and garden lighting installation</li>
+            <li>Photovoltaic modules, charge controllers, and inverters</li>
+            <li>Direct current and alternating current power conversions</li>
+          </ul>
+        </div>
+
+        <div class="glass_card capability_card">
+          <div>
+            <div class="cap_icon_wrap">🏗</div>
+            <h3 class="cap_title">Civil and Structural Project Works</h3>
+            <p class="cap_desc">
+              Heavy infrastructure foundations, commercial facilities, healthcare centers, and industrial building projects supervised by COREN certified engineers.
+            </p>
+          </div>
+          <ul class="cap_features">
+            <li>Heavy structural foundations and reinforced concrete works</li>
+            <li>Institutional buildings and corporate facility development</li>
+            <li>HSE compliant site supervision and structural inspections</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Key Projects Showcase -->
+  <section class="section_block" id="projects">
+    <div class="container">
+      <div class="section_header">
+        <span class="section_pill">Track Record</span>
+        <h2 class="section_heading">Selected Completed Projects</h2>
+        <p class="section_subheading">
+          A representative portfolio of public sector and private engineering contracts delivered across Nigeria.
+        </p>
+      </div>
+
+      <div class="projects_grid">
+        <div class="glass_card project_card">
+          <div>
+            <div class="project_client_badge">Rural Electrification Agency</div>
+            <h3 class="project_title">25 Towns and Villages Electrification</h3>
+            <p class="project_scope">
+              Comprehensive rural electrification project covering twenty five towns and settlements across ten Local Government Areas.
+            </p>
+          </div>
+          <div class="project_meta">
+            <span class="project_location">📍 Sokoto State</span>
+            <span class="project_status">Completed</span>
+          </div>
+        </div>
+
+        <div class="glass_card project_card">
+          <div>
+            <div class="project_client_badge">Federal Capital Development Authority</div>
+            <h3 class="project_title">Public Parks Solar Lighting Network</h3>
+            <p class="project_scope">
+              Construction and installation of solar powered street and garden lighting systems across public recreational parks under Parks and Recreation Department.
+            </p>
+          </div>
+          <div class="project_meta">
+            <span class="project_location">📍 Abuja, FCT</span>
+            <span class="project_status">Completed</span>
+          </div>
+        </div>
+
+        <div class="glass_card project_card">
+          <div>
+            <div class="project_client_badge">Rural Electrification Agency</div>
+            <h3 class="project_title">Ajaokuta to Adogo 22km Grid Extension</h3>
+            <p class="project_scope">
+              Construction of twenty two kilometers of rural electrification transmission line, inter town connection, and step down infrastructure.
+            </p>
+          </div>
+          <div class="project_meta">
+            <span class="project_location">📍 Kogi State</span>
+            <span class="project_status">Completed</span>
+          </div>
+        </div>
+
+        <div class="glass_card project_card">
+          <div>
+            <div class="project_client_badge">Plateau State Government</div>
+            <h3 class="project_title">52 Units Solar Street Lighting</h3>
+            <p class="project_scope">
+              Installation of fifty two dedicated solar street lighting units at Sabo Gidan Lantana community in South Local Government Area.
+            </p>
+          </div>
+          <div class="project_meta">
+            <span class="project_location">📍 Plateau State</span>
+            <span class="project_status">Completed</span>
+          </div>
+        </div>
+
+        <div class="glass_card project_card">
+          <div>
+            <div class="project_client_badge">Rural Electrification Agency</div>
+            <h3 class="project_title">Okwuke Community 300kVA Substation</h3>
+            <p class="project_scope">
+              Construction of high tension and low tension lines with installation of 300kVA 33kV 0.415kV distribution transformer for Okwuke Community in Kwale LGA.
+            </p>
+          </div>
+          <div class="project_meta">
+            <span class="project_location">📍 Delta State</span>
+            <span class="project_status">Completed</span>
+          </div>
+        </div>
+
+        <div class="glass_card project_card">
+          <div>
+            <div class="project_client_badge">Federal Ministry of Industry, Trade and Investment</div>
+            <h3 class="project_title">Industrial Policy Harmonization Consultancy</h3>
+            <p class="project_scope">
+              Engagement of technical consultants to harmonize industrial policies and institutional development initiatives in Abuja. Contract Value: 30 Million Naira.
+            </p>
+          </div>
+          <div class="project_meta">
+            <span class="project_location">📍 Abuja, FCT</span>
+            <span class="project_status">Completed (2026)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Executive Leadership Panel -->
+  <section class="section_block" id="leadership">
+    <div class="container">
+      <div class="section_header">
+        <span class="section_pill">Management Team</span>
+        <h2 class="section_heading">Executive Leadership</h2>
+        <p class="section_subheading">
+          Experienced directors and accredited engineering personnel guiding company operations.
+        </p>
+      </div>
+
+      <div class="leadership_grid">
+        <div class="glass_card leader_card">
+          <div class="leader_avatar_placeholder">OM</div>
+          <h3 class="leader_name">Oyewole Michael Kunle</h3>
+          <div class="leader_role">Managing Director and Principal Engineering Lead</div>
+          <p class="leader_desc">
+            Directs executive strategy, technical operations, and major utility infrastructure developments across the federation.
+          </p>
+        </div>
+
+        <div class="glass_card leader_card">
+          <div class="leader_avatar_placeholder">OB</div>
+          <h3 class="leader_name">Olayinka Bolakale Ronke</h3>
+          <div class="leader_role">Executive Director and Company Secretary</div>
+          <p class="leader_desc">
+            Manages corporate governance, legal administration, statutory compliance, and commercial procurement relations.
+          </p>
+        </div>
+
+        <div class="glass_card leader_card">
+          <div class="leader_avatar_placeholder">OG</div>
+          <h3 class="leader_name">Oyewole Gbenga</h3>
+          <div class="leader_role">Executive Director</div>
+          <p class="leader_desc">
+            Oversees institutional partnerships, resource allocation, and field project execution logistics.
+          </p>
+        </div>
+
+        <div class="glass_card leader_card">
+          <div class="leader_avatar_placeholder">CW</div>
+          <h3 class="leader_name">Engr. Chibuzor Nathaniel Waboso</h3>
+          <div class="leader_role">Project Civil Engineer (COREN Registered)</div>
+          <p class="leader_desc">
+            MSc Civil Engineering graduate leading structural engineering designs, foundation works, and quality inspection protocols.
+          </p>
+        </div>
+
+        <div class="glass_card leader_card">
+          <div class="leader_avatar_placeholder">AJ</div>
+          <h3 class="leader_name">Adefolahan Olanrewaju Jelil</h3>
+          <div class="leader_role">Electrical Systems Lead</div>
+          <p class="leader_desc">
+            Directs transmission line construction, substation power panel coupling, transformer testing, and grid synchronization.
+          </p>
+        </div>
+
+        <div class="glass_card leader_card">
+          <div class="leader_avatar_placeholder">UA</div>
+          <h3 class="leader_name">Umoren Armstrong</h3>
+          <div class="leader_role">CAD Infrastructure Designer</div>
+          <p class="leader_desc">
+            Specializes in architectural drafting, CAD modeling, layout optimization, and physical project site mapping.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Abuja Headquarters & Contact Section -->
+  <section class="section_block" id="contact">
+    <div class="container">
+      <div class="glass_card contact_wrapper">
+        <div class="contact_grid">
+          <div class="contact_info_block">
+            <div>
+              <span class="section_pill">Headquarters</span>
+              <h2 class="overview_title">Contact Our Engineering Offices</h2>
+              <p class="overview_paragraph">
+                Connect with our technical planning team to discuss electrical distribution, substation construction, or general contract requirements.
+              </p>
+            </div>
+
+            <div>
+              <div class="contact_group_title">Abuja Head Office</div>
+              <div class="contact_group_val">
+                Block 6, N.P.A Quarters, Site 1, 2/1 Kubwa F.H.A., FCT Abuja, Nigeria.
+              </div>
+            </div>
+
+            <div>
+              <div class="contact_group_title">Corporate Branch Office</div>
+              <div class="contact_group_val">
+                No. 2 Michika Street, Area 11, Al Maliha Commerce Complex, Garki, Abuja, Nigeria.
+              </div>
+            </div>
+
+            <div>
+              <div class="contact_group_title">Official Telephone Lines</div>
+              <div class="contact_group_val">
+                +234 803 066 3395<br>
+                +234 803 081 7067
+              </div>
+            </div>
+
+            <div>
+              <div class="contact_group_title">Official Email</div>
+              <div class="contact_group_val">
+                uniconglobalnigltd@gmail.com
+              </div>
+            </div>
+
+            <div class="contact_quick_buttons">
+              <a href="mailto:uniconglobalnigltd@gmail.com?subject=Engineering%20Consultation%20Inquiry" class="btn_gold">
+                Send Direct Email
+              </a>
+              <a href="https://wa.me/2348030663395?text=Hello%20Unicon%20Global%20Investment%2C%20I%20would%20like%20to%20request%20an%20engineering%20consultation." target="_blank" rel="noopener noreferrer" class="btn_whatsapp">
+                WhatsApp +234 803 066 3395
+              </a>
+            </div>
+          </div>
+
+          <div class="consult_form">
+            <h3 class="form_title">Request Technical Consultation</h3>
+            <p class="form_subtitle">Submit your project details for engineering review.</p>
+
+            <form id="consultForm" action="https://formsubmit.co/ajax/d25693a4fed3bf3e31e9a47d4eb8d429" method="POST" onsubmit="handleFormSubmit(event)">
+              <input type="hidden" name="_subject" value="New Engineering Consultation Request">
+              <input type="hidden" name="_template" value="table">
+              <input type="hidden" name="_captcha" value="false">
+              <div class="form_row">
+                <label class="form_label" for="fullName">Full Name</label>
+                <input type="text" name="name" id="fullName" class="form_control" placeholder="Engr. John Doe" required>
+              </div>
+
+              <div class="form_row">
+                <label class="form_label" for="orgName">Organization or MDA</label>
+                <input type="text" name="organization" id="orgName" class="form_control" placeholder="Company or Agency Name" required>
+              </div>
+
+              <div class="form_row">
+                <label class="form_label" for="clientEmail">Email Address</label>
+                <input type="email" name="email" id="clientEmail" class="form_control" placeholder="client@agency.gov.ng" required>
+              </div>
+
+              <div class="form_row">
+                <label class="form_label" for="clientPhone">Phone or WhatsApp Number</label>
+                <input type="tel" name="phone" id="clientPhone" class="form_control" placeholder="+234 800 000 0000" required>
+              </div>
+
+              <div class="form_row">
+                <label class="form_label" for="serviceCategory">Service Discipline</label>
+                <select name="service" id="serviceCategory" class="form_control" required>
+                  <option value="">Select Engineering Discipline</option>
+                  <option value="High Voltage Substation Engineering">High Voltage Substation Engineering</option>
+                  <option value="Rural and Urban Electrification Networks">Rural and Urban Electrification Networks</option>
+                  <option value="Commercial Solar and Renewable Microgrids">Commercial Solar and Renewable Microgrids</option>
+                  <option value="Structural Civil Construction and Earthmoving">Structural Civil Construction and Earthmoving</option>
+                  <option value="Industrial Equipment Supply and Procurement">Industrial Equipment Supply and Procurement</option>
+                  <option value="General Engineering Consultancy">General Engineering Consultancy</option>
+                </select>
+              </div>
+
+              <div class="form_row">
+                <label class="form_label" for="scopeDesc">Scope of Work</label>
+                <textarea name="message" id="scopeDesc" class="form_control" placeholder="Provide project location, technical capacity, and timeline requirements" required></textarea>
+              </div>
+
+              <button type="submit" class="btn_gold form_submit_btn" id="submitBtn">Submit Consultation Inquiry</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Dual Channel Confirmation Modal -->
+  <div class="receipt_modal_backdrop" id="receiptModal" onclick="closeModalOnBackdrop(event)">
+    <div class="glass_card receipt_modal_box">
+      <div class="receipt_icon">✓</div>
+      <h3 class="receipt_title">Consultation Request Received</h3>
+      <p class="receipt_detail">
+        Your consultation inquiry has been transmitted directly to our engineering desk at uniconglobalnigltd@gmail.com. You may also escalate immediately via direct WhatsApp chat.
+      </p>
+      <div>
+        <span class="receipt_ref_pill" id="receiptRef">REF: UNIC2026</span>
+      </div>
+      <div class="receipt_actions">
+        <a id="modalWhatsAppBtn" href="#" target="_blank" rel="noopener noreferrer" class="btn_whatsapp" style="width: 100%;">
+          Send Directly via WhatsApp
+        </a>
+        <a id="modalMailtoBtn" href="#" class="btn_outline" style="width: 100%;">
+          Send via Email Client
+        </a>
+        <button type="button" class="btn_outline" onclick="closeReceiptModal()" style="width: 100%; opacity: 0.8;">
+          Close Window
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site_footer">
+    <div class="container footer_content">
+      <div class="brand_emblem_wrap" style="justify-content: center;">
+        <div class="gear_globe_emblem" style="width: 36px; height: 36px;">
+          <svg class="gear_svg" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+          </svg>
+        </div>
+        <span class="footer_badge">RC 799708</span>
+      </div>
+      <p class="footer_copy">
+        Copyright 2026 UNICON GLOBAL INVESTMENT NIG. LTD. All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    // Header Scroll Dynamics
+    const siteHeader = document.getElementById('siteHeader');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 35) {
+        siteHeader.classList.add('scrolled');
+      } else {
+        siteHeader.classList.remove('scrolled');
+      }
+    });
+
+    // Responsive Mobile Navigation Drawer Logic
+    const mobileToggle = document.getElementById('mobileToggle');
+    const navMenu = document.getElementById('navMenu');
+
+    if (mobileToggle && navMenu) {
+      mobileToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        navMenu.classList.toggle('active');
+        const isActive = navMenu.classList.contains('active');
+        mobileToggle.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+      });
+
+      // Close drawer when clicking any navigation link
+      navMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          navMenu.classList.remove('active');
+          mobileToggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+
+      // Close drawer when clicking outside
+      document.addEventListener('click', (e) => {
+        if (navMenu.classList.contains('active') && !navMenu.contains(e.target) && !mobileToggle.contains(e.target)) {
+          navMenu.classList.remove('active');
+          mobileToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      // Close drawer when pressing Escape
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && navMenu.classList.contains('active')) {
+          navMenu.classList.remove('active');
+          mobileToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
+    // Modal Receipt Handlers
+    function showReceiptModal(refCode, nameVal, orgVal, emailVal, phoneVal, serviceVal, scopeVal) {
+      const modal = document.getElementById('receiptModal');
+      const ref = document.getElementById('receiptRef');
+      if (ref) ref.textContent = refCode;
+
+      // Clean WhatsApp format (No hyphens, clean colons and line breaks)
+      const waMessageText = 
+        'New Engineering Consultation Inquiry\n' +
+        'Reference: ' + refCode + '\n' +
+        'Name: ' + nameVal + '\n' +
+        'Phone: ' + phoneVal + '\n' +
+        'Email: ' + emailVal + '\n' +
+        'Organization: ' + orgVal + '\n' +
+        'Discipline: ' + serviceVal + '\n' +
+        'Scope: ' + scopeVal;
+
+      const waBtn = document.getElementById('modalWhatsAppBtn');
+      if (waBtn) {
+        waBtn.href = 'https://wa.me/2348030663395?text=' + encodeURIComponent(waMessageText);
+      }
+
+      // Clean Email Client format
+      const mailtoSubject = 'Engineering Consultation Inquiry ' + refCode;
+      const mailtoBody = 
+        'New Engineering Consultation Inquiry\n\n' +
+        'Reference: ' + refCode + '\n' +
+        'Name: ' + nameVal + '\n' +
+        'Phone: ' + phoneVal + '\n' +
+        'Email: ' + emailVal + '\n' +
+        'Organization: ' + orgVal + '\n' +
+        'Discipline: ' + serviceVal + '\n' +
+        'Scope of Work:\n' + scopeVal;
+
+      const mailtoBtn = document.getElementById('modalMailtoBtn');
+      if (mailtoBtn) {
+        mailtoBtn.href = 'mailto:uniconglobalnigltd@gmail.com?subject=' + encodeURIComponent(mailtoSubject) + '&body=' + encodeURIComponent(mailtoBody);
+      }
+
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function closeReceiptModal() {
+      const modal = document.getElementById('receiptModal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function closeModalOnBackdrop(e) {
+      if (e.target.id === 'receiptModal') {
+        closeReceiptModal();
+      }
+    }
+
+    // Dual Channel Consultation Submission Handler
+    async function handleFormSubmit(e) {
+      e.preventDefault();
+      const form = document.getElementById('consultForm');
+      const submitBtn = document.getElementById('submitBtn');
+      const originalText = submitBtn.textContent;
+      submitBtn.textContent = 'Transmitting...';
+      submitBtn.disabled = true;
+
+      const nameVal = document.getElementById('fullName').value;
+      const orgVal = document.getElementById('orgName').value;
+      const emailVal = document.getElementById('clientEmail').value;
+      const phoneVal = document.getElementById('clientPhone').value;
+      const serviceVal = document.getElementById('serviceCategory').value;
+      const scopeVal = document.getElementById('scopeDesc').value;
+
+      const randomNum = Math.floor(100000 + Math.random() * 900000);
+      const refCode = 'REF: UNIC2026' + randomNum;
+
+      const payload = {
+        name: nameVal,
+        organization: orgVal,
+        email: emailVal,
+        phone: phoneVal,
+        service: serviceVal,
+        message: scopeVal,
+        reference_code: refCode,
+        _subject: 'New Engineering Consultation Request ' + refCode,
+        _captcha: 'false',
+        _template: 'table'
+      };
+
+      try {
+        await fetch('https://formsubmit.co/ajax/d25693a4fed3bf3e31e9a47d4eb8d429', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+      } catch (err) {
+        // Fallback gracefully without interrupting user workflow
+      }
+
+      submitBtn.textContent = originalText;
+      submitBtn.disabled = false;
+
+      showReceiptModal(refCode, nameVal, orgVal, emailVal, phoneVal, serviceVal, scopeVal);
+      form.reset();
+    }
+
+    // -------------------------------------------------------------
+    // THREE.JS 3D PROCEDURAL HIGH VOLTAGE POWER TRANSFORMER CANVAS
+    // -------------------------------------------------------------
+    let scene, camera, renderer, substationGroup;
+    let targetRotationX = 0, targetRotationY = 0;
+    let currentRotationX = 0, currentRotationY = 0;
+    const pulseParticles = [];
+
+    function init3DTransformerScene() {
+      const container = document.getElementById('canvas3d_container');
+      if (!container) return;
+
+      scene = new THREE.Scene();
+
+      // Camera setup with high dynamic range isometric view
+      camera = new THREE.PerspectiveCamera(46, window.innerWidth / window.innerHeight, 1, 3000);
+      camera.position.set(160, 110, 440);
+      camera.lookAt(0, 15, 0);
+
+      renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      container.appendChild(renderer.domElement);
+
+      substationGroup = new THREE.Group();
+      substationGroup.position.set(0, -10, 0);
+      scene.add(substationGroup);
+
+      // Shared High Voltage Substation Materials
+      const cyanLineMat = new THREE.LineBasicMaterial({
+        color: 0x38bdf8,
+        transparent: true,
+        opacity: 0.65
+      });
+
+      const goldLineMat = new THREE.LineBasicMaterial({
+        color: 0xd4af37,
+        transparent: true,
+        opacity: 0.75
+      });
+
+      const deepFillMat = new THREE.MeshBasicMaterial({
+        color: 0x071526,
+        transparent: true,
+        opacity: 0.55
+      });
+
+      const glowingNodeCyan = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+      const glowingNodeGold = new THREE.MeshBasicMaterial({ color: 0xd4af37 });
+
+      // 1. Concrete Foundation Plinth and Substation Earthing Ground Grid
+      const plinthGeo = new THREE.BoxGeometry(220, 10, 150);
+      const plinthMesh = new THREE.Mesh(plinthGeo, deepFillMat);
+      plinthMesh.position.set(0, -82, 0);
+      substationGroup.add(plinthMesh);
+
+      const plinthEdges = new THREE.LineSegments(
+        new THREE.EdgesGeometry(plinthGeo),
+        new THREE.LineBasicMaterial({ color: 0xd4af37, transparent: true, opacity: 0.5 })
+      );
+      plinthEdges.position.copy(plinthMesh.position);
+      substationGroup.add(plinthEdges);
+
+      // Substation Ground Grid Mesh
+      const gridPoints = [];
+      const gridSpan = 520;
+      const gridStep = 40;
+      for (let i = -gridSpan; i <= gridSpan; i += gridStep) {
+        gridPoints.push(new THREE.Vector3(i, -88, -gridSpan));
+        gridPoints.push(new THREE.Vector3(i, -88, gridSpan));
+        gridPoints.push(new THREE.Vector3(-gridSpan, -88, i));
+        gridPoints.push(new THREE.Vector3(gridSpan, -88, i));
+      }
+      const gridGeo = new THREE.BufferGeometry().setFromPoints(gridPoints);
+      const gridMesh = new THREE.LineSegments(
+        gridGeo,
+        new THREE.LineBasicMaterial({ color: 0x162a45, transparent: true, opacity: 0.35 })
+      );
+      substationGroup.add(gridMesh);
+
+      // 2. Main High Voltage Power Transformer Tank
+      const tankWidth = 130, tankHeight = 96, tankDepth = 84;
+      const tankGeo = new THREE.BoxGeometry(tankWidth, tankHeight, tankDepth);
+      const tankMesh = new THREE.Mesh(tankGeo, deepFillMat);
+      tankMesh.position.set(0, -28, 0);
+      substationGroup.add(tankMesh);
+
+      const tankEdges = new THREE.LineSegments(new THREE.EdgesGeometry(tankGeo), cyanLineMat);
+      tankEdges.position.copy(tankMesh.position);
+      substationGroup.add(tankEdges);
+
+      // Structural Stiffening Rib Bands
+      [-52, -28, -4].forEach(yPos => {
+        const ribPoints = [
+          new THREE.Vector3(-tankWidth / 2 - 2, yPos, -tankDepth / 2 - 2),
+          new THREE.Vector3(tankWidth / 2 + 2, yPos, -tankDepth / 2 - 2),
+          new THREE.Vector3(tankWidth / 2 + 2, yPos, tankDepth / 2 + 2),
+          new THREE.Vector3(-tankWidth / 2 - 2, yPos, tankDepth / 2 + 2),
+          new THREE.Vector3(-tankWidth / 2 - 2, yPos, -tankDepth / 2 - 2)
+        ];
+        const ribLine = new THREE.Line(
+          new THREE.BufferGeometry().setFromPoints(ribPoints),
+          goldLineMat
+        );
+        substationGroup.add(ribLine);
+      });
+
+      // Front Marshalling and Instrumentation Kiosk
+      const kioskGeo = new THREE.BoxGeometry(38, 44, 14);
+      const kioskMesh = new THREE.Mesh(kioskGeo, deepFillMat);
+      kioskMesh.position.set(0, -28, tankDepth / 2 + 7);
+      substationGroup.add(kioskMesh);
+
+      const kioskEdges = new THREE.LineSegments(new THREE.EdgesGeometry(kioskGeo), goldLineMat);
+      kioskEdges.position.copy(kioskMesh.position);
+      substationGroup.add(kioskEdges);
+
+      // Overhead Oil Conservator Cylinder Tank
+      const consRadius = 15, consLength = 100;
+      const consGeo = new THREE.CylinderGeometry(consRadius, consRadius, consLength, 16);
+      consGeo.rotateZ(Math.PI / 2);
+      const consMesh = new THREE.Mesh(consGeo, deepFillMat);
+      consMesh.position.set(0, 38, -tankDepth / 4);
+      substationGroup.add(consMesh);
+
+      const consEdges = new THREE.LineSegments(new THREE.EdgesGeometry(consGeo), goldLineMat);
+      consEdges.position.copy(consMesh.position);
+      substationGroup.add(consEdges);
+
+      // Conservator Pipe Mounts to Main Tank Lid
+      [-30, 30].forEach(xPos => {
+        const pipePoints = [
+          new THREE.Vector3(xPos, 20, -tankDepth / 4),
+          new THREE.Vector3(xPos, 38, -tankDepth / 4)
+        ];
+        const pipeLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pipePoints), cyanLineMat);
+        substationGroup.add(pipeLine);
+      });
+
+      // Pressure Relief Explosion Vent Pipe
+      const ventPoints = [
+        new THREE.Vector3(tankWidth / 2 - 16, 20, tankDepth / 4),
+        new THREE.Vector3(tankWidth / 2 - 16, 52, tankDepth / 4),
+        new THREE.Vector3(tankWidth / 2 - 6, 62, tankDepth / 4)
+      ];
+      const ventLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(ventPoints), cyanLineMat);
+      substationGroup.add(ventLine);
+
+      // 3. Radiator Cooling Fin Banks (Left and Right Flanks)
+      function buildRadiatorBank(isLeft) {
+        const group = new THREE.Group();
+        const posX = isLeft ? -tankWidth / 2 - 20 : tankWidth / 2 + 20;
+        const finCount = 8;
+        const finSpacing = 9;
+        const finWidth = 26;
+        const finHeight = 72;
+
+        // Manifold Header Pipes (Top and Bottom)
+        const headerPointsTop = [
+          new THREE.Vector3(isLeft ? 15 : -15, finHeight / 2 - 2, -(finCount * finSpacing) / 2 - 4),
+          new THREE.Vector3(0, finHeight / 2 - 2, -(finCount * finSpacing) / 2 - 4),
+          new THREE.Vector3(0, finHeight / 2 - 2, (finCount * finSpacing) / 2 + 4),
+          new THREE.Vector3(isLeft ? 15 : -15, finHeight / 2 - 2, (finCount * finSpacing) / 2 + 4)
+        ];
+        group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(headerPointsTop), cyanLineMat));
+
+        const headerPointsBottom = [
+          new THREE.Vector3(isLeft ? 15 : -15, -finHeight / 2 + 2, -(finCount * finSpacing) / 2 - 4),
+          new THREE.Vector3(0, -finHeight / 2 + 2, -(finCount * finSpacing) / 2 - 4),
+          new THREE.Vector3(0, -finHeight / 2 + 2, (finCount * finSpacing) / 2 + 4),
+          new THREE.Vector3(isLeft ? 15 : -15, -finHeight / 2 + 2, (finCount * finSpacing) / 2 + 4)
+        ];
+        group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(headerPointsBottom), cyanLineMat));
+
+        // Vertical Radiator Fin Plates
+        for (let i = 0; i < finCount; i++) {
+          const zOffset = (i - (finCount - 1) / 2) * finSpacing;
+          const finGeo = new THREE.BoxGeometry(finWidth, finHeight, 2);
+          const finEdges = new THREE.LineSegments(
+            new THREE.EdgesGeometry(finGeo),
+            i % 2 === 0 ? cyanLineMat : goldLineMat
+          );
+          finEdges.position.set(0, 0, zOffset);
+          group.add(finEdges);
+
+          // Internal vertical convection fluid line
+          const channelPoints = [
+            new THREE.Vector3(0, -finHeight / 2 + 4, zOffset),
+            new THREE.Vector3(0, finHeight / 2 - 4, zOffset)
+          ];
+          group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(channelPoints), cyanLineMat));
+        }
+
+        group.position.set(posX, -28, 0);
+        return group;
+      }
+
+      substationGroup.add(buildRadiatorBank(true));
+      substationGroup.add(buildRadiatorBank(false));
+
+      // 4. High Voltage Ceramic Insulator Bushings (3 HV and 4 LV)
+      const hvTerminalNodes = [];
+
+      // 3 High Voltage Bushings (3 Phase 33kV and 132kV)
+      const hvBushingPositions = [-38, 0, 38];
+      hvBushingPositions.forEach((xPos, idx) => {
+        const bushingGroup = new THREE.Group();
+        const baseTurretGeo = new THREE.CylinderGeometry(6, 7, 8, 12);
+        const baseTurret = new THREE.LineSegments(new THREE.EdgesGeometry(baseTurretGeo), cyanLineMat);
+        baseTurret.position.y = 4;
+        bushingGroup.add(baseTurret);
+
+        // Stacked Conical Ceramic Shed Discs
+        const shedsCount = 6;
+        for (let s = 0; s < shedsCount; s++) {
+          const shedRadius = 6.8 - s * 0.45;
+          const shedGeo = new THREE.ConeGeometry(shedRadius, 5, 12);
+          const shedEdges = new THREE.LineSegments(new THREE.EdgesGeometry(shedGeo), goldLineMat);
+          shedEdges.position.y = 10 + s * 5.2;
+          bushingGroup.add(shedEdges);
+        }
+
+        // Terminal Conductor Rod
+        const rodPoints = [
+          new THREE.Vector3(0, 10, 0),
+          new THREE.Vector3(0, 48, 0)
+        ];
+        bushingGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(rodPoints), goldLineMat));
+
+        // Glowing Terminal Conductor Node
+        const nodeGeo = new THREE.SphereGeometry(3.2, 10, 10);
+        const nodeMesh = new THREE.Mesh(nodeGeo, idx === 1 ? glowingNodeGold : glowingNodeCyan);
+        nodeMesh.position.set(0, 48, 0);
+        bushingGroup.add(nodeMesh);
+
+        // Angle slightly forward (10 degrees)
+        bushingGroup.rotation.x = 0.16;
+        bushingGroup.position.set(xPos, 20, 18);
+        substationGroup.add(bushingGroup);
+
+        hvTerminalNodes.push(new THREE.Vector3(xPos, 20 + 46, 18 - 8));
+      });
+
+      // 4 Low Voltage Bushings (4 Phase: Red, Yellow, Blue, Neutral)
+      const lvPositions = [-45, -15, 15, 45];
+      lvPositions.forEach(xPos => {
+        const lvGroup = new THREE.Group();
+        const shedsCount = 4;
+        for (let s = 0; s < shedsCount; s++) {
+          const shedGeo = new THREE.ConeGeometry(4.2, 4, 10);
+          const shedEdges = new THREE.LineSegments(new THREE.EdgesGeometry(shedGeo), cyanLineMat);
+          shedEdges.position.y = 4 + s * 4.5;
+          lvGroup.add(shedEdges);
+        }
+
+        const nodeMesh = new THREE.Mesh(new THREE.SphereGeometry(2.2, 8, 8), glowingNodeCyan);
+        nodeMesh.position.set(0, 24, 0);
+        lvGroup.add(nodeMesh);
+
+        lvGroup.position.set(xPos, 20, -22);
+        substationGroup.add(lvGroup);
+      });
+
+      // 5. Overhead Substation Gantry Framework and Catenary Busbars
+      // Gantry Lattice Towers (Left and Right)
+      function createGantryTower(xPos) {
+        const tower = new THREE.Group();
+        const baseWidth = 32, topWidth = 14, height = 230;
+        const pts = [];
+
+        pts.push(new THREE.Vector3(-baseWidth / 2, 0, -baseWidth / 2));
+        pts.push(new THREE.Vector3(-topWidth / 2, height, -topWidth / 2));
+
+        pts.push(new THREE.Vector3(baseWidth / 2, 0, -baseWidth / 2));
+        pts.push(new THREE.Vector3(topWidth / 2, height, -topWidth / 2));
+
+        pts.push(new THREE.Vector3(baseWidth / 2, 0, baseWidth / 2));
+        pts.push(new THREE.Vector3(topWidth / 2, height, topWidth / 2));
+
+        pts.push(new THREE.Vector3(-baseWidth / 2, 0, baseWidth / 2));
+        pts.push(new THREE.Vector3(-topWidth / 2, height, topWidth / 2));
+
+        // Horizontal and diagonal cross lacing panels
+        const tiers = 6;
+        for (let t = 0; t <= tiers; t++) {
+          const frac = t / tiers;
+          const y = frac * height;
+          const w = (baseWidth * (1 - frac) + topWidth * frac) / 2;
+
+          pts.push(new THREE.Vector3(-w, y, -w));
+          pts.push(new THREE.Vector3(w, y, -w));
+          pts.push(new THREE.Vector3(w, y, w));
+          pts.push(new THREE.Vector3(-w, y, w));
+          pts.push(new THREE.Vector3(-w, y, -w));
+
+          if (t < tiers) {
+            const nextFrac = (t + 1) / tiers;
+            const nextY = nextFrac * height;
+            const nextW = (baseWidth * (1 - nextFrac) + topWidth * nextFrac) / 2;
+            pts.push(new THREE.Vector3(-w, y, -w));
+            pts.push(new THREE.Vector3(nextW, nextY, nextW));
+            pts.push(new THREE.Vector3(w, y, -w));
+            pts.push(new THREE.Vector3(-nextW, nextY, nextW));
+          }
+        }
+
+        const towerGeo = new THREE.BufferGeometry().setFromPoints(pts);
+        const towerLine = new THREE.Line(towerGeo, cyanLineMat);
+        tower.add(towerLine);
+
+        tower.position.set(xPos, -82, 0);
+        return tower;
+      }
+
+      substationGroup.add(createGantryTower(-210));
+      substationGroup.add(createGantryTower(210));
+
+      // Overhead Cross Gantry Truss Box Girder
+      const gantryY = 145;
+      const gantryPts = [];
+      const trussSpan = 420;
+      const trussH = 16, trussD = 16;
+
+      gantryPts.push(new THREE.Vector3(-trussSpan / 2, gantryY - trussH / 2, -trussD / 2));
+      gantryPts.push(new THREE.Vector3(trussSpan / 2, gantryY - trussH / 2, -trussD / 2));
+
+      gantryPts.push(new THREE.Vector3(-trussSpan / 2, gantryY + trussH / 2, -trussD / 2));
+      gantryPts.push(new THREE.Vector3(trussSpan / 2, gantryY + trussH / 2, -trussD / 2));
+
+      gantryPts.push(new THREE.Vector3(-trussSpan / 2, gantryY - trussH / 2, trussD / 2));
+      gantryPts.push(new THREE.Vector3(trussSpan / 2, gantryY - trussH / 2, trussD / 2));
+
+      gantryPts.push(new THREE.Vector3(-trussSpan / 2, gantryY + trussH / 2, trussD / 2));
+      gantryPts.push(new THREE.Vector3(trussSpan / 2, gantryY + trussH / 2, trussD / 2));
+
+      // Diagonal cross bracing along gantry span
+      const bayCount = 14;
+      for (let b = 0; b < bayCount; b++) {
+        const x1 = -trussSpan / 2 + (b * trussSpan) / bayCount;
+        const x2 = -trussSpan / 2 + ((b + 1) * trussSpan) / bayCount;
+
+        gantryPts.push(new THREE.Vector3(x1, gantryY - trussH / 2, trussD / 2));
+        gantryPts.push(new THREE.Vector3(x2, gantryY + trussH / 2, trussD / 2));
+
+        gantryPts.push(new THREE.Vector3(x1, gantryY - trussH / 2, -trussD / 2));
+        gantryPts.push(new THREE.Vector3(x2, gantryY + trussH / 2, -trussD / 2));
+      }
+
+      const gantryGeo = new THREE.BufferGeometry().setFromPoints(gantryPts);
+      substationGroup.add(new THREE.LineSegments(gantryGeo, cyanLineMat));
+
+      // 6. Suspension Insulators and Catenary Power Transmission Lines
+      hvBushingPositions.forEach((xPos, idx) => {
+        const suspPoints = [];
+        const suspTopY = gantryY - trussH / 2;
+        const suspBottomY = suspTopY - 32;
+
+        suspPoints.push(new THREE.Vector3(xPos, suspTopY, 12));
+        suspPoints.push(new THREE.Vector3(xPos, suspBottomY, 12));
+
+        for (let d = 0; d < 5; d++) {
+          const discY = suspTopY - 6 - d * 5;
+          const discGeo = new THREE.ConeGeometry(5, 3.5, 10);
+          discGeo.rotateX(Math.PI);
+          const discMesh = new THREE.LineSegments(new THREE.EdgesGeometry(discGeo), goldLineMat);
+          discMesh.position.set(xPos, discY, 12);
+          substationGroup.add(discMesh);
+        }
+
+        const suspLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(suspPoints), goldLineMat);
+        substationGroup.add(suspLine);
+
+        // Smooth Catenary High Voltage Conductor Droop
+        const termPos = hvTerminalNodes[idx];
+        const p1 = new THREE.Vector3(xPos, suspBottomY, 12);
+        const pMid = new THREE.Vector3(xPos * 0.85, (suspBottomY + termPos.y) / 2 - 12, (12 + termPos.z) / 2 + 8);
+        const pEnd = termPos;
+
+        const curve = new THREE.QuadraticBezierCurve3(p1, pMid, pEnd);
+        const curvePoints = curve.getPoints(24);
+        const curveGeo = new THREE.BufferGeometry().setFromPoints(curvePoints);
+        const curveLine = new THREE.Line(
+          curveGeo,
+          new THREE.LineBasicMaterial({
+            color: idx === 1 ? 0xd4af37 : 0x38bdf8,
+            transparent: true,
+            opacity: 0.85
+          })
+        );
+        substationGroup.add(curveLine);
+
+        // Animated Traveling High Voltage Energy Pulses
+        const pulseMesh = new THREE.Mesh(
+          new THREE.SphereGeometry(2.4, 8, 8),
+          idx === 1 ? glowingNodeGold : glowingNodeCyan
+        );
+        substationGroup.add(pulseMesh);
+        pulseParticles.push({
+          mesh: pulseMesh,
+          curve: curve,
+          offset: idx * 0.33,
+          speed: 0.35
+        });
+      });
+
+      // 7. Ambient Ionization Particles
+      const particleCount = 200;
+      const particleGeo = new THREE.BufferGeometry();
+      const particlePositions = new Float32Array(particleCount * 3);
+      for (let p = 0; p < particleCount * 3; p += 3) {
+        particlePositions[p] = (Math.random() - 0.5) * 580;
+        particlePositions[p + 1] = Math.random() * 260 - 80;
+        particlePositions[p + 2] = (Math.random() - 0.5) * 500;
+      }
+      particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+      const particleMat = new THREE.PointsMaterial({
+        color: 0xd4af37,
+        size: 3.2,
+        transparent: true,
+        opacity: 0.75
+      });
+      const particleSystem = new THREE.Points(particleGeo, particleMat);
+      substationGroup.add(particleSystem);
+
+      // 8. Event Listeners for Parallax and Dynamic Window Resize
+      window.addEventListener('mousemove', e => {
+        const mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+        const mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+        targetRotationY = mouseX * 0.16;
+        targetRotationX = -mouseY * 0.12;
+      });
+
+      window.addEventListener('touchmove', e => {
+        if (e.touches && e.touches.length > 0) {
+          const touchX = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
+          const touchY = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
+          targetRotationY = touchX * 0.14;
+          targetRotationX = -touchY * 0.1;
+        }
+      }, { passive: true });
+
+      function handleAdaptiveFraming() {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        const aspect = width / height;
+        camera.aspect = aspect;
+
+        if (aspect < 0.75) {
+          // Compact smartphones in portrait orientation
+          camera.fov = 58;
+          camera.position.set(0, 95, 620);
+        } else if (aspect < 1.1) {
+          // Tablets and square displays
+          camera.fov = 52;
+          camera.position.set(80, 105, 520);
+        } else if (width > 2000) {
+          // 4K Ultra Wide displays and screens
+          camera.fov = 42;
+          camera.position.set(180, 115, 460);
+        } else {
+          // Standard laptops and desktops
+          camera.fov = 46;
+          camera.position.set(160, 110, 440);
+        }
+
+        camera.updateProjectionMatrix();
+        renderer.setSize(width, height);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      }
+
+      window.addEventListener('resize', handleAdaptiveFraming);
+      handleAdaptiveFraming();
+
+      // 9. GSAP ScrollTrigger Camera Scrubbing
+      if (typeof ScrollTrigger !== 'undefined' && typeof gsap !== 'undefined') {
+        gsap.to(substationGroup.rotation, {
+          y: Math.PI * 0.65,
+          scrollTrigger: {
+            trigger: 'body',
+            start: 'top top',
+            end: 'bottom bottom',
+            scrub: 1.5
+          }
+        });
+
+        gsap.to(camera.position, {
+          x: 120,
+          y: 150,
+          z: 360,
+          scrollTrigger: {
+            trigger: 'body',
+            start: 'top top',
+            end: 'bottom bottom',
+            scrub: 1.5
+          }
+        });
+      }
+
+      // 10. Animation Render Loop
+      function animate() {
+        requestAnimationFrame(animate);
+
+        // Physics Lerp
+        currentRotationX += (targetRotationX - currentRotationX) * 0.05;
+        currentRotationY += (targetRotationY - currentRotationY) * 0.05;
+
+        substationGroup.rotation.x = currentRotationX;
+        substationGroup.position.x = currentRotationY * 45;
+
+        // Animate Traveling High Voltage Energy Pulses
+        const time = Date.now() * 0.001;
+        pulseParticles.forEach(p => {
+          const t = (time * p.speed + p.offset) % 1;
+          const pos = p.curve.getPointAt(t);
+          p.mesh.position.copy(pos);
+          const scale = 0.8 + Math.sin(t * Math.PI) * 0.6;
+          p.mesh.scale.set(scale, scale, scale);
+        });
+
+        cyanLineMat.opacity = 0.55 + Math.sin(time * 2.5) * 0.15;
+        goldLineMat.opacity = 0.65 + Math.cos(time * 2.0) * 0.15;
+
+        renderer.render(scene, camera);
+      }
+
+      animate();
+    }
+
+    // Initialize when DOM is ready
+    window.addEventListener('DOMContentLoaded', () => {
+      init3DTransformerScene();
+    });
+  </script>
+</body>
+</html>
