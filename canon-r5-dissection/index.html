@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>CANON EOS R5 MARK II</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./lib/three.module.js",
+        "three/addons/": "./lib/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="webgl-fallback" class="fallback-screen" style="display: none;">
+    <div class="fallback-card">
+      <div class="fallback-brand">CANON EOS R5 MARK II</div>
+      <h2>WebGL Hardware Acceleration Required</h2>
+      <p>This interactive procedural 3D dissection requires WebGL graphics support. Please enable hardware acceleration in your browser settings to inspect the camera architecture.</p>
+    </div>
+  </div>
+
+  <!-- Persistent top left brand mark -->
+  <header class="brand-header" id="brand-header">
+    <span class="canon-brand">CANON EOS R5 MARK II</span>
+  </header>
+
+  <!-- WebGL Render Canvas -->
+  <canvas id="webgl-canvas"></canvas>
+  
+  <!-- Preallocated SVG Leader Line Elements -->
+  <svg id="svg-overlay" aria-hidden="true">
+    <circle id="leader-dot" r="3.2" fill="#62d8eb" style="opacity: 0;"></circle>
+    <polyline id="leader-line" fill="none" stroke="rgba(98, 216, 235, 0.85)" stroke-width="1.2" style="opacity: 0;"></polyline>
+  </svg>
+  
+  <!-- Editorial Overlays Layer -->
+  <div id="ui-layer">
+    <!-- PHASE 1: 360 SPIN HERO INTRO (0.00 - 0.25) -->
+    <div id="hero-overlay" class="editorial-block hero-block">
+      <span class="hero-brand">CANON</span>
+      <h1 class="hero-title">EOS R5 MARK II</h1>
+      <p class="hero-subtitle">READ FROM THE OUTSIDE IN</p>
+    </div>
+
+    <!-- INTRO EDITORIAL SPOKEN BEATS (0.00 - 0.25) -->
+    <div id="intro-lines-overlay" class="intro-lines-overlay">
+      <div id="intro-line-1" class="intro-card">
+        <span class="intro-tag">FRONT VIEW.</span>
+        <p class="intro-text">
+          <span class="word">Engineered</span> <span class="word">to</span> <span class="word">be</span> <span class="word">held.</span> <span class="word">Every</span> <span class="word">curve</span> <span class="word">on</span> <span class="word">this</span> <span class="word">body</span> <span class="word">has</span> <span class="word">a</span> <span class="word">reason.</span>
+        </p>
+      </div>
+      <div id="intro-line-2" class="intro-card">
+        <span class="intro-tag">TOP AND GRIP.</span>
+        <p class="intro-text">
+          <span class="word">Magnesium</span> <span class="word">bones</span> <span class="word">under</span> <span class="word">leatherette</span> <span class="word">skin,</span> <span class="word">sealed</span> <span class="word">against</span> <span class="word">weather</span> <span class="word">and</span> <span class="word">time.</span>
+        </p>
+      </div>
+      <div id="intro-line-3" class="intro-card">
+        <span class="intro-tag">MOUNT AND RED RING.</span>
+        <p class="intro-text">
+          <span class="word">Behind</span> <span class="word">this</span> <span class="word">ring</span> <span class="word">the</span> <span class="word">machine</span> <span class="word">begins.</span> <span class="word">What</span> <span class="word">you</span> <span class="word">never</span> <span class="word">see</span> <span class="word">is</span> <span class="word">what</span> <span class="word">makes</span> <span class="word">the</span> <span class="word">image.</span>
+        </p>
+      </div>
+      <div id="intro-line-4" class="intro-card intro-promise">
+        <p class="intro-promise-text">
+          <span class="word">NOW</span> <span class="word">WE</span> <span class="word">GO</span> <span class="word">INSIDE.</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- STAGED DISSECTION ANNOTATIONS (FROSTED GLASS PANELS, NO STAGE TAGS, NO NUMBERS) -->
+    <div id="annotations-overlay">
+      <div id="ann-optical" class="glass-annotation">
+        <h3 class="glass-title">RF OPTICAL GROUP</h3>
+        <p class="glass-copy"><span class="ann-term">THREE CURVED ELEMENTS</span> grind the light before it touches the body.</p>
+      </div>
+
+      <div id="ann-iris" class="glass-annotation">
+        <h3 class="glass-title">IRIS UNIT</h3>
+        <p class="glass-copy"><span class="ann-term">NINE BLADES</span> decide how much light survives the entrance.</p>
+      </div>
+
+      <div id="ann-chassis" class="glass-annotation">
+        <h3 class="glass-title">MAGNESIUM CHASSIS</h3>
+        <p class="glass-copy"><span class="ann-term">MACHINED METAL</span> carries the grip, the dials, and the mount.</p>
+      </div>
+
+      <div id="ann-thermal" class="glass-annotation">
+        <h3 class="glass-title">THERMAL CORE</h3>
+        <p class="glass-copy"><span class="ann-term">COPPER PIPES</span> carry the heat of continuous capture away.</p>
+      </div>
+
+      <div id="ann-sensor" class="glass-annotation">
+        <h3 class="glass-title">STACKED SENSOR</h3>
+        <p class="glass-copy"><span class="ann-term">A FULL FRAME SENSOR</span> reads the scene from a floating copper plate.</p>
+      </div>
+    </div>
+
+    <!-- THE FINAL ACT (0.85 - 1.00): FOUR BEATS -->
+    <div id="final-act-container" class="final-act-container">
+      <!-- BEAT 1 & 2: SPECIFICATION SHEET -->
+      <div id="spec-stage" class="spec-stage">
+        <div id="spec-label" class="spec-label">THE SPECIFICATION</div>
+        <div id="spec-sheet" class="spec-sheet">
+          <div class="spec-col spec-col-left">
+            <div class="spec-group" id="spec-group-core">
+              <div class="spec-group-title">CORE</div>
+              <div class="spec-row">
+                <span class="spec-key">SENSOR.</span>
+                <span class="spec-val">36 by 24 mm full frame stacked CMOS, back illuminated, approx 45 megapixels.</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">ENGINE.</span>
+                <span class="spec-val">DIGIC X processor with DIGIC Accelerator.</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">STABILIZATION.</span>
+                <span class="spec-val">Sensor shift, up to 8.5 stops at center, 7.5 at the periphery.</span>
+              </div>
+            </div>
+
+            <div class="spec-group" id="spec-group-capture">
+              <div class="spec-group-title">CAPTURE</div>
+              <div class="spec-row">
+                <span class="spec-key">RECORDING.</span>
+                <span class="spec-val">8K RAW video up to 60P, captured in camera.</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">SPEED.</span>
+                <span class="spec-val">Up to 30 frames per second electronic shutter, 12 with mechanical.</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">SENSITIVITY.</span>
+                <span class="spec-val">ISO 100 to 51200, expandable to 102400.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="spec-col spec-col-right">
+            <div class="spec-group" id="spec-group-interface">
+              <div class="spec-group-title">INTERFACE</div>
+              <div class="spec-row">
+                <span class="spec-key">VIEWFINDER.</span>
+                <span class="spec-val">0.5 inch OLED, 5.76 million dots, approx 0.76x magnification.</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">MONITOR.</span>
+                <span class="spec-val">3.2 inch vari angle touch screen, approx 2.1 million dots.</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">FOCUS.</span>
+                <span class="spec-val">Dual Pixel Intelligent AF with Eye Control.</span>
+              </div>
+            </div>
+
+            <div class="spec-group" id="spec-group-body">
+              <div class="spec-group-title">BODY</div>
+              <div class="spec-row">
+                <span class="spec-key">CONSTRUCTION.</span>
+                <span class="spec-val">Magnesium alloy chassis, water and dust resistant.</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">STORAGE.</span>
+                <span class="spec-val">One CFexpress Type B and one SD UHS II slot.</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-key">WEIGHT.</span>
+                <span class="spec-val">Approx 656 grams, body only.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BEAT 3: NOTABLE LINES (0.94 - 0.97) -->
+        <div id="notable-container" class="notable-container">
+          <div class="notable-label">NOTABLE</div>
+          <div class="notable-items">
+            <div class="notable-row" id="notable-0">
+              <span class="notable-key">Eye Control AF.</span>
+              <span class="notable-val">The camera focuses where you look.</span>
+            </div>
+            <div class="notable-row" id="notable-1">
+              <span class="notable-key">Pre continuous shooting.</span>
+              <span class="notable-val">It begins capturing from 15 frames before the shutter is fully pressed.</span>
+            </div>
+            <div class="notable-row" id="notable-2">
+              <span class="notable-key">In camera upscaling.</span>
+              <span class="notable-val">Neural network processing to approx 179 megapixels.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BEAT 4: CLOSING SETTLEMENT (0.97 - 1.00) -->
+      <div id="closing-settlement" class="closing-settlement">
+        <div class="closing-statement"><span class="closing-word">A</span> <span class="closing-word">photograph</span> <span class="closing-word">begins</span> <span class="closing-word">where</span> <span class="closing-word">the</span> <span class="closing-word">eye</span> <span class="closing-word">cannot</span> <span class="closing-word">reach.</span></div>
+        <div class="closing-rule"></div>
+        <div class="closing-footer">CONCEPT DISSECTION STUDY</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Soft background dimming scrim for specification readability -->
+  <div id="spec-scrim" class="spec-scrim" aria-hidden="true"></div>
+  <div class="vignette-overlay" aria-hidden="true"></div>
+
+  <!-- In-flow spacer ensuring native 1000vh scroll height -->
+  <div class="scroll-spacer"></div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
