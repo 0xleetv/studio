@@ -187,7 +187,7 @@ scene.add(frontSweep);
    PBR TEXTURE LOADER & BAKED DECALS
    ========================================================================= */
 const isMobile = window.innerWidth <= 768;
-const texSuffix = isMobile ? '_1024.png' : '.png';
+const texSuffix = isMobile ? '_1024.webp' : '.webp';
 const textureLoader = new THREE.TextureLoader();
 const maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
 
