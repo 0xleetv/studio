@@ -1272,7 +1272,8 @@ function animate() {
       const screenX = (tempVec.x * 0.5 + 0.5) * window.innerWidth;
       const screenY = (-tempVec.y * 0.5 + 0.5) * window.innerHeight;
 
-      if (inFront && screenX >= -40 && screenX <= window.innerWidth + 40 && screenY >= -40 && screenY <= window.innerHeight + 40) {
+      const annVisible = activeStage.dom.classList.contains('active') && parseFloat(getComputedStyle(activeStage.dom).opacity) > 0.05;
+      if (annVisible && inFront && screenX >= -40 && screenX <= window.innerWidth + 40 && screenY >= -40 && screenY <= window.innerHeight + 40) {
         const rect = activeStage.dom.getBoundingClientRect();
         const textX = (screenX < rect.left) ? rect.left : rect.right;
         const textY = rect.top + 20;
@@ -1370,6 +1371,12 @@ function animate() {
   const { basePos, baseTarget } = evaluateStagedCamera(p);
 
   const offset = new THREE.Vector3().subVectors(basePos, baseTarget);
+
+  // PORTRAIT FRAMING: pull the camera back on tall screens so the phone shows
+  // the same composition as a 16:9 desktop, and relax the fog to match distance
+  const portraitComp = Math.max(1, (16 / 9) / camera.aspect);
+  offset.multiplyScalar(portraitComp);
+  if (scene.fog) scene.fog.density = 0.032 / portraitComp;
 
   // Yaw rotation around Y axis with pointer parallax
   offset.applyAxisAngle(new THREE.Vector3(0, 1, 0), orbitYaw + currentMouseX * 0.08);
