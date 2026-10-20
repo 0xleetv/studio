@@ -38,8 +38,12 @@
   const bandDefs = [
     ["b-hero", 0.0],
     ["b-geom", 0.105],
+    ["b-moon", 0.20],
     ["b-tot", 0.30],
+    ["b-air", 0.365],
     ["b-flash", 0.45],
+    ["b-fall", 0.545],
+    ["b-fall2", 0.60],
     ["b-shadow", 0.70],
     ["b-dur", 0.78],
     ["b-cor", 0.89],
@@ -64,8 +68,8 @@
       const topCopy = bd.el.classList.contains("top");
       const inWin = topCopy ? bd.a - CROSS : bd.a;
       const outWin = topCopy ? bd.a : bd.a + 0.095;
-      const fadeIn = hero ? 1 : smooth(inWin + 0.005, inWin + 0.04, p);
-      const fadeOut = last ? 1 : 1 - smooth(outWin - 0.03, outWin, p);
+      const fadeIn = hero ? 1 : smooth(inWin - 0.02, inWin + 0.02, p);
+      const fadeOut = last ? 1 : 1 - smooth(outWin - 0.03, outWin + 0.008, p);
       const op = Math.max(0, Math.min(1, fadeIn * fadeOut));
       bd.el.style.opacity = op.toFixed(3);
       bd.el.style.transform = `translateY(${(1 - op) * 26}px)`;
@@ -413,7 +417,14 @@
 
   /* ---------- tap-to-name the totality layers ---------- */
   const tags = $("tags");
-  let tagsOn = false;
+  const ANNO = [
+    ["a-first", 0.075, 0.125],
+    ["a-bead", 0.455, 0.525],
+    ["a-umbra", 0.555, 0.63],
+    ["a-limb", 0.705, 0.78],
+    ["a-stream", 0.875, 0.945]
+  ];
+  let tagsOn = true;
   document.addEventListener("click", (e) => {
     if (e.target.closest("input, .chip, .pick")) return;
     if (cur > 0.285 && cur < 0.465) tagsOn = !tagsOn;
@@ -468,7 +479,11 @@
 
     const tagWin = cur > 0.285 && cur < 0.465;
     tags.classList.toggle("on", tagsOn && tagWin);
-    if (!tagWin) tagsOn = false;
+
+    for (const an of ANNO) {
+      const el = document.getElementById(an[0]);
+      if (el) el.style.opacity = (smooth(an[1], an[1] + 0.02, cur) * (1 - smooth(an[2] - 0.02, an[2], cur))).toFixed(3);
+    }
 
     px += (mx - px) * 0.06;
     py += (my - py) * 0.06;

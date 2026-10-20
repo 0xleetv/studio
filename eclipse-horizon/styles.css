@@ -104,3 +104,16 @@ html,body{margin:0;padding:0;background:#000;color:var(--ink);
 .band.top .copy{margin-left:auto;margin-right:0}
 .band.right .knob{margin-left:auto}
 .band.right .chart,.band.right .chips{margin-left:auto}
+
+/* ---------- annotations ---------- */
+#annos{position:fixed;inset:0;z-index:4;pointer-events:none}
+.anno{position:absolute;opacity:0;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:.66rem;letter-spacing:.28em;text-transform:uppercase;color:#e3dfd7;
+  text-shadow:0 2px 16px rgba(0,0,0,.9)}
+.anno::after{content:"";display:block;width:30px;height:1px;background:var(--line);margin-top:.5rem}
+#a-first{left:63vw;top:34vh}
+#a-bead{left:64vw;top:40vh}
+#a-umbra{left:44vw;top:26vh}
+#a-limb{left:56vw;top:10vh}
+#a-stream{left:20vw;top:55vh}
