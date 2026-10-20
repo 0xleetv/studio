@@ -10,7 +10,7 @@ html,body{margin:0;padding:0;background:#000;color:var(--ink);
   -webkit-font-smoothing:antialiased}
 
 /* ---------- film stage ---------- */
-.film{position:relative;height:1300vh}
+.film{position:relative;height:1500vh}
 .stage{position:sticky;top:0;height:100vh;overflow:hidden}
 #sky{position:absolute;inset:0;width:100%;height:100%;display:block}
 
@@ -97,3 +97,10 @@ html,body{margin:0;padding:0;background:#000;color:var(--ink);
 .pick{cursor:pointer}
 .pick.active .lbl{color:var(--ink)}
 .pick.active .bar{box-shadow:0 0 12px rgba(240,163,94,.35)}
+
+/* ---------- free copy placement ---------- */
+.band.right{justify-content:flex-end;text-align:right}
+.band.top{align-items:flex-start;padding-top:15vh}
+.band.top .copy{margin-left:auto;margin-right:0}
+.band.right .knob{margin-left:auto}
+.band.right .chart,.band.right .chips{margin-left:auto}

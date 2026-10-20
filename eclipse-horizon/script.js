@@ -37,33 +37,45 @@
   /* text bands: [id, start, end, fadeIn, fadeOut] */
   const bandDefs = [
     ["b-hero", 0.0],
-    ["b-geom", 0.13],
-    ["b-tot", 0.36],
-    ["b-flash", 0.50],
-    ["b-shadow", 0.67],
-    ["b-dur", 0.735],
-    ["b-cor", 0.845],
-    ["b-fut", 0.923]
+    ["b-geom", 0.105],
+    ["b-tot", 0.30],
+    ["b-flash", 0.45],
+    ["b-shadow", 0.70],
+    ["b-dur", 0.78],
+    ["b-cor", 0.89],
+    ["b-fut", 0.9333]
   ];
   const bands = bandDefs.map(([id, a]) => {
     const el = document.getElementById(id);
     el.style.top = `calc(${a * 100}%)`;
+    el.querySelectorAll('.bar').forEach((bar) => {
+      bar.dataset.w = parseFloat(bar.style.width) || 0;
+    });
     return { el, a };
   });
 
   /* bands scroll through the viewport; opacity polishes the edges.
      100vh crossing = 0.0952 of the film span (film is 1150vh). */
-  const CROSS = 100 / 1300;
+  const CROSS = 100 / 1500;
   function layoutBands(p) {
     for (const bd of bands) {
       const last = bd.a > 0.9;
       const hero = bd.a < 0.001;
-      const fadeIn = hero ? 1 : smooth(bd.a - CROSS, bd.a - CROSS * 0.72, p);
-      const fadeOut = last ? 1 : 1 - smooth(bd.a + 0.03, bd.a + 0.075, p);
+      const topCopy = bd.el.classList.contains("top");
+      const inWin = topCopy ? bd.a - CROSS : bd.a;
+      const outWin = topCopy ? bd.a : bd.a + 0.095;
+      const fadeIn = hero ? 1 : smooth(inWin + 0.005, inWin + 0.04, p);
+      const fadeOut = last ? 1 : 1 - smooth(outWin - 0.03, outWin, p);
       const op = Math.max(0, Math.min(1, fadeIn * fadeOut));
       bd.el.style.opacity = op.toFixed(3);
       bd.el.style.transform = `translateY(${(1 - op) * 26}px)`;
       bd.el.style.pointerEvents = op > 0.6 ? "auto" : "none";
+      if (bd.el.id === "b-dur") {
+        const pr = smooth(bd.a - CROSS * 0.3, bd.a + CROSS * 0.9, p);
+        bd.el.querySelectorAll(".bar").forEach((bar) => {
+          bar.style.width = ((parseFloat(bar.dataset.w) || 0) * pr).toFixed(1) + "%";
+        });
+      }
     }
   }
 
@@ -77,7 +89,7 @@
   }
 
   function drawStars(p, t) {
-    const w = smooth(0.565, 0.63, p) * (1 - smooth(0.83, 0.88, p));
+    const w = smooth(0.645, 0.70, p) * (1 - smooth(0.89, 0.93, p));
     if (w <= 0.002) return;
     ctx.globalAlpha = 1;
     for (let i = 0; i < stars.length; i++) {
@@ -101,19 +113,22 @@
     const R = Math.min(W, H) * 0.155 * cam.s;
 
     const wob = RM() ? 0 : Math.sin(t * 0.7) * 0.4 + Math.sin(t * 1.9 + 1.7) * 0.2;
-    const approach = smooth(0.08, 0.34, p);
+    const approach = smooth(0.06, 0.30, p);
     const moonX = cx + (1 - approach) * W * 0.8;
-    const moonY = cy;
+    const moonY = cy - Math.sin(approach * Math.PI) * H * 0.05;
 
     const ms = state.ms;                       // moon-to-sun angular ratio
     const annular = ms < 0.995;
     const mr = R * 1.045 * ms;
     const totality = approach >= 0.999 && !annular;
-    const coronaBloom = smooth(0.32, 0.40, p) * (1 - smooth(0.50, 0.56, p))
-      + smooth(0.80, 0.86, p) * (1 - smooth(0.94, 0.99, p));
-    const flash = smooth(0.50, 0.535, p) * (1 - smooth(0.555, 0.59, p));
+    const coronaBloom = smooth(0.28, 0.36, p) * (1 - smooth(0.44, 0.50, p))
+      + smooth(0.86, 0.90, p) * (1 - smooth(0.97, 1.0, p));
+    const flash = smooth(0.455, 0.485, p) * (1 - smooth(0.50, 0.53, p));
 
     ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(cam.rot || 0);
+    ctx.translate(-cx, -cy);
     ctx.globalAlpha = cam.alpha;
 
     /* sun disc */
@@ -167,11 +182,13 @@
     ctx.arc(cx, cy, R * 3.4, 0, 6.283);
     ctx.fill();
 
-    /* moon, sliding in */
+    /* moon, sliding in: stays opaque while the light around it fades */
+    ctx.globalAlpha = 1;
     ctx.fillStyle = "#050506";
     ctx.beginPath();
     ctx.arc(moonX, moonY, mr, 0, 6.283);
     ctx.fill();
+    ctx.globalAlpha = cam.alpha;
     /* thin crescent edge while approaching */
     if (approach > 0.02 && !totality && !annular) {
       const bite = Math.min(1, approach);
@@ -210,13 +227,13 @@
     /* diamond ring flash */
     if (flash > 0.003) {
       const fx = cx + mr * 0.98, fy = cy - mr * 0.15;
-      const g = ctx.createRadialGradient(fx, fy, 0, fx, fy, R * 2.2 * flash);
+      const g = ctx.createRadialGradient(fx, fy, 0, fx, fy, R * 0.6 * flash);
       g.addColorStop(0, `rgba(255,255,250,${0.95 * flash})`);
-      g.addColorStop(0.25, `rgba(255,226,160,${0.5 * flash})`);
+      g.addColorStop(0.3, `rgba(255,226,160,${0.4 * flash})`);
       g.addColorStop(1, "rgba(255,226,160,0)");
       ctx.fillStyle = g;
       ctx.beginPath();
-      ctx.arc(fx, fy, R * 2.2 * flash, 0, 6.283);
+      ctx.arc(fx, fy, R * 0.6 * flash, 0, 6.283);
       ctx.fill();
       ctx.fillStyle = "#fff";
       ctx.beginPath();
@@ -238,12 +255,12 @@
 
   /* the wide shot: Earth limb + racing umbra */
   function drawEarth(p, t) {
-    const w = smooth(0.585, 0.64, p) * (1 - smooth(0.80, 0.84, p));
+    const w = smooth(0.645, 0.705, p) * (1 - smooth(0.885, 0.92, p));
     if (w <= 0.002) return;
-    const recede = smooth(0.72, 0.80, p);
-    const er = Math.max(W, H) * (1.15 - 0.62 * recede);
+    const recede = smooth(0.80, 0.86, p);
+    const er = Math.max(W, H) * (0.82 - 0.28 * recede);
     const ecx = CX();
-    const ecy = H * (0.62 + 0.28 * recede);
+    const ecy = H * (0.88 + 0.05 * recede);
 
     /* limb: dark disc, atmosphere rim fading out past the edge */
     ctx.globalAlpha = w;
@@ -330,14 +347,58 @@
   sweepSlider.addEventListener("input", updateSweep);
   updateSweep();
 
+  /* ---------- nightfall: darkness falls on a gravity curve ---------- */
+  const dust = [];
+  for (let i = 0; i < 46; i++) {
+    dust.push({
+      x0: rnd(), y0: rnd() * 0.35,
+      delay: rnd() * 0.3,
+      s: 0.8 + rnd() * 1.4, a: 0.45 + rnd() * 0.55
+    });
+  }
+  function drawFall(p, t) {
+    const t2 = (p - 0.52) / 0.115;
+    if (t2 <= 0.001 || t2 >= 1.02) return;
+    const tc = Math.min(1, t2);
+    const G = 2.6 * H;
+    const edge = -0.15 * H + 0.5 * G * tc * tc;
+
+    for (let i = 0; i < dust.length; i++) {
+      const d = dust[i];
+      const tt = Math.max(0, tc - d.delay);
+      const y = d.y0 * H + 0.5 * G * tt * tt;
+      if (y <= edge + 6 || y > H + 30) continue;
+      const x = (d.x0 + 0.02 * Math.sin(t * 0.4 + i * 1.7)) * W;
+      const len = Math.min(26, 2 + G * tt * 0.02);
+      ctx.strokeStyle = "rgba(12,12,16," + (0.5 * d.a).toFixed(3) + ")";
+      ctx.lineWidth = d.s;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x, y + len);
+      ctx.stroke();
+    }
+
+    const gh = 0.16 * H;
+    const g0 = ctx.createLinearGradient(0, edge - gh, 0, edge);
+    g0.addColorStop(0, "rgba(0,0,0,0)");
+    g0.addColorStop(1, "rgba(0,0,0,1)");
+    ctx.fillStyle = g0;
+    ctx.fillRect(0, Math.max(0, edge - gh), W, gh + 1);
+    if (edge - gh > 0) {
+      ctx.fillStyle = "#000";
+      ctx.fillRect(0, 0, W, edge - gh);
+    }
+  }
+
   /* ---------- chapter label ---------- */
   const chapterEl = $("chapter");
   const chapterDefs = [
-    ["Approach", 0.055, 0.335],
-    ["Totality", 0.345, 0.495],
-    ["Diamond ring", 0.505, 0.615],
-    ["The shadow", 0.625, 0.795],
-    ["The corona", 0.805, 0.90],
+    ["Approach", 0.045, 0.295],
+    ["Totality", 0.305, 0.455],
+    ["Diamond ring", 0.44, 0.515],
+    ["Nightfall", 0.525, 0.635],
+    ["The shadow", 0.65, 0.805],
+    ["The corona", 0.815, 0.90],
     ["The clock", 0.915, 1.01]
   ];
   function layoutChapter(p) {
@@ -355,7 +416,7 @@
   let tagsOn = false;
   document.addEventListener("click", (e) => {
     if (e.target.closest("input, .chip, .pick")) return;
-    if (cur > 0.315 && cur < 0.505) tagsOn = !tagsOn;
+    if (cur > 0.285 && cur < 0.465) tagsOn = !tagsOn;
   });
 
   /* ---------- chips and bars ---------- */
@@ -405,7 +466,7 @@
     layoutBands(cur);
     layoutChapter(cur);
 
-    const tagWin = cur > 0.315 && cur < 0.505;
+    const tagWin = cur > 0.285 && cur < 0.465;
     tags.classList.toggle("on", tagsOn && tagWin);
     if (!tagWin) tagsOn = false;
 
@@ -420,11 +481,15 @@
     drawStars(cur, tGlobal);
 
     /* eclipse camera: full -> pull back -> zoom back in */
-    const pull = smooth(0.56, 0.64, cur);
-    const zoom = smooth(0.80, 0.86, cur);
+    const pull = smooth(0.52, 0.63, cur);
+    const zoom = smooth(0.86, 0.90, cur);
     const camS = 1 - 0.5 * pull + 0.7 * zoom;
-    const camA = 1 - 0.55 * pull * (1 - zoom) - smooth(0.94, 0.99, cur) * 0.9;
-    drawEclipse(cur, tGlobal, { s: Math.max(0.45, camS), alpha: Math.max(0, camA) });
+    const camA = (1 - smooth(0.52, 0.60, cur) * (1 - smooth(0.86, 0.91, cur)))
+      * (1 - smooth(0.94, 0.99, cur));
+    const rot = -0.05 * pull + 0.04 * zoom;
+    drawEclipse(cur, tGlobal, { s: Math.max(0.45, camS), alpha: Math.max(0, camA), rot: rot });
+
+    drawFall(cur, tGlobal);
 
     drawEarth(cur, tGlobal);
 
