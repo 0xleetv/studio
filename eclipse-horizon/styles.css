@@ -72,3 +72,28 @@ html,body{margin:0;padding:0;background:#000;color:var(--ink);
   .stats{grid-template-columns:1fr;gap:1.6rem}
   .copy-hero{bottom:9vh}
 }
+
+/* ---------- chapter, tags, chips ---------- */
+.chapter{position:fixed;top:4.5vh;left:6vw;z-index:5;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:.68rem;letter-spacing:.32em;text-transform:uppercase;
+  color:var(--dim);opacity:0;pointer-events:none}
+#tags{position:fixed;inset:0;z-index:4;pointer-events:none;opacity:0;transition:opacity .45s}
+#tags.on{opacity:1}
+.tag{position:absolute;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:.68rem;letter-spacing:.24em;text-transform:uppercase;color:#e8e6e0;
+  text-shadow:0 2px 18px rgba(0,0,0,.9)}
+.tag b{display:block;font-weight:400;letter-spacing:.04em;text-transform:none;
+  color:var(--dim);margin-top:.4rem;font-size:.74rem}
+.tag::after{content:"";display:block;width:34px;height:1px;background:var(--line);margin-top:.55rem}
+.tag-a{left:9vw;top:19vh}
+.tag-b{right:8vw;top:60vh;text-align:right}
+.chips{display:flex;flex-wrap:wrap;gap:.55rem;margin:1.5rem 0 .9rem}
+.chip{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);
+  background:transparent;border:1px solid var(--line);border-radius:999px;
+  padding:.6rem 1.1rem;cursor:pointer}
+.chip.active{color:var(--ink);border-color:var(--amber)}
+.pick{cursor:pointer}
+.pick.active .lbl{color:var(--ink)}
+.pick.active .bar{box-shadow:0 0 12px rgba(240,163,94,.35)}

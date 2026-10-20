@@ -96,7 +96,8 @@
   /* the eclipse close-up: sun, moon, corona, flash. cam = {s, alpha} */
   function drawEclipse(p, t, cam) {
     if (cam.alpha <= 0.002) return;
-    const cx = CX(), cy = CY();
+    const cx = CX() + (px - 0.5) * W * 0.05;
+    const cy = CY() + (py - 0.5) * H * 0.05;
     const R = Math.min(W, H) * 0.155 * cam.s;
 
     const wob = RM() ? 0 : Math.sin(t * 0.7) * 0.4 + Math.sin(t * 1.9 + 1.7) * 0.2;
@@ -329,6 +330,57 @@
   sweepSlider.addEventListener("input", updateSweep);
   updateSweep();
 
+  /* ---------- chapter label ---------- */
+  const chapterEl = $("chapter");
+  const chapterDefs = [
+    ["Approach", 0.055, 0.335],
+    ["Totality", 0.345, 0.495],
+    ["Diamond ring", 0.505, 0.615],
+    ["The shadow", 0.625, 0.795],
+    ["The corona", 0.805, 0.90],
+    ["The clock", 0.915, 1.01]
+  ];
+  function layoutChapter(p) {
+    let best = "", bestOp = 0;
+    for (const [label, a, b] of chapterDefs) {
+      const op = smooth(a, a + 0.02, p) * (b >= 1 ? 1 : 1 - smooth(b - 0.02, b, p));
+      if (op > bestOp) { bestOp = op; best = label; }
+    }
+    if (best) chapterEl.textContent = best;
+    chapterEl.style.opacity = bestOp.toFixed(3);
+  }
+
+  /* ---------- tap-to-name the totality layers ---------- */
+  const tags = $("tags");
+  let tagsOn = false;
+  document.addEventListener("click", (e) => {
+    if (e.target.closest("input, .chip, .pick")) return;
+    if (cur > 0.315 && cur < 0.505) tagsOn = !tagsOn;
+  });
+
+  /* ---------- chips and bars ---------- */
+  document.querySelectorAll(".chip").forEach((ch) => {
+    ch.addEventListener("click", () => {
+      document.querySelectorAll(".chip").forEach((c) => c.classList.remove("active"));
+      ch.classList.add("active");
+      $("next-line").textContent = ch.dataset.line;
+    });
+  });
+  document.querySelectorAll(".pick").forEach((row) => {
+    row.addEventListener("click", () => {
+      document.querySelectorAll(".pick").forEach((r) => r.classList.remove("active"));
+      row.classList.add("active");
+      $("dur-note").textContent = row.dataset.note;
+    });
+  });
+
+  /* ---------- pointer parallax ---------- */
+  let mx = 0.5, my = 0.5, px = 0.5, py = 0.5;
+  window.addEventListener("pointermove", (e) => {
+    mx = e.clientX / Math.max(1, W);
+    my = e.clientY / Math.max(1, H);
+  });
+
   /* ---------- master loop ---------- */
   let target = 0, cur = 0, tGlobal = 0, lastT = 0;
 
@@ -351,6 +403,14 @@
     }
 
     layoutBands(cur);
+    layoutChapter(cur);
+
+    const tagWin = cur > 0.315 && cur < 0.505;
+    tags.classList.toggle("on", tagsOn && tagWin);
+    if (!tagWin) tagsOn = false;
+
+    px += (mx - px) * 0.06;
+    py += (my - py) * 0.06;
 
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     ctx.clearRect(0, 0, W, H);

@@ -15,6 +15,12 @@
       <canvas id="sky"></canvas>
     </div>
 
+    <p class="chapter" id="chapter"></p>
+    <div id="tags" aria-hidden="true">
+      <span class="tag tag-a">Corona<b>streamers follow the magnetic field</b></span>
+      <span class="tag tag-b">Chromosphere<b>a hot rim at the moon's edge</b></span>
+    </div>
+
     <section class="band" id="b-hero">
       <div class="copy copy-hero">
         <p class="kicker">A total solar eclipse</p>
@@ -37,6 +43,7 @@
         <p class="kicker">Totality</p>
         <h2 class="display">The corona</h2>
         <p class="statement">The outer atmosphere appears, silver-white, only while the moon hides the sun.</p>
+        <p class="mono">Tap the disc to name the layers</p>
       </div>
     </section>
 
@@ -64,12 +71,13 @@
         <h2 class="display">7:32</h2>
         <p class="statement">The ceiling for a total eclipse. Most totality lasts a fraction of it.</p>
         <div class="chart">
-          <div class="row top"><span class="lbl">theoretical ceiling</span><span class="bar" style="width:100%"></span><span class="num">7:32</span></div>
-          <div class="row"><span class="lbl">Karachi 1955</span><span class="bar" style="width:94.7%"></span><span class="num">7:08</span></div>
-          <div class="row"><span class="lbl">Luxor 2027</span><span class="bar" style="width:84.7%"></span><span class="num">6:23</span></div>
-          <div class="row"><span class="lbl">North America 2024</span><span class="bar" style="width:59.3%"></span><span class="num">4:28</span></div>
-          <div class="row"><span class="lbl">Iceland and Spain 2026</span><span class="bar" style="width:30.5%"></span><span class="num">2:18</span></div>
+          <div class="row pick" data-note="The physics ceiling, set by geometry alone." top"><span class="lbl">theoretical ceiling</span><span class="bar" style="width:100%"></span><span class="num">7:32</span></div>
+          <div class="row pick" data-note="June 20, 1955. The longest of the twentieth century.""><span class="lbl">Karachi 1955</span><span class="bar" style="width:94.7%"></span><span class="num">7:08</span></div>
+          <div class="row pick" data-note="August 2, 2027. The longest of the century so far.""><span class="lbl">Luxor 2027</span><span class="bar" style="width:84.7%"></span><span class="num">6:23</span></div>
+          <div class="row pick" data-note="April 8, 2024. The path swept Mexico, the US and Canada.""><span class="lbl">North America 2024</span><span class="bar" style="width:59.3%"></span><span class="num">4:28</span></div>
+          <div class="row pick" data-note="August 12, 2026. Europe's first total eclipse since 1999.""><span class="lbl">Iceland and Spain 2026</span><span class="bar" style="width:30.5%"></span><span class="num">2:18</span></div>
         </div>
+        <p class="mono" id="dur-note">Tap a bar for its story</p>
       </div>
     </section>
 
@@ -90,6 +98,12 @@
           <div class="stat"><b>600 Myr</b><span>until the last total eclipse</span></div>
           <div class="stat"><b>18y 11d 8h</b><span>the saros cycle</span></div>
         </div>
+        <div class="chips">
+          <button class="chip active" data-line="August 2027. Up to 6 minutes 23 seconds over Luxor, Egypt.">Aug 2027</button>
+          <button class="chip" data-line="July 2028. Totality crosses Sydney late in the afternoon.">Jul 2028</button>
+          <button class="chip" data-line="November 2030. The shadow returns to southern Africa.">Nov 2030</button>
+        </div>
+        <p class="mono" id="next-line">August 2027. Up to 6 minutes 23 seconds over Luxor, Egypt.</p>
         <p class="mono">Figures from NASA eclipse bulletins and lunar laser ranging.</p>
       </div>
     </section>
