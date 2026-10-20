@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Eclipse Horizon</title>
+  <meta name="description" content="A scroll-driven study in celestial geometry, from first light to totality to the horizon closer.">
+  <meta name="theme-color" content="#000000">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="scroll-track">
+    <div class="stage" aria-hidden="true">
+      <div class="eclipse-stage">
+        <div class="corona-group" id="corona-group">
+          <img src="corona-1.webp" alt="" class="corona corona-1" id="corona-1" decoding="async">
+          <img src="corona-2.webp" alt="" class="corona corona-2" id="corona-2" decoding="async">
+          <img src="corona-3.webp" alt="" class="corona corona-3" id="corona-3" decoding="async">
+        </div>
+        <div class="sun-disc" id="sun-disc">
+          <div class="sun-circle">
+            <video id="sun-video" class="sun-video" muted loop playsinline autoplay preload="auto" poster="sun-hero.png">
+              <source src="sun-shimmer.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+        <div class="moon-disc" id="moon-disc">
+          <div class="moon-black-circle"></div>
+          <img src="moon-rim.png" alt="" class="moon-rim" id="moon-rim" decoding="async">
+        </div>
+        <div class="diamond-group" id="diamond-group">
+          <img src="diamond-ring.webp" alt="" class="diamond-plate" id="diamond-plate" decoding="async">
+        </div>
+      </div>
+      <div class="caption-stage">
+        <div class="caption-item item-hero" id="caption-hero">
+          <p class="scene-line">The sky's rarest show is a coincidence of sizes.</p>
+        </div>
+        <div class="caption-item item-contact" id="caption-contact">
+          <div class="micro-label">FIRST CONTACT</div>
+          <p class="scene-line">The sun is about 400 times wider than the moon and about 400 times farther away.</p>
+        </div>
+        <div class="caption-item item-totality" id="caption-totality">
+          <p class="totality-line">The sky goes dark.</p>
+        </div>
+        <div class="caption-item item-diamond" id="caption-diamond">
+          <div class="micro-label">DIAMOND RING</div>
+          <div class="glass-pills-row">
+            <span class="glass-pill">SECOND CONTACT</span>
+            <span class="glass-pill">BAILY'S BEADS</span>
+          </div>
+        </div>
+      </div>
+      <div class="horizon-glow" id="horizon-glow"></div>
+      <div class="horizon-stage" id="horizon-stage">
+        <img src="horizon-silhouette.png" alt="" class="horizon-image" id="horizon-image" decoding="async">
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
