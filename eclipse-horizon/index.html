@@ -4,102 +4,96 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Eclipse Horizon</title>
-  <meta name="description" content="A scroll study of the geometry of a total solar eclipse, from first contact to the last bead.">
+  <meta name="description" content="A continuous scroll film through the geometry of a total solar eclipse, from first contact to the last bead.">
   <meta name="theme-color" content="#000000">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-  <div class="scroll-track" id="track">
+  <div class="film" id="film">
     <div class="stage">
       <canvas id="sky"></canvas>
-      <div class="hero-caption" id="hero-caption">
+    </div>
+
+    <section class="band" id="b-hero">
+      <div class="copy copy-hero">
         <p class="kicker">A total solar eclipse</p>
         <p class="hero-line">The sky's rarest show is a coincidence of sizes.</p>
       </div>
-    </div>
+    </section>
+
+    <section class="band" id="b-geom">
+      <div class="copy">
+        <p class="kicker">Geometry 01 · Coincidence</p>
+        <h2 class="display" id="dist-verdict">Total</h2>
+        <p class="statement" id="dist-statement">Full cover. Daylight collapses.</p>
+        <input class="knob" type="range" id="dist-slider" min="356500" max="406700" value="356500" step="100" aria-label="Moon distance">
+        <p class="mono" id="dist-read"></p>
+      </div>
+    </section>
+
+    <section class="band" id="b-tot">
+      <div class="copy">
+        <p class="kicker">Totality</p>
+        <h2 class="display">The corona</h2>
+        <p class="statement">The outer atmosphere appears, silver-white, only while the moon hides the sun.</p>
+      </div>
+    </section>
+
+    <section class="band" id="b-flash">
+      <div class="copy">
+        <p class="kicker">Light 02 · The last bead</p>
+        <h2 class="display">Diamond ring</h2>
+        <p class="statement">Sunlight threads the valleys of the moon as the final bead. Francis Baily drew it in 1836.</p>
+      </div>
+    </section>
+
+    <section class="band" id="b-shadow">
+      <div class="copy">
+        <p class="kicker">Geometry 03 · The shadow</p>
+        <h2 class="display" id="sweep-verdict">Path centre</h2>
+        <p class="statement">One shadow races across the face of the Earth. Where you stand decides everything.</p>
+        <input class="knob" type="range" id="sweep-slider" min="0" max="100" value="50" aria-label="Umbra position along the path">
+        <p class="mono" id="sweep-read"></p>
+      </div>
+    </section>
+
+    <section class="band" id="b-dur">
+      <div class="copy">
+        <p class="kicker">Geometry 04 · Duration</p>
+        <h2 class="display">7:32</h2>
+        <p class="statement">The ceiling for a total eclipse. Most totality lasts a fraction of it.</p>
+        <div class="chart">
+          <div class="row top"><span class="lbl">theoretical ceiling</span><span class="bar" style="width:100%"></span><span class="num">7:32</span></div>
+          <div class="row"><span class="lbl">Karachi 1955</span><span class="bar" style="width:94.7%"></span><span class="num">7:08</span></div>
+          <div class="row"><span class="lbl">Luxor 2027</span><span class="bar" style="width:84.7%"></span><span class="num">6:23</span></div>
+          <div class="row"><span class="lbl">North America 2024</span><span class="bar" style="width:59.3%"></span><span class="num">4:28</span></div>
+          <div class="row"><span class="lbl">Iceland and Spain 2026</span><span class="bar" style="width:30.5%"></span><span class="num">2:18</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="b-cor">
+      <div class="copy">
+        <p class="kicker">Light 05 · The paradox</p>
+        <h2 class="display">1,000,000 °C</h2>
+        <p class="statement">The corona burns a hundred times hotter than the surface beneath it. Nobody has fully explained why.</p>
+      </div>
+    </section>
+
+    <section class="band" id="b-fut">
+      <div class="copy">
+        <p class="kicker">Future 06 · The clock</p>
+        <p class="statement">The moon drifts 3.8 centimetres away every year. The perfect fit is slowly unwinding, and totality has an end date.</p>
+        <div class="stats">
+          <div class="stat"><b>3.8 cm</b><span>moon drift, per year</span></div>
+          <div class="stat"><b>600 Myr</b><span>until the last total eclipse</span></div>
+          <div class="stat"><b>18y 11d 8h</b><span>the saros cycle</span></div>
+        </div>
+        <p class="mono">Figures from NASA eclipse bulletins and lunar laser ranging.</p>
+      </div>
+    </section>
   </div>
-
-  <section class="scene" id="s1">
-    <div class="object">
-      <div class="solar-pair" id="solar-pair">
-        <div class="orb sun-ui" id="ui-sun"></div>
-        <div class="orb moon-ui" id="ui-moon"></div>
-      </div>
-    </div>
-    <div class="copy">
-      <p class="kicker">Geometry 01 · Coincidence</p>
-      <h2 class="display" id="dist-verdict">Total</h2>
-      <p class="statement" id="dist-statement">Full cover. Daylight collapses.</p>
-      <input class="knob" type="range" id="dist-slider" min="356500" max="406700" value="384400" step="100" aria-label="Moon distance">
-      <p class="mono" id="dist-read"></p>
-    </div>
-  </section>
-
-  <section class="scene" id="s2">
-    <div class="object earth-object">
-      <div class="earth-scene" id="earth-scene">
-        <div class="earth" id="earth"></div>
-        <div class="umbra" id="umbra"></div>
-      </div>
-    </div>
-    <div class="copy">
-      <p class="kicker">Geometry 02 · The shadow</p>
-      <h2 class="display" id="sweep-verdict">Path centre</h2>
-      <p class="statement">One shadow races across the face of the Earth. Where you stand decides everything.</p>
-      <input class="knob" type="range" id="sweep-slider" min="0" max="100" value="50" aria-label="Umbra position along the path">
-      <p class="mono" id="sweep-read"></p>
-    </div>
-  </section>
-
-  <section class="scene" id="s3">
-    <div class="copy">
-      <p class="kicker">Geometry 03 · Duration</p>
-      <h2 class="display">7:32</h2>
-      <p class="statement">The ceiling for a total eclipse. Most totality lasts a fraction of it.</p>
-      <div class="chart">
-        <div class="row top"><span class="lbl">theoretical ceiling</span><span class="bar" style="width:100%"></span><span class="num">7:32</span></div>
-        <div class="row"><span class="lbl">Karachi 1955</span><span class="bar" style="width:94.7%"></span><span class="num">7:08</span></div>
-        <div class="row"><span class="lbl">Luxor 2027</span><span class="bar" style="width:84.7%"></span><span class="num">6:23</span></div>
-        <div class="row"><span class="lbl">North America 2024</span><span class="bar" style="width:59.3%"></span><span class="num">4:28</span></div>
-        <div class="row"><span class="lbl">Iceland and Spain 2026</span><span class="bar" style="width:30.5%"></span><span class="num">2:18</span></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="scene" id="s4">
-    <div class="object"><canvas id="corona2"></canvas></div>
-    <div class="copy">
-      <p class="kicker">Light 04 · The paradox</p>
-      <h2 class="display">1,000,000 °C</h2>
-      <p class="statement">The corona burns a hundred times hotter than the surface beneath it. Nobody has fully explained why.</p>
-    </div>
-  </section>
-
-  <section class="scene" id="s5">
-    <div class="object"><div class="flash"><span class="streak"></span><span class="streak v"></span></div></div>
-    <div class="copy">
-      <p class="kicker">Light 05 · The last bead</p>
-      <h2 class="display">Diamond ring</h2>
-      <p class="statement">Sunlight threads the valleys of the moon as the final bead. Francis Baily drew it in 1836.</p>
-    </div>
-  </section>
-
-  <section class="scene" id="s6">
-    <div class="copy">
-      <p class="kicker">Future 06 · The clock</p>
-      <p class="statement">The moon drifts 3.8 centimetres away every year. The perfect fit is slowly unwinding, and totality has an end date.</p>
-      <div class="stats">
-        <div class="stat"><b>3.8 cm</b><span>moon drift, per year</span></div>
-        <div class="stat"><b>600 Myr</b><span>until the last total eclipse</span></div>
-        <div class="stat"><b>18y 11d 8h</b><span>the saros cycle</span></div>
-      </div>
-    </div>
-  </section>
-
-  <footer>
-    <p class="mono">Figures from NASA eclipse bulletins and lunar laser ranging.</p>
-  </footer>
 
 <script src="script.js"></script>
 </body>

@@ -1,248 +1,389 @@
 (() => {
   "use strict";
-  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
-  const smooth = (a, b, x) => { x = clamp((x - a) / (b - a), 0, 1); return x * x * (3 - 2 * x); };
-  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* ---------- stage scrub canvas ---------- */
-  const track = document.getElementById("track");
-  const sky = document.getElementById("sky");
-  const ctx = sky.getContext("2d");
-  const cap = document.getElementById("hero-caption");
-  let w = 0, h = 0, dpr = 1;
+  const canvas = document.getElementById("sky");
+  const ctx = canvas.getContext("2d");
+  const film = document.getElementById("film");
 
-  const fit = () => {
-    w = sky.clientWidth; h = sky.clientHeight;
-    dpr = Math.min(devicePixelRatio || 1, 2);
-    sky.width = w * dpr; sky.height = h * dpr;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const RM = () => reduced.matches;
+
+  /* ---------- master timeline (p 0..1 across the film) ---------- */
+  const smooth = (a, b, x) => {
+    if (b <= a) return x >= b ? 1 : 0;
+    const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
+    return t * t * (3 - 2 * t);
   };
-  addEventListener("resize", fit);
-  fit();
 
-  const readP = () => {
-    const span = track.offsetHeight - innerHeight;
-    return span > 0 ? clamp(scrollY / span, 0, 1) : 0;
+  let W = 0, H = 0, DPR = 1;
+  const CX = () => W / 2;
+  const CY = () => H * 0.5;
+
+  /* stars, fixed seed */
+  const stars = [];
+  (function seed(s) { return s; })(42);
+  let rngState = 42;
+  const rnd = () => {
+    rngState = (rngState * 1103515245 + 12345) & 0x7fffffff;
+    return rngState / 0x7fffffff;
   };
-  let target = readP(), cur = target;
+  for (let i = 0; i < 150; i++) {
+    stars.push({ x: rnd(), y: rnd(), r: 0.5 + rnd() * 1.1, a: 0.15 + rnd() * 0.6, sp: 0.4 + rnd() * 1.4, ph: rnd() * 6.28 });
+  }
 
-  const wob = (a, t) =>
-    Math.sin(a * 3 + t * 0.55) * 0.5 +
-    Math.sin(a * 7 - t * 0.9) * 0.3 +
-    Math.sin(a * 15 + t * 0.25) * 0.2;
+  /* widget state */
+  const state = { ms: 1.047, t2: 0.5 };
 
-  function draw(p, t) {
-    ctx.clearRect(0, 0, w, h);
-    const cx = w / 2, cy = h * 0.44;
-    const R = Math.min(w, h) * 0.27;
-    const fade = 1 - smooth(0.80, 0.96, p);
-    const approach = smooth(0.04, 0.5, p);
-    const corona = smooth(0.52, 0.62, p) * (1 - smooth(0.85, 0.95, p)) * fade;
-    const flash = smooth(0.66, 0.705, p) * (1 - smooth(0.73, 0.8, p)) * fade;
+  /* text bands: [id, start, end, fadeIn, fadeOut] */
+  const bandDefs = [
+    ["b-hero", 0.0],
+    ["b-geom", 0.13],
+    ["b-tot", 0.36],
+    ["b-flash", 0.50],
+    ["b-shadow", 0.67],
+    ["b-dur", 0.735],
+    ["b-cor", 0.845],
+    ["b-fut", 0.923]
+  ];
+  const bands = bandDefs.map(([id, a]) => {
+    const el = document.getElementById(id);
+    el.style.top = `calc(${a * 100}%)`;
+    return { el, a };
+  });
 
-    let g = ctx.createRadialGradient(cx, cy, R * 0.6, cx, cy, R * 3.4);
-    g.addColorStop(0, `rgba(255,170,90,${0.07 * fade})`);
-    g.addColorStop(1, "rgba(255,170,90,0)");
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, w, h);
+  /* bands scroll through the viewport; opacity polishes the edges.
+     100vh crossing = 0.0952 of the film span (film is 1150vh). */
+  const CROSS = 100 / 1300;
+  function layoutBands(p) {
+    for (const bd of bands) {
+      const last = bd.a > 0.9;
+      const hero = bd.a < 0.001;
+      const fadeIn = hero ? 1 : smooth(bd.a - CROSS, bd.a - CROSS * 0.72, p);
+      const fadeOut = last ? 1 : 1 - smooth(bd.a + 0.03, bd.a + 0.075, p);
+      const op = Math.max(0, Math.min(1, fadeIn * fadeOut));
+      bd.el.style.opacity = op.toFixed(3);
+      bd.el.style.transform = `translateY(${(1 - op) * 26}px)`;
+      bd.el.style.pointerEvents = op > 0.6 ? "auto" : "none";
+    }
+  }
 
-    if (corona > 0.002) {
-      const N = 56;
-      for (let i = 0; i < N; i++) {
-        const a = (i / N) * Math.PI * 2;
-        const L = R * (1.35 + wob(a, t) * 0.6);
-        const x1 = cx + Math.cos(a) * R * 1.02, y1 = cy + Math.sin(a) * R * 1.02;
-        const x2 = cx + Math.cos(a) * L, y2 = cy + Math.sin(a) * L;
-        const al = (0.09 + 0.16 * Math.abs(wob(a, t))) * corona;
-        const lg = ctx.createLinearGradient(x1, y1, x2, y2);
-        lg.addColorStop(0, `rgba(255,225,190,${al})`);
-        lg.addColorStop(1, "rgba(255,190,120,0)");
-        ctx.strokeStyle = lg;
-        ctx.lineWidth = 1.2 + 2.2 * Math.abs(wob(a * 2, t));
-        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+  /* ---------- canvas physics ---------- */
+  const SUN_ANG = 32.0;
+  const MOON_R_KM = 1737.4;
+
+  function moonScaleFromDist(km) {
+    const ma = 2 * Math.atan(MOON_R_KM / km) * (3437.75);
+    return ma / SUN_ANG;
+  }
+
+  function drawStars(p, t) {
+    const w = smooth(0.565, 0.63, p) * (1 - smooth(0.83, 0.88, p));
+    if (w <= 0.002) return;
+    ctx.globalAlpha = 1;
+    for (let i = 0; i < stars.length; i++) {
+      const s = stars[i];
+      let tw = 1;
+      if (!RM()) tw = 0.7 + 0.3 * Math.sin(t * s.sp + s.ph);
+      ctx.globalAlpha = s.a * w * tw;
+      ctx.fillStyle = "#e8e6e0";
+      ctx.beginPath();
+      ctx.arc(s.x * W, s.y * H * 0.92, s.r, 0, 6.283);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  /* the eclipse close-up: sun, moon, corona, flash. cam = {s, alpha} */
+  function drawEclipse(p, t, cam) {
+    if (cam.alpha <= 0.002) return;
+    const cx = CX(), cy = CY();
+    const R = Math.min(W, H) * 0.155 * cam.s;
+
+    const wob = RM() ? 0 : Math.sin(t * 0.7) * 0.4 + Math.sin(t * 1.9 + 1.7) * 0.2;
+    const approach = smooth(0.08, 0.34, p);
+    const moonX = cx + (1 - approach) * W * 0.8;
+    const moonY = cy;
+
+    const ms = state.ms;                       // moon-to-sun angular ratio
+    const annular = ms < 0.995;
+    const mr = R * 1.045 * ms;
+    const totality = approach >= 0.999 && !annular;
+    const coronaBloom = smooth(0.32, 0.40, p) * (1 - smooth(0.50, 0.56, p))
+      + smooth(0.80, 0.86, p) * (1 - smooth(0.94, 0.99, p));
+    const flash = smooth(0.50, 0.535, p) * (1 - smooth(0.555, 0.59, p));
+
+    ctx.save();
+    ctx.globalAlpha = cam.alpha;
+
+    /* sun disc */
+    const sg = ctx.createRadialGradient(cx, cy, R * 0.4, cx, cy, R * 1.15);
+    sg.addColorStop(0, "rgba(255,232,190,1)");
+    sg.addColorStop(0.75, "rgba(255,176,96,1)");
+    sg.addColorStop(1, "rgba(255,140,60,0.15)");
+    ctx.fillStyle = sg;
+    ctx.beginPath();
+    ctx.arc(cx, cy, R, 0, 6.283);
+    ctx.fill();
+
+    /* corona bloom behind moon */
+    if (coronaBloom > 0.003 || totality || (annular && approach >= 0.999)) {
+      const strength = annular ? coronaBloom * 0.35 : Math.max(coronaBloom, totality ? 0.12 : 0);
+      const sh = RM() ? 0 : Math.sin(t * 2.1) * 0.5 + Math.sin(t * 0.53) * 0.5;
+      for (let k = 0; k < 3; k++) {
+        const base = [R * 1.25, R * 1.75, R * 2.45][k];
+        const g = ctx.createRadialGradient(cx, cy, R * 0.98, cx, cy, base * (1 + 0.03 * sh * wob));
+        const a = strength * [0.55, 0.28, 0.13][k];
+        g.addColorStop(0, `rgba(235,238,255,${a})`);
+        g.addColorStop(1, "rgba(235,238,255,0)");
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(cx, cy, base * (1 + 0.03 * sh * wob), 0, 6.283);
+        ctx.fill();
       }
-      g = ctx.createRadialGradient(cx, cy, R, cx, cy, R * 1.9);
-      g.addColorStop(0, `rgba(255,235,205,${0.34 * corona})`);
-      g.addColorStop(1, "rgba(255,235,205,0)");
-      ctx.fillStyle = g;
-      ctx.beginPath(); ctx.arc(cx, cy, R * 1.9, 0, 7); ctx.fill();
+      /* tendrils */
+      const n = 56;
+      for (let i = 0; i < n; i++) {
+        const th = (i / n) * 6.283;
+        const len = base1Len(i, R, t, coronaBloom, annular);
+        const g2 = ctx.createRadialGradient(cx, cy, R * 1.0, cx, cy, R + len);
+        g2.addColorStop(0, `rgba(232,236,255,${(annular ? 0.07 : 0.30) * Math.max(coronaBloom, 0.25) * cam.alpha})`);
+        g2.addColorStop(1, "rgba(228,232,252,0)");
+        ctx.fillStyle = g2;
+        ctx.beginPath();
+        ctx.moveTo(cx + Math.cos(th) * R * 0.99, cy + Math.sin(th) * R * 0.99);
+        ctx.arc(cx, cy, R + len, th - 0.035, th + 0.035);
+        ctx.closePath();
+        ctx.fill();
+      }
     }
 
-    g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R);
-    g.addColorStop(0, `rgba(255,248,232,${0.98 * fade})`);
-    g.addColorStop(0.72, `rgba(255,206,150,${0.96 * fade})`);
-    g.addColorStop(1, `rgba(244,150,70,${0.95 * fade})`);
-    ctx.fillStyle = g;
-    ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.fill();
+    /* ambient glow */
+    const ag = ctx.createRadialGradient(cx, cy, R, cx, cy, R * 3.4);
+    ag.addColorStop(0, "rgba(255,214,150,0.12)");
+    ag.addColorStop(1, "rgba(255,214,150,0)");
+    ctx.fillStyle = ag;
+    ctx.beginPath();
+    ctx.arc(cx, cy, R * 3.4, 0, 6.283);
+    ctx.fill();
 
-    const mx = cx + (1 - approach) * w * 0.62;
-    const my = cy + (1 - approach) * h * 0.06;
-    const mr = R * 1.045;
-    ctx.fillStyle = "#000";
-    ctx.beginPath(); ctx.arc(mx, my, mr, 0, 7); ctx.fill();
-
-    const rim = Math.max(approach, corona * 0.9);
-    if (rim > 0.002) {
-      ctx.strokeStyle = `rgba(255,214,170,${0.9 * rim})`;
-      ctx.lineWidth = 1.6;
-      ctx.beginPath(); ctx.arc(mx, my, mr - 0.8, Math.PI * 0.62, Math.PI * 1.38); ctx.stroke();
+    /* moon, sliding in */
+    ctx.fillStyle = "#050506";
+    ctx.beginPath();
+    ctx.arc(moonX, moonY, mr, 0, 6.283);
+    ctx.fill();
+    /* thin crescent edge while approaching */
+    if (approach > 0.02 && !totality && !annular) {
+      const bite = Math.min(1, approach);
+      const lg = ctx.createRadialGradient(moonX - mr * 0.5, moonY - mr * 0.5, mr * 0.2, moonX, moonY, mr);
+      lg.addColorStop(0, "rgba(255,200,130,0.22)");
+      lg.addColorStop(1, "rgba(255,200,130,0)");
+      ctx.globalAlpha = cam.alpha * bite * 0.5;
+      ctx.fillStyle = lg;
+      ctx.beginPath();
+      ctx.arc(moonX, moonY, mr, 0, 6.283);
+      ctx.fill();
+      ctx.globalAlpha = cam.alpha;
     }
 
+    /* chromosphere rim: thin hot ring at the moon edge during totality */
+    if (totality) {
+      const cg = ctx.createRadialGradient(cx, cy, mr * 0.96, cx, cy, mr * 1.09);
+      cg.addColorStop(0, "rgba(255,190,140,0)");
+      cg.addColorStop(0.5, "rgba(255,196,150,0.85)");
+      cg.addColorStop(1, "rgba(255,190,140,0)");
+      ctx.fillStyle = cg;
+      ctx.beginPath();
+      ctx.arc(cx, cy, mr * 1.09, 0, 6.283);
+      ctx.fill();
+    }
+
+    /* annular ring of remaining sun */
+    if (annular && approach >= 0.999) {
+      ctx.strokeStyle = "rgba(255,196,110,0.9)";
+      ctx.lineWidth = Math.max(1.5, (R - mr) * 0.9);
+      ctx.beginPath();
+      ctx.arc(cx, cy, (R + mr) / 2, 0, 6.283);
+      ctx.stroke();
+    }
+
+    /* diamond ring flash */
     if (flash > 0.003) {
-      const fx = mx - Math.cos(-0.9) * mr * 0.92;
-      const fy = my - Math.sin(-0.9) * mr * 0.92;
-      const r = R * 0.16 * flash;
-      g = ctx.createRadialGradient(fx, fy, 0, fx, fy, r * 3);
+      const fx = cx + mr * 0.98, fy = cy - mr * 0.15;
+      const g = ctx.createRadialGradient(fx, fy, 0, fx, fy, R * 2.2 * flash);
       g.addColorStop(0, `rgba(255,255,250,${0.95 * flash})`);
-      g.addColorStop(0.35, `rgba(255,230,190,${0.5 * flash})`);
-      g.addColorStop(1, "rgba(255,230,190,0)");
+      g.addColorStop(0.25, `rgba(255,226,160,${0.5 * flash})`);
+      g.addColorStop(1, "rgba(255,226,160,0)");
       ctx.fillStyle = g;
-      ctx.beginPath(); ctx.arc(fx, fy, r * 3, 0, 7); ctx.fill();
-      ctx.fillStyle = `rgba(255,255,250,${0.9 * flash})`;
-      ctx.beginPath(); ctx.arc(fx, fy, r * 0.5, 0, 7); ctx.fill();
-      const sw = w * 0.5 * flash;
-      g = ctx.createLinearGradient(fx - sw, 0, fx + sw, 0);
-      g.addColorStop(0, "rgba(255,240,210,0)");
-      g.addColorStop(0.5, `rgba(255,240,210,${0.5 * flash})`);
-      g.addColorStop(1, "rgba(255,240,210,0)");
-      ctx.fillStyle = g;
-      ctx.fillRect(fx - sw, fy - 1, sw * 2, 2);
-      const sh = h * 0.3 * flash;
-      g = ctx.createLinearGradient(0, fy - sh, 0, fy + sh);
-      g.addColorStop(0, "rgba(255,240,210,0)");
-      g.addColorStop(0.5, `rgba(255,240,210,${0.35 * flash})`);
-      g.addColorStop(1, "rgba(255,240,210,0)");
-      ctx.fillStyle = g;
-      ctx.fillRect(fx - 1, fy - sh, 2, sh * 2);
+      ctx.beginPath();
+      ctx.arc(fx, fy, R * 2.2 * flash, 0, 6.283);
+      ctx.fill();
+      ctx.fillStyle = "#fff";
+      ctx.beginPath();
+      ctx.arc(fx, fy, R * 0.05 * flash + 1.5, 0, 6.283);
+      ctx.fill();
     }
 
-    const capFade = 1 - smooth(0.05, 0.22, p);
-    cap.style.opacity = capFade.toFixed(3);
-    cap.style.visibility = capFade > 0.01 ? "visible" : "hidden";
+    ctx.restore();
   }
 
-  const t0 = performance.now();
-  function loop(now) {
-    target = readP();
-    cur += (target - cur) * (reduced ? 1 : 0.14);
-    if (Math.abs(target - cur) < 0.0004) cur = target;
-    draw(cur, reduced ? 0 : (now - t0) / 1000);
-    requestAnimationFrame(loop);
+  function base1Len(i, R, t, bloom, annular) {
+    const th = i * 2.399;
+    const wob = RM() ? 0 : Math.sin(t * 0.9 + th) * 0.18 + Math.sin(t * 0.31 + th * 0.7) * 0.12;
+    const petal = 0.55 + 0.45 * Math.abs(Math.sin(th * 2.5 + 1.3));
+    const cap = annular ? R * 0.35 : R * 1.55;
+    return (R * (0.35 + 1.05 * petal) * wob01(petal) + cap * 0.22) * Math.max(bloom, annular ? 0.25 : 0.12) * (1 + wob);
   }
-  requestAnimationFrame(loop);
+  function wob01(x) { return 0.7 + 0.3 * x; }
 
-  /* ---------- widget 1: coincidence ---------- */
-  const SUN_ANG = 32.0, RM = 1737.4;
-  const sl1 = document.getElementById("dist-slider");
-  const v1 = document.getElementById("dist-verdict");
-  const st1 = document.getElementById("dist-statement");
-  const rd1 = document.getElementById("dist-read");
-  const pair = document.getElementById("solar-pair");
-  const sunUi = document.getElementById("ui-sun");
-  const moonUi = document.getElementById("ui-moon");
+  /* the wide shot: Earth limb + racing umbra */
+  function drawEarth(p, t) {
+    const w = smooth(0.585, 0.64, p) * (1 - smooth(0.80, 0.84, p));
+    if (w <= 0.002) return;
+    const recede = smooth(0.72, 0.80, p);
+    const er = Math.max(W, H) * (1.15 - 0.62 * recede);
+    const ecx = CX();
+    const ecy = H * (0.62 + 0.28 * recede);
 
-  function upd1() {
-    const d = +sl1.value;
-    const ma = 2 * Math.atan(RM / d) * 3437.75;
-    const total = ma >= SUN_ANG;
-    v1.textContent = total ? "Total" : "Annular";
-    st1.textContent = total
+    /* limb: dark disc, atmosphere rim fading out past the edge */
+    ctx.globalAlpha = w;
+    const lg = ctx.createRadialGradient(ecx, ecy, er * 0.82, ecx, ecy, er * 1.12);
+    lg.addColorStop(0, "rgba(4,8,14,1)");
+    lg.addColorStop(0.86, "rgba(6,12,20,1)");
+    lg.addColorStop(0.93, "rgba(38,64,96,0.85)");
+    lg.addColorStop(0.96, "rgba(70,110,160,0.5)");
+    lg.addColorStop(1, "rgba(70,110,160,0)");
+    ctx.fillStyle = lg;
+    ctx.beginPath();
+    ctx.arc(ecx, ecy, er * 1.12, 0, 6.283);
+    ctx.fill();
+
+
+
+    /* umbra */
+    const phi = state.t2 * 2.0;
+    const ux = ecx + er * Math.sin(-Math.PI / 2 + phi);
+    const uy = ecy - er * Math.cos(-Math.PI / 2 + phi);
+    const rx = er * 0.06, ry = rx * 0.42;
+    const ug = ctx.createRadialGradient(ux, uy, 0, ux, uy, rx * 1.6);
+    ug.addColorStop(0, "rgba(0,0,0,0.92)");
+    ug.addColorStop(0.6, "rgba(0,0,0,0.55)");
+    ug.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.save();
+    ctx.translate(ux, uy);
+    ctx.scale(1, ry / rx);
+    ctx.fillStyle = ug;
+    ctx.beginPath();
+    ctx.arc(0, 0, rx * 1.6, 0, 6.283);
+    ctx.fill();
+    ctx.restore();
+
+    /* sunlit haze bleeding over the limb */
+    const hg = ctx.createRadialGradient(ecx, ecy - er, 0, ecx, ecy - er, er * 0.5);
+    hg.addColorStop(0, "rgba(255,205,150,0.16)");
+    hg.addColorStop(1, "rgba(255,205,150,0)");
+    ctx.fillStyle = hg;
+    ctx.beginPath();
+    ctx.arc(ecx, ecy - er, er * 0.5, 0, 6.283);
+    ctx.fill();
+
+    ctx.globalAlpha = 1;
+  }
+
+  /* ---------- widget wiring ---------- */
+  const $ = (id) => document.getElementById(id);
+  const distSlider = $("dist-slider");
+  const distVerdict = $("dist-verdict");
+  const distStatement = $("dist-statement");
+  const distRead = $("dist-read");
+
+  function updateDist() {
+    const km = Number(distSlider.value);
+    const ms = moonScaleFromDist(km);
+    state.ms = Math.min(1.08, Math.max(0.85, ms));
+    const ma = ms * SUN_ANG;
+    const total = state.ms >= 0.995;
+    distVerdict.textContent = total ? "Total" : "Annular";
+    distVerdict.classList.toggle("warn", !total);
+    distStatement.textContent = total
       ? "Full cover. Daylight collapses."
-      : "A ring of sun survives. The moon sits too far.";
-    rd1.textContent = `${d.toLocaleString("en-US")} km · ${ma.toFixed(1)} arcmin vs 32.0`;
-    v1.classList.toggle("warn", !total);
-    const base = pair.clientWidth * 0.52;
-    sunUi.style.width = sunUi.style.height = base + "px";
-    const ms = clamp(ma / SUN_ANG, 0.8, 1.08);
-    moonUi.style.width = moonUi.style.height = (base * ms) + "px";
+      : "Too far. A ring of sun survives.";
+    distRead.textContent = `MOON ${Math.round(km).toLocaleString("en-US")} KM · ${ma.toFixed(1)} ARCMIN VS SUN ${SUN_ANG.toFixed(1)}`;
   }
-  sl1.addEventListener("input", upd1);
+  distSlider.addEventListener("input", updateDist);
+  updateDist();
 
-  /* ---------- widget 2: umbra sweep ---------- */
-  const sl2 = document.getElementById("sweep-slider");
-  const v2 = document.getElementById("sweep-verdict");
-  const rd2 = document.getElementById("sweep-read");
-  const earthScene = document.getElementById("earth-scene");
-  const earth = document.getElementById("earth");
-  const umbra = document.getElementById("umbra");
-
-  function upd2() {
-    const t = (+sl2.value - 50) / 50;
-    const at = Math.abs(t);
-    const width = Math.round(270 - 150 * at);
-    const speed = Math.round(1700 + 3300 * at);
-    v2.textContent = at < 0.34 ? "Path centre" : at < 0.85 ? "Inner path" : "Path edge";
-    rd2.textContent = `about ${width.toLocaleString("en-US")} km wide · ground speed about ${speed.toLocaleString("en-US")} km/h`;
-    const scW = earthScene.clientWidth, scH = earthScene.clientHeight;
-    const er = Math.min(scH * 2.2, scW * 2.6);
-    earth.style.width = earth.style.height = (er * 2) + "px";
-    earth.style.top = (scH * 0.56) + "px";
-    const phiMax = Math.asin(clamp(0.4 * scW / er, 0.02, 0.5));
-    const phi = t * phiMax;
-    const x = scW / 2 + er * Math.sin(phi);
-    const y = scH * 0.56 + er * (1 - Math.cos(phi));
-    const wFrac = 0.55 + 0.45 * ((width - 120) / 150);
-    const uw = er * 0.11 * wFrac;
-    umbra.style.width = uw + "px";
-    umbra.style.height = (uw * 0.45) + "px";
-    umbra.style.left = x + "px";
-    umbra.style.top = y + "px";
+  const sweepSlider = $("sweep-slider");
+  const sweepVerdict = $("sweep-verdict");
+  const sweepRead = $("sweep-read");
+  function updateSweep() {
+    const t = Number(sweepSlider.value) / 100;
+    state.t2 = t;
+    const edge = t < 0.42 || t > 0.58;
+    sweepVerdict.textContent = edge ? "Edge of path" : "Path centre";
+    sweepVerdict.classList.toggle("warn", !edge);
+    const width = Math.round(120 + 150 * (1 - Math.abs(t - 0.5) * 2 / 0.5));
+    const speed = Math.round(5000 - 3300 * (1 - Math.abs(t - 0.5) * 2 / 0.5));
+    const mins = edge ? 0 : Math.round(Math.abs(t - 0.5) < 0.04 ? 2 : 2.5 - Math.abs(t - 0.5) * 2);
+    sweepRead.textContent = `UMBRA ${width} KM · ${speed.toLocaleString("en-US")} KM/H · ${Math.max(mins, 0)} MIN OVERHEAD`;
   }
-  sl2.addEventListener("input", upd2);
+  sweepSlider.addEventListener("input", updateSweep);
+  updateSweep();
 
-  /* ---------- corona canvas for scene 4 ---------- */
-  const c2 = document.getElementById("corona2");
-  const c2ctx = c2.getContext("2d");
-  let c2w = 0, c2h = 0;
+  /* ---------- master loop ---------- */
+  let target = 0, cur = 0, tGlobal = 0, lastT = 0;
 
-  function fitC2() {
-    c2w = c2.clientWidth; c2h = c2.clientHeight;
-    const d2 = Math.min(devicePixelRatio || 1, 2);
-    c2.width = c2w * d2; c2.height = c2h * d2;
-    c2ctx.setTransform(d2, 0, 0, d2, 0, 0);
-    drawCorona(0.35);
+  function readScroll() {
+    const span = Math.max(1, film.offsetHeight - window.innerHeight);
+    target = Math.min(1, Math.max(0, window.scrollY / span));
   }
 
-  function drawCorona(t) {
-    if (!c2w) return;
-    const x = c2ctx;
-    x.clearRect(0, 0, c2w, c2h);
-    const cx = c2w / 2, cy = c2h * 0.42;
-    const R = Math.min(c2w, c2h) * 0.34;
-    let g = x.createRadialGradient(cx, cy, R * 0.4, cx, cy, R * 4);
-    g.addColorStop(0, "rgba(255,170,90,0.16)");
-    g.addColorStop(1, "rgba(255,170,90,0)");
-    x.fillStyle = g; x.fillRect(0, 0, c2w, c2h);
-    const N = 72;
-    for (let i = 0; i < N; i++) {
-      const a = (i / N) * Math.PI * 2;
-      const L = R * (1.3 + wob(a, t) * 0.75);
-      const x1 = cx + Math.cos(a) * R, y1 = cy + Math.sin(a) * R;
-      const x2 = cx + Math.cos(a) * L, y2 = cy + Math.sin(a) * L;
-      const al = 0.05 + 0.10 * Math.abs(wob(a, t));
-      const lg = x.createLinearGradient(x1, y1, x2, y2);
-      lg.addColorStop(0, `rgba(255,228,195,${al})`);
-      lg.addColorStop(1, "rgba(255,190,120,0)");
-      x.strokeStyle = lg;
-      x.lineWidth = 1.4 + 2.6 * Math.abs(wob(a * 2, t));
-      x.beginPath(); x.moveTo(x1, y1); x.lineTo(x2, y2); x.stroke();
+  function frame(ts) {
+    const dt = Math.min(0.05, (ts - lastT) / 1000 || 0.016);
+    lastT = ts;
+    if (!RM()) tGlobal += dt;
+
+    readScroll();
+    if (RM()) { cur = target; }
+    else {
+      const k = 1 - Math.pow(0.001, dt);
+      cur += (target - cur) * k;
+      if (Math.abs(target - cur) < 0.0002) cur = target;
     }
-    g = x.createRadialGradient(cx, cy, R * 0.2, cx, cy, R);
-    g.addColorStop(0, "rgba(255,246,228,0.95)");
-    g.addColorStop(0.7, "rgba(255,206,150,0.9)");
-    g.addColorStop(1, "rgba(244,150,70,0.85)");
-    x.fillStyle = g;
-    x.beginPath(); x.arc(cx, cy, R, 0, 7); x.fill();
+
+    layoutBands(cur);
+
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, W, H);
+
+    drawStars(cur, tGlobal);
+
+    /* eclipse camera: full -> pull back -> zoom back in */
+    const pull = smooth(0.56, 0.64, cur);
+    const zoom = smooth(0.80, 0.86, cur);
+    const camS = 1 - 0.5 * pull + 0.7 * zoom;
+    const camA = 1 - 0.55 * pull * (1 - zoom) - smooth(0.94, 0.99, cur) * 0.9;
+    drawEclipse(cur, tGlobal, { s: Math.max(0.45, camS), alpha: Math.max(0, camA) });
+
+    drawEarth(cur, tGlobal);
+
+    requestAnimationFrame(frame);
   }
 
-  /* ---------- scene reveals ---------- */
-  const io = new IntersectionObserver((es) => {
-    es.forEach((e) => {
-      if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
-    });
-  }, { threshold: 0.25 });
-  document.querySelectorAll(".scene").forEach((s) => io.observe(s));
+  function resize() {
+    DPR = Math.min(2, window.devicePixelRatio || 1);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = Math.round(W * DPR);
+    canvas.height = Math.round(H * DPR);
+    canvas.style.width = W + "px";
+    canvas.style.height = H + "px";
+  }
 
-  addEventListener("resize", () => { upd1(); upd2(); fitC2(); });
-  upd1(); upd2(); fitC2();
+  window.addEventListener("resize", resize);
+  resize();
+  readScroll();
+  cur = target;
+  requestAnimationFrame(frame);
 })();

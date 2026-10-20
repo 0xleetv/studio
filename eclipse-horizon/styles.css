@@ -9,13 +9,20 @@ html,body{margin:0;padding:0;background:#000;color:var(--ink);
   font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
   -webkit-font-smoothing:antialiased}
 
-/* ---------- stage ---------- */
-.scroll-track{height:640vh}
+/* ---------- film stage ---------- */
+.film{position:relative;height:1300vh}
 .stage{position:sticky;top:0;height:100vh;overflow:hidden}
 #sky{position:absolute;inset:0;width:100%;height:100%;display:block}
-.hero-caption{position:absolute;left:6vw;bottom:11vh;z-index:3;pointer-events:none}
 
-/* ---------- shared type ---------- */
+/* ---------- bands ---------- */
+.band{position:absolute;left:0;width:100%;height:100vh;display:flex;
+  align-items:flex-end;padding:12vh 6vw 14vh;overflow:hidden;
+  pointer-events:none;will-change:opacity,transform}
+.copy{position:relative;z-index:2;max-width:42rem;width:100%;
+  text-shadow:0 2px 28px rgba(0,0,0,.85)}
+.copy-hero{position:absolute;left:6vw;bottom:11vh;width:auto}
+
+/* ---------- type ---------- */
 .kicker{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   font-size:.72rem;letter-spacing:.35em;text-transform:uppercase;
   color:var(--dim);margin:0 0 1rem}
@@ -29,45 +36,17 @@ html,body{margin:0;padding:0;background:#000;color:var(--ink);
 .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   font-size:.78rem;letter-spacing:.08em;color:var(--dim);margin:1rem 0 0}
 
-/* ---------- scenes ---------- */
-.scene{min-height:100vh;position:relative;display:flex;align-items:flex-end;
-  padding:12vh 6vw 14vh;overflow:hidden}
-.object{position:absolute;inset:0;z-index:0;display:grid;place-items:center;pointer-events:none}
-.copy{position:relative;z-index:2;max-width:42rem;width:100%}
-.scene .copy,.scene .object{opacity:0;transform:translateY(28px);
-  transition:opacity .9s ease,transform .9s ease}
-.scene.in .copy,.scene.in .object{opacity:1;transform:none}
-
 /* ---------- slider ---------- */
 .knob{appearance:none;-webkit-appearance:none;width:min(420px,74vw);height:2px;
-  background:var(--line);border-radius:2px;margin:0;display:block;cursor:pointer}
+  background:var(--line);border-radius:2px;margin:0;display:block;cursor:pointer;
+}
 .knob::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;
   border-radius:50%;background:var(--amber);border:none;cursor:pointer;
   box-shadow:0 0 14px rgba(240,163,94,.55)}
 .knob::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
   background:var(--amber);border:none;cursor:pointer}
 
-/* ---------- scene 1 ---------- */
-.solar-pair{position:relative;width:min(74vmin,540px);aspect-ratio:1;
-  display:grid;place-items:center}
-.orb{position:absolute;border-radius:50%;left:50%;top:50%;transform:translate(-50%,-50%)}
-.sun-ui{aspect-ratio:1;
-  background:radial-gradient(circle at 50% 44%, #fff6e4 0 30%, #ffcf9a 55%, #f29a4a 67%, rgba(242,154,74,0) 72%);
-  box-shadow:0 0 12vmin 2vmin rgba(255,170,90,.32), 0 0 3vmin rgba(255,220,170,.55)}
-.moon-ui{aspect-ratio:1;background:#000;z-index:2;
-  box-shadow:-3px 0 9px -2px rgba(255,205,160,.85), -1px 0 3px rgba(255,220,180,.9)}
-
-/* ---------- scene 2 ---------- */
-.earth-object{place-items:stretch}
-.earth-scene{position:absolute;inset:0;overflow:hidden}
-.earth{position:absolute;left:50%;transform:translateX(-50%);border-radius:50%;
-  background:radial-gradient(circle at 50% 26%, #171a20 0 16%, #07080c 58%);
-  box-shadow:0 -2px 0 rgba(170,190,220,.22), 0 -10px 46px rgba(120,150,200,.10)}
-.umbra{position:absolute;transform:translate(-50%,-50%);border-radius:50%;
-  background:radial-gradient(closest-side, rgba(0,0,0,.98), rgba(0,0,0,.65) 55%, rgba(0,0,0,0));
-  pointer-events:none}
-
-/* ---------- scene 3 ---------- */
+/* ---------- chart ---------- */
 .chart{display:grid;gap:1.15rem;max-width:46rem;width:100%;margin-top:.4rem}
 .row{display:grid;grid-template-columns:minmax(96px,9rem) 1fr auto;gap:1.1rem;align-items:center}
 .row .lbl{font-family:ui-monospace,Menlo,monospace;font-size:.7rem;
@@ -78,39 +57,18 @@ html,body{margin:0;padding:0;background:#000;color:var(--ink);
 .row.top .num{font-size:1.3rem;color:var(--amber)}
 .row.top .bar{background:linear-gradient(90deg, rgba(240,163,94,1), rgba(240,163,94,.45))}
 
-/* ---------- scene 4 ---------- */
-#corona2{width:100%;height:100%;display:block}
-
-/* ---------- scene 5 ---------- */
-.flash{width:min(58vmin,500px);aspect-ratio:1;position:relative}
-.flash::before{content:"";position:absolute;inset:-42%;border-radius:50%;
-  background:radial-gradient(closest-side, rgba(255,244,222,.85), rgba(255,214,160,.22) 38%, rgba(255,214,160,0) 72%);
-  filter:blur(4px)}
-.flash .streak{position:absolute;left:50%;top:50%;height:2px;width:170%;
-  transform:translate(-50%,-50%);
-  background:linear-gradient(90deg,transparent,rgba(255,240,215,.85),transparent)}
-.flash .streak.v{transform:translate(-50%,-50%) rotate(90deg);height:1px}
-.flash::after{content:"";position:absolute;inset:40%;border-radius:50%;
-  background:radial-gradient(circle,#fff 0 16%, rgba(255,230,190,.6) 42%, transparent 72%)}
-
-/* ---------- scene 6 ---------- */
+/* ---------- stats ---------- */
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem}
 .stat b{display:block;font-size:clamp(1.9rem,6vw,3.4rem);font-weight:800;
   letter-spacing:-0.03em;margin-bottom:.5rem}
 .stat span{font-family:ui-monospace,Menlo,monospace;font-size:.68rem;
   letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
 
-footer{padding:10vh 6vw 12vh;text-align:center}
-
 /* ---------- mobile ---------- */
 @media (max-width:480px){
-  .scene{padding:10vh 7vw 12vh}
+  .band{padding:10vh 7vw 12vh}
   .row{grid-template-columns:minmax(80px,6.5rem) 1fr auto;gap:.7rem}
   .row .lbl{font-size:.58rem}
   .stats{grid-template-columns:1fr;gap:1.6rem}
-  .hero-caption{bottom:9vh}
-}
-
-@media (prefers-reduced-motion: reduce){
-  .scene .copy,.scene .object{opacity:1;transform:none;transition:none}
+  .copy-hero{bottom:9vh}
 }
