@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Eclipse Horizon</title>
-  <meta name="description" content="A scroll-driven study in celestial geometry, from first light to totality to the horizon closer.">
+  <meta name="description" content="A scroll study of the geometry of a total solar eclipse, from first contact to the last bead.">
   <meta name="theme-color" content="#000000">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -57,6 +57,108 @@
       </div>
     </div>
   </div>
+
+  <main class="lessons">
+
+    <section class="lesson" id="l-coincidence">
+      <div class="lesson-eyebrow">GEOMETRY 01</div>
+      <h2>A coincidence the size of the sky</h2>
+      <p>The sun is about 400 times wider than the moon, and on average about 400 times farther away. Two unrelated accidents of scale cancel out, so both discs measure roughly half a degree across our sky.</p>
+      <p>Total eclipses exist because, right now, that match is close enough. It does not have to be. Drag the moon along its orbit and watch the verdict flip.</p>
+      <div class="widget">
+        <div class="widget-head">
+          <span class="micro-label">MOON DISTANCE</span>
+          <span class="widget-read" id="dist-read">384,400 km · 31.1 arcmin</span>
+        </div>
+        <svg viewBox="0 0 320 140" class="widget-svg" role="img" aria-label="Sun and moon discs compared">
+          <circle cx="90" cy="66" r="48" class="w-sun"></circle>
+          <circle cx="230" cy="66" id="w-moon" r="46.6" class="w-moon"></circle>
+        </svg>
+        <input type="range" id="dist-slider" min="356500" max="406700" step="100" value="384400" aria-label="Moon distance in kilometres">
+        <div class="widget-foot">
+          <span class="verdict" id="dist-verdict">ANNULAR</span>
+          <span class="widget-hint" id="dist-hint">The moon leaves a ring of the sun showing.</span>
+        </div>
+        <p class="widget-note">Sun drawn at its average apparent size, 32 arcminutes. Ends of the slider are the moon's real perigee and apogee.</p>
+      </div>
+    </section>
+
+    <section class="lesson" id="l-shadow">
+      <div class="lesson-eyebrow">GEOMETRY 02</div>
+      <h2>Two shadows, one dark spot</h2>
+      <p>The moon casts a double shadow. The penumbra is the wide, pale outer cone: stand in it and the sun is only partly eaten. The umbra is the dark inner cone, and on the ground it is tiny, never wider than about 270 kilometres.</p>
+      <p>Everything dramatic happens inside that dot. It sweeps the ground at roughly 1,700 to 5,000 kilometres per hour, slowest near midday, fastest at the edges of the path, so totality lasts longer near the middle.</p>
+      <div class="widget">
+        <div class="widget-head">
+          <span class="micro-label">UMBRA SWEEP</span>
+          <span class="widget-read" id="sweep-read">ground speed about 1,700 km/h · umbra about 270 km wide</span>
+        </div>
+        <svg viewBox="0 0 320 150" class="widget-svg" role="img" aria-label="Umbra and penumbra sweeping along a path">
+          <circle cx="160" cy="330" r="258" class="w-earth"></circle>
+          <ellipse cx="160" cy="72" rx="62" ry="22" class="w-penumbra" id="w-penumbra"></ellipse>
+          <circle cx="160" cy="72" r="9" class="w-umbra" id="w-umbra"></circle>
+        </svg>
+        <input type="range" id="sweep-slider" min="0" max="100" step="1" value="50" aria-label="Shadow position along the path">
+        <div class="widget-foot">
+          <span class="verdict" id="sweep-verdict">PATH CENTRE</span>
+          <span class="widget-hint">Totality is longest near the centre of the path.</span>
+        </div>
+        <p class="widget-note">Stylized geometry with real bounds: umbra widths run about 120 to 270 km, ground speeds about 1,700 to 5,000 km/h.</p>
+      </div>
+    </section>
+
+    <section class="lesson" id="l-duration">
+      <div class="lesson-eyebrow">GEOMETRY 03</div>
+      <h2>Seven minutes, at best</h2>
+      <p>Even perfectly placed, totality is short. The theoretical ceiling is about 7 minutes 32 seconds, and it takes a rare combination of moon size, sun distance and path geometry to approach it.</p>
+      <p>The longest total eclipse of the twentieth century, over Karachi in 1955, reached 7 minutes 8 seconds. Most are far shorter. Here is how recent ones compare.</p>
+      <div class="dur-chart">
+        <div class="dur-row"><span class="dur-name">Ceiling, any eclipse ever</span><div class="dur-track"><div class="dur-fill" style="width:100%"></div></div><span class="dur-val">7:32</span></div>
+        <div class="dur-row"><span class="dur-name">Karachi, 1955, century record</span><div class="dur-track"><div class="dur-fill" style="width:95%"></div></div><span class="dur-val">7:08</span></div>
+        <div class="dur-row"><span class="dur-name">Luxor, 2027</span><div class="dur-track"><div class="dur-fill" style="width:85%"></div></div><span class="dur-val">6:23</span></div>
+        <div class="dur-row"><span class="dur-name">North America, 2024</span><div class="dur-track"><div class="dur-fill" style="width:60%"></div></div><span class="dur-val">4:28</span></div>
+        <div class="dur-row"><span class="dur-name">Iceland and Spain, 2026</span><div class="dur-track"><div class="dur-fill" style="width:32%"></div></div><span class="dur-val">2:18</span></div>
+      </div>
+    </section>
+
+    <section class="lesson" id="l-corona">
+      <div class="lesson-eyebrow">LIGHT 04</div>
+      <h2>The corona paradox</h2>
+      <p>The sun's visible surface is about 5,500 degrees Celsius. Its outer atmosphere, the corona, runs past a million degrees, hotter than the surface it wraps. Working out where that heat comes from took most of a century; the answer is the sun's magnetic field.</p>
+      <p>You will never see it on a normal day. The sky's glare drowns it out. Totality, when the moon blocks the glare, is the only time the corona is visible to the naked eye, and it is what the dark sky in the opening scene is showing you.</p>
+      <figure class="lesson-figure">
+        <img src="corona-3.webp" alt="Rendered view of the solar corona during totality" loading="lazy" decoding="async">
+      </figure>
+    </section>
+
+    <section class="lesson" id="l-beads">
+      <div class="lesson-eyebrow">LIGHT 05</div>
+      <h2>The last bead</h2>
+      <p>Seconds before and after totality, the last slivers of sunlight pour through the valleys and craters on the moon's ragged limb, strung out as points of light: Baily's beads, described by Francis Baily in 1836.</p>
+      <p>The single brightest bead, flaring beside the corona, is the diamond ring. It is the flash that ends the opening scene, and it happens because the moon's edge is mountains, not a polished circle.</p>
+      <figure class="lesson-figure">
+        <img src="diamond-ring.webp" alt="The diamond ring flash at third contact" loading="lazy" decoding="async">
+      </figure>
+    </section>
+
+    <section class="lesson" id="l-future">
+      <div class="lesson-eyebrow">FUTURE 06</div>
+      <h2>The clock is running</h2>
+      <p>Lunar laser ranging, bouncing beams off reflectors left on the moon, shows it drifting away at 3.8 centimetres per year. The size match between the two discs is slowly unwinding.</p>
+      <p>In roughly 600 million years the moon will be too small to cover the sun, and total eclipses will end. Until then the pattern repeats in families: every 18 years, 11 days and 8 hours, the saros cycle returns the same geometry, landing about a third of the way around the Earth.</p>
+      <div class="fact-band">
+        <div class="fact"><span class="fact-num">3.8 cm</span><span class="fact-label">moon drift, per year</span></div>
+        <div class="fact"><span class="fact-num">600 Myr</span><span class="fact-label">until the last total eclipse</span></div>
+        <div class="fact"><span class="fact-num">18y 11d 8h</span><span class="fact-label">the saros cycle</span></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="sources">
+    <p>Figures from NASA eclipse bulletins and lunar laser ranging.</p>
+  </footer>
+
   <script src="script.js"></script>
 </body>
 </html>

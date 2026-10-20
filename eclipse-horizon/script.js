@@ -8,7 +8,6 @@
     return x * x * (3 - 2 * x);
   };
   const inOut = t => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-  const outCubic = t => 1 - Math.pow(1 - t, 3);
   const win = (p, a, b, c, d) => smoothstep(a, b, p) * (1 - smoothstep(c, d, p));
 
   const moonDisc = document.getElementById("moon-disc");
@@ -31,7 +30,6 @@
   };
   const video = document.getElementById("sun-video");
 
-  const SUN = "sun-disc";
   const setX = (el, px) => { el.style.transform = "translate3d(" + px.toFixed(1) + "px,0,0)"; };
   const setO = (el, a) => { el.style.opacity = clamp(a, 0, 1).toFixed(3); };
 
@@ -117,5 +115,62 @@
     };
     requestAnimationFrame(tick);
     if (video && video.play) video.play().catch(() => {});
+  }
+
+  // ===== teaching widgets: user-driven input, reduced-motion safe =====
+  const SUN_ANG = 32.0;      // sun's average apparent diameter, arcminutes
+  const MOON_R_KM = 1737.4;  // moon radius, km
+
+  const distSlider = document.getElementById("dist-slider");
+  const distRead = document.getElementById("dist-read");
+  const distVerdict = document.getElementById("dist-verdict");
+  const distHint = document.getElementById("dist-hint");
+  const wMoon = document.getElementById("w-moon");
+
+  const fmt = n => Math.round(n).toLocaleString("en-US");
+
+  function updateDist() {
+    if (!distSlider) return;
+    const d = parseFloat(distSlider.value);
+    const ang = 2 * Math.atan(MOON_R_KM / d) * (180 / Math.PI) * 60;
+    const total = ang >= SUN_ANG;
+    distRead.textContent = fmt(d) + " km · " + ang.toFixed(1) + " arcmin";
+    distVerdict.textContent = total ? "TOTAL ECLIPSE" : "ANNULAR";
+    distVerdict.className = "verdict" + (total ? " total" : "");
+    distHint.textContent = total
+      ? "The moon covers the sun completely."
+      : "The moon leaves a ring of the sun showing.";
+    wMoon.setAttribute("r", (48 * ang / SUN_ANG).toFixed(2));
+  }
+  if (distSlider) {
+    distSlider.addEventListener("input", updateDist);
+    updateDist();
+  }
+
+  const sweepSlider = document.getElementById("sweep-slider");
+  const sweepRead = document.getElementById("sweep-read");
+  const sweepVerdict = document.getElementById("sweep-verdict");
+  const wUmbra = document.getElementById("w-umbra");
+  const wPenumbra = document.getElementById("w-penumbra");
+
+  function updateSweep() {
+    if (!sweepSlider) return;
+    const t = (parseFloat(sweepSlider.value) - 50) / 50; // -1 edge .. 1 edge
+    const a = t * 0.6; // radians along the limb
+    const x = 160 + 250 * Math.sin(a);
+    const y = 320 - 250 * Math.cos(a);
+    wUmbra.setAttribute("cx", x.toFixed(1));
+    wUmbra.setAttribute("cy", y.toFixed(1));
+    wPenumbra.setAttribute("cx", x.toFixed(1));
+    wPenumbra.setAttribute("cy", y.toFixed(1));
+    const speed = 1700 + 3300 * Math.pow(Math.abs(t), 0.6);
+    const width = 120 + 150 * (1 - Math.abs(t));
+    sweepRead.textContent = "ground speed about " + fmt(speed) + " km/h · umbra about " + fmt(width) + " km wide";
+    const at = Math.abs(t);
+    sweepVerdict.textContent = at < 0.15 ? "PATH CENTRE" : (at > 0.85 ? "PATH EDGE" : "INNER PATH");
+  }
+  if (sweepSlider) {
+    sweepSlider.addEventListener("input", updateSweep);
+    updateSweep();
   }
 })();
