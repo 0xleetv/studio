@@ -58,7 +58,8 @@ html,body{margin:0;padding:0;background:#000;color:var(--ink);
 .row.top .bar{background:linear-gradient(90deg, rgba(240,163,94,1), rgba(240,163,94,.45))}
 
 /* ---------- stats ---------- */
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem}
+.stats{display:flex;flex-wrap:wrap;gap:1.6rem 2.4rem}
+.stat b{white-space:nowrap}
 .stat b{display:block;font-size:clamp(1.9rem,6vw,3.4rem);font-weight:800;
   letter-spacing:-0.03em;margin-bottom:.5rem}
 .stat span{font-family:ui-monospace,Menlo,monospace;font-size:.68rem;
@@ -112,10 +113,13 @@ html,body{margin:0;padding:0;background:#000;color:var(--ink);
   font-size:.66rem;letter-spacing:.28em;text-transform:uppercase;color:#e3dfd7;
   text-shadow:0 2px 16px rgba(0,0,0,.9)}
 .anno::after{content:"";display:block;width:30px;height:1px;background:var(--line);margin-top:.5rem}
-#a-first{left:70vw;top:38vh}
+#a-first{left:82vw;top:36vh}
 #a-bead{left:60vw;top:38vh}
 #a-umbra{left:14vw;top:24vh}
 #a-limb{left:56vw;top:10vh}
-#a-stream{left:20vw;top:55vh}
+#a-stream{left:18vw;top:55vh}
+#a-bands{left:60vw;top:16vh}
+#a-prom{left:14vw;top:60vh}
+.anno,.tag-a,.tag-b,.chapter{transition:left .45s ease,top .45s ease}
 .tag-b{left:10vw;top:70vh;right:auto;text-align:left}
 @media (max-width:700px){.tag-b{top:90vh}}

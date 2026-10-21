@@ -212,6 +212,7 @@
     const cy = CY() + (py - 0.5) * H * 0.08 + sc[1] * H + sway * Math.cos(t * 0.23) * H * 0.003;
     const R = Math.min(Math.min(W, H) * 0.165 * cam.s, W * 0.42);
     const near = RM() ? 0 : Math.max(0, 1 - Math.hypot(px * W - cx, py * H - cy) / (2.4 * R));
+    lastDisc.x = cx; lastDisc.y = cy; lastDisc.r = R; lastDisc.vis = cam.alpha > 0.05;
 
     const wob = RM() ? 0 : Math.sin(t * 0.7) * 0.4 + Math.sin(t * 1.9 + 1.7) * 0.2;
     const approach = smooth(0.06, 0.30, p);
@@ -491,13 +492,88 @@
     }
   }
 
+  /* ---------- small words never touch objects or other words ---------- */
+  const SPOTS = {
+    "a-first":  [[0.82, 0.36], [0.62, 0.70], [0.28, 0.28], [0.08, 0.70]],
+    "a-bead":   [[0.58, 0.36], [0.74, 0.20], [0.28, 0.30], [0.68, 0.76], [0.86, 0.44]],
+    "a-umbra":  [[0.13, 0.24], [0.62, 0.20], [0.72, 0.60], [0.13, 0.76]],
+    "a-bands":  [[0.60, 0.16], [0.14, 0.30], [0.80, 0.62], [0.10, 0.66]],
+    "a-limb":   [[0.56, 0.10], [0.30, 0.12], [0.80, 0.08], [0.16, 0.72]],
+    "a-stream": [[0.18, 0.55], [0.13, 0.20], [0.74, 0.18], [0.13, 0.82]],
+    "a-prom":   [[0.14, 0.60], [0.13, 0.16], [0.74, 0.20], [0.14, 0.84]],
+    "tag-a":    [[0.09, 0.19], [0.64, 0.14], [0.09, 0.80]],
+    "tag-b":    [[0.10, 0.70], [0.64, 0.80], [0.09, 0.30], [0.09, 0.08]],
+    "chapter":  [[0.06, 0.045], [0.72, 0.045], [0.06, 0.91]]
+  };
+  let lastResolveP = -1;
+  const hideT = new Map();
+  function resolveSmallWords(force) {
+    if (!force && Math.abs(cur - lastResolveP) < 0.004) return;
+    lastResolveP = cur;
+    const rects = [];
+    for (const bd of bands) {
+      if (parseFloat(bd.el.style.opacity) > 0.03) {
+        bd.el.querySelectorAll(".copy, .display, .statement, .kicker, .stats").forEach((c) => rects.push(c.getBoundingClientRect()));
+      }
+    }
+    const targets = [];
+    for (const an of ANNO) {
+      const el = document.getElementById(an[0]);
+      if (el && parseFloat(el.style.opacity) > 0.02) targets.push(el);
+    }
+    if (tags.classList.contains("on")) {
+      for (const cls of [".tag-a", ".tag-b"]) { const el = document.querySelector(cls); if (el) targets.push(el); }
+    }
+    if (parseFloat(chapterEl.style.opacity) > 0.02) targets.push(chapterEl);
+    for (const el of targets) {
+      const key = el.id || el.classList[1];
+      const spots = SPOTS[key];
+      if (!spots) continue;
+      const base = el.getBoundingClientRect();
+      const w = base.width, h = base.height;
+      let chosen = null;
+      for (const [fx, fy] of spots) {
+        const L = fx * W, T = fy * H, Rr = L + w, B = T + h;
+        if (Rr > W - 8 || B > H - 8) continue;
+        let ok = true;
+        for (const cr of rects) {
+          if (L < cr.right && cr.left < Rr && T < cr.bottom && cr.top < B) { ok = false; break; }
+        }
+        if (ok && lastDisc.vis) {
+          const nx = Math.max(L, Math.min(lastDisc.x, Rr));
+          const ny = Math.max(T, Math.min(lastDisc.y, B));
+          const dx = lastDisc.x - nx, dy = lastDisc.y - ny;
+          const lim = lastDisc.r * 1.18;
+          if (dx * dx + dy * dy < lim * lim) ok = false;
+        }
+        if (ok) { chosen = [fx, fy]; break; }
+      }
+      if (chosen) {
+        const nl = (chosen[0] * 100).toFixed(1) + "vw", nt = (chosen[1] * 100).toFixed(1) + "vh";
+        if (el.style.left !== nl || el.style.top !== nt) {
+          el.style.visibility = "hidden";
+          clearTimeout(hideT.get(el));
+          hideT.set(el, setTimeout(() => { el.style.visibility = ""; }, 280));
+          el.style.left = nl;
+          el.style.top = nt;
+        } else if (!hideT.get(el)) {
+          el.style.visibility = "";
+        }
+      } else {
+        clearTimeout(hideT.get(el));
+        hideT.set(el, null);
+        el.style.visibility = "hidden";
+      }
+    }
+  }
+
   /* ---------- chapter label ---------- */
   const chapterEl = $("chapter");
   const chapterDefs = [
     ["Approach", 0.02, 0.26],
     ["Totality", 0.27, 0.415],
     ["Diamond ring", 0.42, 0.505],
-    ["Nightfall", 0.515, 0.635],
+    ["Nightfall", 0.515, 0.615],
     ["The shadow", 0.645, 0.745],
     ["The corona", 0.755, 0.905],
     ["The clock", 0.91, 1.01]
@@ -516,10 +592,12 @@
   const tags = $("tags");
   const ANNO = [
     ["a-first", 0.075, 0.125],
-    ["a-bead", 0.435, 0.515],
-    ["a-umbra", 0.53, 0.61],
+    ["a-bead", 0.435, 0.49],
+    ["a-umbra", 0.53, 0.575],
     ["a-limb", 0.68, 0.755],
-    ["a-stream", 0.865, 0.935]
+    ["a-stream", 0.865, 0.915],
+    ["a-bands", 0.40, 0.448],
+    ["a-prom", 0.855, 0.925]
   ];
   let tagsOn = true;
   document.addEventListener("click", (e) => {
@@ -558,8 +636,50 @@
     gy = Math.max(-1, Math.min(1, (e.beta - 40) / 30));
   });
 
+  /* ---------- shooting stars: rare visitors, scrolling or still ---------- */
+  let meteors = [], nextMeteor = 3 + Math.random() * 6;
+  function spawnMeteor() {
+    const dir = Math.random() < 0.5 ? -1 : 1;
+    const ang = 0.32 + Math.random() * 0.3;
+    meteors.push({
+      x: W * (0.08 + Math.random() * 0.84),
+      y: H * (0.04 + Math.random() * 0.38),
+      dx: dir * Math.cos(ang), dy: Math.sin(ang),
+      sp: 850 + Math.random() * 700,
+      t: 0, life: 0.8 + Math.random() * 0.5,
+      len: 130 + Math.random() * 110
+    });
+  }
+  function drawMeteors(dt) {
+    nextMeteor -= dt;
+    if (nextMeteor <= 0) { spawnMeteor(); nextMeteor = 6 + Math.random() * 10; }
+    for (let i = meteors.length - 1; i >= 0; i--) {
+      const m = meteors[i];
+      m.t += dt;
+      if (m.t >= m.life) { meteors.splice(i, 1); continue; }
+      const fade = Math.sin(Math.PI * m.t / m.life);
+      const hx = m.x + m.dx * m.sp * m.t, hy = m.y + m.dy * m.sp * m.t;
+      const tx = hx - m.dx * m.len, ty = hy - m.dy * m.len;
+      const g = ctx.createLinearGradient(hx, hy, tx, ty);
+      g.addColorStop(0, `rgba(255,255,255,${(0.85 * fade).toFixed(3)})`);
+      g.addColorStop(0.3, `rgba(215,225,255,${(0.38 * fade).toFixed(3)})`);
+      g.addColorStop(1, "rgba(215,225,255,0)");
+      ctx.strokeStyle = g;
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(hx, hy);
+      ctx.lineTo(tx, ty);
+      ctx.stroke();
+      ctx.fillStyle = `rgba(255,255,255,${(0.9 * fade).toFixed(3)})`;
+      ctx.beginPath();
+      ctx.arc(hx, hy, 1.4, 0, 6.283);
+      ctx.fill();
+    }
+  }
+
   /* ---------- master loop ---------- */
   let target = 0, cur = 0, tGlobal = 0, lastT = 0, driftV = 0, prevCur = 0;
+  let lastDisc = { x: 0, y: 0, r: 0, vis: false };
 
   function readScroll() {
     const span = Math.max(1, film.offsetHeight - window.innerHeight);
@@ -593,6 +713,8 @@
       if (el) el.style.opacity = (smooth(an[1], an[1] + 0.02, cur) * (1 - smooth(an[2] - 0.02, an[2], cur))).toFixed(3);
     }
 
+    resolveSmallWords();
+
     const useGyro = gyroOn && performance.now() - lastPointer > 1500;
     const tx = useGyro ? 0.5 + gx * 0.22 : mx;
     const ty = useGyro ? 0.5 + gy * 0.18 : my;
@@ -605,6 +727,7 @@
     drawStars(cur, tGlobal);
     drawHorizon(cur);
     drawMotes(cur, tGlobal);
+    drawMeteors(dt);
 
     /* eclipse camera: full -> pull back -> zoom back in */
     const pull = smooth(0.52, 0.63, cur);
@@ -632,6 +755,10 @@
   }
 
   window.addEventListener("resize", resize);
+  window.addEventListener("resize", () => {
+    document.querySelectorAll(".anno, .tag, .chapter").forEach((e) => { e.style.left = ""; e.style.top = ""; });
+    lastResolveP = -1;
+  });
   resize();
   readScroll();
   cur = target;
