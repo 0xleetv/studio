@@ -38,20 +38,19 @@
   const bandDefs = [
     ["b-hero", 0.0],
     ["b-geom", 0.105],
-    ["b-moon", 0.20],
-    ["b-tot", 0.30],
-    ["b-air", 0.365],
-    ["b-flash", 0.45],
-    ["b-fall", 0.545],
-    ["b-fall2", 0.60],
-    ["b-shadow", 0.70],
-    ["b-dur", 0.78],
-    ["b-cor", 0.89],
-    ["b-fut", 0.9333]
+    ["b-moon", 0.185],
+    ["b-tot", 0.275],
+    ["b-air", 0.35],
+    ["b-flash", 0.43],
+    ["b-fall", 0.52],
+    ["b-fall2", 0.595],
+    ["b-shadow", 0.675],
+    ["b-dur", 0.755],
+    ["b-cor", 0.845],
+    ["b-fut", 0.935]
   ];
   const bands = bandDefs.map(([id, a]) => {
     const el = document.getElementById(id);
-    el.style.top = `calc(${a * 100}%)`;
     el.querySelectorAll('.bar').forEach((bar) => {
       bar.dataset.w = parseFloat(bar.style.width) || 0;
     });
@@ -65,17 +64,16 @@
     for (const bd of bands) {
       const last = bd.a > 0.9;
       const hero = bd.a < 0.001;
-      const topCopy = bd.el.classList.contains("top");
-      const inWin = topCopy ? bd.a - CROSS : bd.a;
-      const outWin = topCopy ? bd.a : bd.a + 0.095;
-      const fadeIn = hero ? 1 : smooth(inWin - 0.02, inWin + 0.02, p);
-      const fadeOut = last ? 1 : 1 - smooth(outWin - 0.03, outWin + 0.008, p);
+      const fadeIn = hero ? 1 : smooth(bd.a - 0.025, bd.a - 0.004, p);
+      const fadeOut = hero ? 1 - smooth(0.05, 0.078, p)
+        : last ? 1 : 1 - smooth(bd.a + 0.055, bd.a + 0.08, p);
       const op = Math.max(0, Math.min(1, fadeIn * fadeOut));
       bd.el.style.opacity = op.toFixed(3);
-      bd.el.style.transform = `translateY(${(1 - op) * 26}px)`;
+      bd.el.style.visibility = op <= 0.002 ? "hidden" : "visible";
+      bd.el.style.transform = `translateY(${(((1 - fadeIn) - (1 - fadeOut)) * 18).toFixed(1)}px)`;
       bd.el.style.pointerEvents = op > 0.6 ? "auto" : "none";
       if (bd.el.id === "b-dur") {
-        const pr = smooth(bd.a - CROSS * 0.3, bd.a + CROSS * 0.9, p);
+        const pr = smooth(bd.a - 0.02, bd.a + 0.06, p);
         bd.el.querySelectorAll(".bar").forEach((bar) => {
           bar.style.width = ((parseFloat(bar.dataset.w) || 0) * pr).toFixed(1) + "%";
         });
@@ -90,6 +88,49 @@
   function moonScaleFromDist(km) {
     const ma = 2 * Math.atan(MOON_R_KM / km) * (3437.75);
     return ma / SUN_ANG;
+  }
+
+  const motes = Array.from({ length: 90 }, () => ({
+    x: Math.random(), y: Math.random(),
+    r: Math.random() * 1.4 + 0.5,
+    sp: Math.random() * 0.9 + 0.5,
+    ph: Math.random() * 6.28
+  }));
+
+  function drawHorizon(p) {
+    const day = 1 - smooth(0.22, 0.32, p);
+    const night = smooth(0.63, 0.70, p) * (1 - smooth(0.88, 0.94, p));
+    if (day > 0.01) {
+      const g = ctx.createLinearGradient(0, H * 0.72, 0, H);
+      g.addColorStop(0, "rgba(255,140,70,0)");
+      g.addColorStop(1, `rgba(255,140,70,${(0.09 * day).toFixed(3)})`);
+      ctx.fillStyle = g;
+      ctx.fillRect(0, H * 0.72, W, H * 0.28);
+    }
+    if (night > 0.01) {
+      const g = ctx.createLinearGradient(0, H * 0.78, 0, H);
+      g.addColorStop(0, "rgba(120,150,210,0)");
+      g.addColorStop(1, `rgba(120,150,210,${(0.07 * night).toFixed(3)})`);
+      ctx.fillStyle = g;
+      ctx.fillRect(0, H * 0.78, W, H * 0.22);
+    }
+  }
+
+  function drawMotes(p, t) {
+    const day = 1 - smooth(0.26, 0.36, p);
+    const night = smooth(0.63, 0.70, p) * (1 - smooth(0.92, 0.97, p));
+    const a = Math.max(day, night * 0.55);
+    if (a < 0.01) return;
+    const warm = a > 0 && day >= night;
+    for (const m of motes) {
+      const y = (((m.y * H - p * H * (1.1 + m.sp)) % (H + 60)) + H + 60) % (H + 60) - 30;
+      const x = m.x * W + (RM() ? 0 : Math.sin(t * 0.4 + m.ph) * 8);
+      const al = (0.14 + m.r * 0.12) * a;
+      ctx.fillStyle = warm ? `rgba(255,186,128,${al.toFixed(3)})` : `rgba(205,216,250,${al.toFixed(3)})`;
+      ctx.beginPath();
+      ctx.arc(x, y, m.r, 0, 6.283);
+      ctx.fill();
+    }
   }
 
   function drawStars(p, t) {
@@ -114,7 +155,7 @@
     if (cam.alpha <= 0.002) return;
     const cx = CX() + (px - 0.5) * W * 0.05;
     const cy = CY() + (py - 0.5) * H * 0.05;
-    const R = Math.min(W, H) * 0.155 * cam.s;
+    const R = Math.min(W, H) * 0.165 * cam.s;
 
     const wob = RM() ? 0 : Math.sin(t * 0.7) * 0.4 + Math.sin(t * 1.9 + 1.7) * 0.2;
     const approach = smooth(0.06, 0.30, p);
@@ -397,13 +438,13 @@
   /* ---------- chapter label ---------- */
   const chapterEl = $("chapter");
   const chapterDefs = [
-    ["Approach", 0.045, 0.295],
-    ["Totality", 0.305, 0.455],
-    ["Diamond ring", 0.44, 0.515],
-    ["Nightfall", 0.525, 0.635],
-    ["The shadow", 0.65, 0.805],
-    ["The corona", 0.815, 0.90],
-    ["The clock", 0.915, 1.01]
+    ["Approach", 0.02, 0.26],
+    ["Totality", 0.27, 0.415],
+    ["Diamond ring", 0.42, 0.505],
+    ["Nightfall", 0.515, 0.635],
+    ["The shadow", 0.645, 0.745],
+    ["The corona", 0.755, 0.905],
+    ["The clock", 0.91, 1.01]
   ];
   function layoutChapter(p) {
     let best = "", bestOp = 0;
@@ -419,10 +460,10 @@
   const tags = $("tags");
   const ANNO = [
     ["a-first", 0.075, 0.125],
-    ["a-bead", 0.455, 0.525],
-    ["a-umbra", 0.555, 0.63],
-    ["a-limb", 0.705, 0.78],
-    ["a-stream", 0.875, 0.945]
+    ["a-bead", 0.435, 0.515],
+    ["a-umbra", 0.53, 0.61],
+    ["a-limb", 0.68, 0.755],
+    ["a-stream", 0.865, 0.935]
   ];
   let tagsOn = true;
   document.addEventListener("click", (e) => {
@@ -477,7 +518,7 @@
     layoutBands(cur);
     layoutChapter(cur);
 
-    const tagWin = cur > 0.285 && cur < 0.465;
+    const tagWin = cur > 0.26 && cur < 0.42;
     tags.classList.toggle("on", tagsOn && tagWin);
 
     for (const an of ANNO) {
@@ -494,6 +535,8 @@
     ctx.fillRect(0, 0, W, H);
 
     drawStars(cur, tGlobal);
+    drawHorizon(cur);
+    drawMotes(cur, tGlobal);
 
     /* eclipse camera: full -> pull back -> zoom back in */
     const pull = smooth(0.52, 0.63, cur);

@@ -15,9 +15,9 @@ html,body{margin:0;padding:0;background:#000;color:var(--ink);
 #sky{position:absolute;inset:0;width:100%;height:100%;display:block}
 
 /* ---------- bands ---------- */
-.band{position:absolute;left:0;width:100%;height:100vh;display:flex;
+.band{position:fixed;top:0;left:0;width:100%;height:100vh;display:flex;
   align-items:flex-end;padding:12vh 6vw 14vh;overflow:hidden;
-  pointer-events:none;will-change:opacity,transform}
+  pointer-events:none;will-change:opacity,transform;visibility:hidden}
 .copy{position:relative;z-index:2;max-width:42rem;width:100%;
   text-shadow:0 2px 28px rgba(0,0,0,.85)}
 .copy-hero{position:absolute;left:6vw;bottom:11vh;width:auto}
@@ -117,3 +117,4 @@ html,body{margin:0;padding:0;background:#000;color:var(--ink);
 #a-umbra{left:44vw;top:26vh}
 #a-limb{left:56vw;top:10vh}
 #a-stream{left:20vw;top:55vh}
+.tag-b{left:10vw;top:70vh;right:auto;text-align:left}
