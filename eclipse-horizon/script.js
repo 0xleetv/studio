@@ -64,9 +64,9 @@
     for (const bd of bands) {
       const last = bd.a > 0.9;
       const hero = bd.a < 0.001;
-      const fadeIn = hero ? 1 : smooth(bd.a - 0.025, bd.a - 0.004, p);
+      const fadeIn = hero ? 1 : smooth(bd.a - 0.018, bd.a - 0.004, p);
       const fadeOut = hero ? 1 - smooth(0.05, 0.078, p)
-        : last ? 1 : 1 - smooth(bd.a + 0.055, bd.a + 0.08, p);
+        : last ? 1 : 1 - smooth(bd.a + 0.030, bd.a + 0.058, p);
       const op = Math.max(0, Math.min(1, fadeIn * fadeOut));
       bd.el.style.opacity = op.toFixed(3);
       bd.el.style.visibility = op <= 0.002 ? "hidden" : "visible";
@@ -99,7 +99,7 @@
 
   function drawHorizon(p) {
     const day = 1 - smooth(0.22, 0.32, p);
-    const night = smooth(0.63, 0.70, p) * (1 - smooth(0.88, 0.94, p));
+    const night = smooth(0.63, 0.70, p);
     if (day > 0.01) {
       const g = ctx.createLinearGradient(0, H * 0.72, 0, H);
       g.addColorStop(0, "rgba(255,140,70,0)");
@@ -118,13 +118,13 @@
 
   function drawMotes(p, t) {
     const day = 1 - smooth(0.26, 0.36, p);
-    const night = smooth(0.63, 0.70, p) * (1 - smooth(0.92, 0.97, p));
+    const night = smooth(0.515, 0.585, p);
     const a = Math.max(day, night * 0.55);
     if (a < 0.01) return;
     const warm = a > 0 && day >= night;
     for (const m of motes) {
       const y = (((m.y * H - p * H * (1.1 + m.sp)) % (H + 60)) + H + 60) % (H + 60) - 30;
-      const x = m.x * W + (RM() ? 0 : Math.sin(t * 0.4 + m.ph) * 8);
+      const x = m.x * W + (RM() ? 0 : Math.sin(t * 0.4 + m.ph) * 8) + (px - 0.5) * W * 0.03;
       const al = (0.14 + m.r * 0.12) * a;
       ctx.fillStyle = warm ? `rgba(255,186,128,${al.toFixed(3)})` : `rgba(205,216,250,${al.toFixed(3)})`;
       ctx.beginPath();
@@ -134,7 +134,7 @@
   }
 
   function drawStars(p, t) {
-    const w = smooth(0.645, 0.70, p) * (1 - smooth(0.89, 0.93, p));
+    const w = smooth(0.595, 0.66, p);
     if (w <= 0.002) return;
     ctx.globalAlpha = 1;
     for (let i = 0; i < stars.length; i++) {
@@ -151,10 +151,36 @@
   }
 
   /* the eclipse close-up: sun, moon, corona, flash. cam = {s, alpha} */
+  const SCENE_OFF = [
+    [0.000,  0.06, -0.03],
+    [0.105,  0.18, -0.04],
+    [0.185, -0.16,  0.00],
+    [0.275, -0.15,  0.00],
+    [0.350, -0.12,  0.00],
+    [0.430,  0.14, -0.10],
+    [0.520, -0.14,  0.00],
+    [0.595,  0.14,  0.00],
+    [0.675,  0.00,  0.00],
+    [0.755,  0.16,  0.00],
+    [0.845, -0.12,  0.08],
+    [0.935,  0.16,  0.02]
+  ];
+  function sceneOff(p) {
+    if (p <= SCENE_OFF[0][0]) return [SCENE_OFF[0][1], SCENE_OFF[0][2]];
+    for (let i = 0; i < SCENE_OFF.length - 1; i++) {
+      const A = SCENE_OFF[i], B = SCENE_OFF[i + 1];
+      if (p < B[0]) {
+        const t = smooth(A[0] + 0.02, B[0] - 0.02, p);
+        return [A[1] + (B[1] - A[1]) * t, A[2] + (B[2] - A[2]) * t];
+      }
+    }
+    return [SCENE_OFF[SCENE_OFF.length - 1][1], SCENE_OFF[SCENE_OFF.length - 1][2]];
+  }
   function drawEclipse(p, t, cam) {
     if (cam.alpha <= 0.002) return;
-    const cx = CX() + (px - 0.5) * W * 0.05;
-    const cy = CY() + (py - 0.5) * H * 0.05;
+    const sc = sceneOff(p);
+    const cx = CX() + (px - 0.5) * W * 0.08 + sc[0] * W;
+    const cy = CY() + (py - 0.5) * H * 0.08 + sc[1] * H;
     const R = Math.min(W, H) * 0.165 * cam.s;
 
     const wob = RM() ? 0 : Math.sin(t * 0.7) * 0.4 + Math.sin(t * 1.9 + 1.7) * 0.2;
@@ -167,7 +193,7 @@
     const mr = R * 1.045 * ms;
     const totality = approach >= 0.999 && !annular;
     const coronaBloom = smooth(0.28, 0.36, p) * (1 - smooth(0.44, 0.50, p))
-      + smooth(0.86, 0.90, p) * (1 - smooth(0.97, 1.0, p));
+      + smooth(0.86, 0.90, p) * (0.45 + 0.55 * (1 - smooth(0.97, 1.0, p)));
     const flash = smooth(0.455, 0.485, p) * (1 - smooth(0.50, 0.53, p));
 
     ctx.save();
@@ -542,8 +568,7 @@
     const pull = smooth(0.52, 0.63, cur);
     const zoom = smooth(0.86, 0.90, cur);
     const camS = 1 - 0.5 * pull + 0.7 * zoom;
-    const camA = (1 - smooth(0.52, 0.60, cur) * (1 - smooth(0.86, 0.91, cur)))
-      * (1 - smooth(0.94, 0.99, cur));
+    const camA = 1 - smooth(0.52, 0.60, cur) * (1 - smooth(0.86, 0.91, cur));
     const rot = -0.05 * pull + 0.04 * zoom;
     drawEclipse(cur, tGlobal, { s: Math.max(0.45, camS), alpha: Math.max(0, camA), rot: rot });
 

@@ -112,9 +112,9 @@ html,body{margin:0;padding:0;background:#000;color:var(--ink);
   font-size:.66rem;letter-spacing:.28em;text-transform:uppercase;color:#e3dfd7;
   text-shadow:0 2px 16px rgba(0,0,0,.9)}
 .anno::after{content:"";display:block;width:30px;height:1px;background:var(--line);margin-top:.5rem}
-#a-first{left:63vw;top:34vh}
-#a-bead{left:64vw;top:40vh}
-#a-umbra{left:44vw;top:26vh}
+#a-first{left:70vw;top:38vh}
+#a-bead{left:60vw;top:38vh}
+#a-umbra{left:14vw;top:24vh}
 #a-limb{left:56vw;top:10vh}
 #a-stream{left:20vw;top:55vh}
 .tag-b{left:10vw;top:70vh;right:auto;text-align:left}
