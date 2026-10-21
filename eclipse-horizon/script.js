@@ -97,22 +97,30 @@
     ph: Math.random() * 6.28
   }));
 
+  let hgDay = null, hgNight = null, hgW = 0, hgH = 0;
   function drawHorizon(p) {
     const day = 1 - smooth(0.22, 0.32, p);
-    const night = smooth(0.63, 0.70, p);
+    const night = smooth(0.55, 0.62, p);
+    if (hgW !== W || hgH !== H) {
+      hgDay = ctx.createLinearGradient(0, H * 0.72, 0, H);
+      hgDay.addColorStop(0, "rgba(255,140,70,0)");
+      hgDay.addColorStop(1, "rgba(255,140,70,1)");
+      hgNight = ctx.createLinearGradient(0, H * 0.78, 0, H);
+      hgNight.addColorStop(0, "rgba(120,150,210,0)");
+      hgNight.addColorStop(1, "rgba(120,150,210,1)");
+      hgW = W; hgH = H;
+    }
     if (day > 0.01) {
-      const g = ctx.createLinearGradient(0, H * 0.72, 0, H);
-      g.addColorStop(0, "rgba(255,140,70,0)");
-      g.addColorStop(1, `rgba(255,140,70,${(0.09 * day).toFixed(3)})`);
-      ctx.fillStyle = g;
+      ctx.globalAlpha = 0.09 * day;
+      ctx.fillStyle = hgDay;
       ctx.fillRect(0, H * 0.72, W, H * 0.28);
+      ctx.globalAlpha = 1;
     }
     if (night > 0.01) {
-      const g = ctx.createLinearGradient(0, H * 0.78, 0, H);
-      g.addColorStop(0, "rgba(120,150,210,0)");
-      g.addColorStop(1, `rgba(120,150,210,${(0.07 * night).toFixed(3)})`);
-      ctx.fillStyle = g;
+      ctx.globalAlpha = 0.07 * night;
+      ctx.fillStyle = hgNight;
       ctx.fillRect(0, H * 0.78, W, H * 0.22);
+      ctx.globalAlpha = 1;
     }
   }
 
@@ -137,14 +145,16 @@
     const w = smooth(0.595, 0.66, p);
     if (w <= 0.002) return;
     ctx.globalAlpha = 1;
+    ctx.fillStyle = "#e8e6e0";
+    const par = RM() ? 0 : 1;
+    const sx0 = (px - 0.5) * W * 0.018 * par, sy0 = (py - 0.5) * H * 0.014 * par;
     for (let i = 0; i < stars.length; i++) {
       const s = stars[i];
       let tw = 1;
       if (!RM()) tw = 0.7 + 0.3 * Math.sin(t * s.sp + s.ph);
       ctx.globalAlpha = s.a * w * tw;
-      ctx.fillStyle = "#e8e6e0";
       ctx.beginPath();
-      ctx.arc(s.x * W, s.y * H * 0.92, s.r, 0, 6.283);
+      ctx.arc(s.x * W + sx0, s.y * H * 0.92 + sy0, s.r, 0, 6.283);
       ctx.fill();
     }
     ctx.globalAlpha = 1;
@@ -170,18 +180,38 @@
     for (let i = 0; i < SCENE_OFF.length - 1; i++) {
       const A = SCENE_OFF[i], B = SCENE_OFF[i + 1];
       if (p < B[0]) {
-        const t = smooth(A[0] + 0.02, B[0] - 0.02, p);
+        const x = Math.min(1, Math.max(0, (p - (A[0] + 0.035)) / Math.max(0.001, (B[0] - 0.015) - (A[0] + 0.035))));
+        const t = x * x * x * (x * (x * 6 - 15) + 10);
         return [A[1] + (B[1] - A[1]) * t, A[2] + (B[2] - A[2]) * t];
       }
     }
     return [SCENE_OFF[SCENE_OFF.length - 1][1], SCENE_OFF[SCENE_OFF.length - 1][2]];
   }
+  const rayCv = document.createElement("canvas");
+  (function buildRay() {
+    rayCv.width = 256; rayCv.height = 64;
+    const g = rayCv.getContext("2d");
+    const lg = g.createLinearGradient(0, 0, 256, 0);
+    lg.addColorStop(0, "rgba(232,236,255,1)");
+    lg.addColorStop(1, "rgba(228,232,252,0)");
+    g.fillStyle = lg;
+    g.fillRect(0, 0, 256, 64);
+    const vg = g.createLinearGradient(0, 0, 0, 64);
+    vg.addColorStop(0, "rgba(0,0,0,0)");
+    vg.addColorStop(0.5, "rgba(0,0,0,1)");
+    vg.addColorStop(1, "rgba(0,0,0,0)");
+    g.globalCompositeOperation = "destination-in";
+    g.fillStyle = vg;
+    g.fillRect(0, 0, 256, 64);
+  })();
   function drawEclipse(p, t, cam) {
     if (cam.alpha <= 0.002) return;
     const sc = sceneOff(p);
-    const cx = CX() + (px - 0.5) * W * 0.08 + sc[0] * W;
-    const cy = CY() + (py - 0.5) * H * 0.08 + sc[1] * H;
-    const R = Math.min(W, H) * 0.165 * cam.s;
+    const sway = RM() ? 0 : 1;
+    const cx = CX() + (px - 0.5) * W * 0.08 + sc[0] * W + sway * Math.sin(t * 0.19) * W * 0.0035 + driftV * W;
+    const cy = CY() + (py - 0.5) * H * 0.08 + sc[1] * H + sway * Math.cos(t * 0.23) * H * 0.003;
+    const R = Math.min(Math.min(W, H) * 0.165 * cam.s, W * 0.42);
+    const near = RM() ? 0 : Math.max(0, 1 - Math.hypot(px * W - cx, py * H - cy) / (2.4 * R));
 
     const wob = RM() ? 0 : Math.sin(t * 0.7) * 0.4 + Math.sin(t * 1.9 + 1.7) * 0.2;
     const approach = smooth(0.06, 0.30, p);
@@ -192,8 +222,9 @@
     const annular = ms < 0.995;
     const mr = R * 1.045 * ms;
     const totality = approach >= 0.999 && !annular;
-    const coronaBloom = smooth(0.28, 0.36, p) * (1 - smooth(0.44, 0.50, p))
+    let coronaBloom = smooth(0.28, 0.36, p) * (1 - smooth(0.44, 0.50, p))
       + smooth(0.86, 0.90, p) * (0.45 + 0.55 * (1 - smooth(0.97, 1.0, p)));
+    coronaBloom = Math.min(1, coronaBloom + near * 0.18);
     const flash = smooth(0.455, 0.485, p) * (1 - smooth(0.50, 0.53, p));
 
     ctx.save();
@@ -215,7 +246,7 @@
     /* corona bloom behind moon */
     if (coronaBloom > 0.003 || totality || (annular && approach >= 0.999)) {
       const strength = annular ? coronaBloom * 0.35 : Math.max(coronaBloom, totality ? 0.12 : 0);
-      const sh = RM() ? 0 : Math.sin(t * 2.1) * 0.5 + Math.sin(t * 0.53) * 0.5;
+      const sh = RM() ? 0 : Math.sin(t * (2.1 + 1.6 * near)) * 0.5 + Math.sin(t * (0.53 + 0.4 * near)) * 0.5;
       for (let k = 0; k < 3; k++) {
         const base = [R * 1.25, R * 1.75, R * 2.45][k];
         const g = ctx.createRadialGradient(cx, cy, R * 0.98, cx, cy, base * (1 + 0.03 * sh * wob));
@@ -227,20 +258,19 @@
         ctx.arc(cx, cy, base * (1 + 0.03 * sh * wob), 0, 6.283);
         ctx.fill();
       }
-      /* tendrils */
+      /* tendrils: one cached soft ray, drawn per angle */
       const n = 56;
       for (let i = 0; i < n; i++) {
         const th = (i / n) * 6.283;
         const len = base1Len(i, R, t, coronaBloom, annular);
-        const g2 = ctx.createRadialGradient(cx, cy, R * 1.0, cx, cy, R + len);
-        g2.addColorStop(0, `rgba(232,236,255,${(annular ? 0.07 : 0.30) * Math.max(coronaBloom, 0.25) * cam.alpha})`);
-        g2.addColorStop(1, "rgba(228,232,252,0)");
-        ctx.fillStyle = g2;
-        ctx.beginPath();
-        ctx.moveTo(cx + Math.cos(th) * R * 0.99, cy + Math.sin(th) * R * 0.99);
-        ctx.arc(cx, cy, R + len, th - 0.035, th + 0.035);
-        ctx.closePath();
-        ctx.fill();
+        if (len < 2) continue;
+        const wd = 0.07 * (R * 0.99 + len);
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(th);
+        ctx.globalAlpha = Math.max(coronaBloom, 0.25) * cam.alpha * (W < 700 ? 0.72 : 1);
+        ctx.drawImage(rayCv, R * 0.99, -wd / 2, len, wd);
+        ctx.restore();
       }
     }
 
@@ -515,13 +545,21 @@
 
   /* ---------- pointer parallax ---------- */
   let mx = 0.5, my = 0.5, px = 0.5, py = 0.5;
+  let gyroOn = false, gx = 0, gy = 0, lastPointer = 0;
   window.addEventListener("pointermove", (e) => {
     mx = e.clientX / Math.max(1, W);
     my = e.clientY / Math.max(1, H);
+    lastPointer = performance.now();
+  });
+  window.addEventListener("deviceorientation", (e) => {
+    if (e.gamma == null) return;
+    gyroOn = true;
+    gx = Math.max(-1, Math.min(1, e.gamma / 22));
+    gy = Math.max(-1, Math.min(1, (e.beta - 40) / 30));
   });
 
   /* ---------- master loop ---------- */
-  let target = 0, cur = 0, tGlobal = 0, lastT = 0;
+  let target = 0, cur = 0, tGlobal = 0, lastT = 0, driftV = 0, prevCur = 0;
 
   function readScroll() {
     const span = Math.max(1, film.offsetHeight - window.innerHeight);
@@ -539,7 +577,10 @@
       const k = 1 - Math.pow(0.001, dt);
       cur += (target - cur) * k;
       if (Math.abs(target - cur) < 0.0002) cur = target;
+      driftV += ((cur - prevCur) * 9 - driftV) * Math.min(1, dt * 3.2);
+      driftV = Math.max(-0.035, Math.min(0.035, driftV));
     }
+    prevCur = cur;
 
     layoutBands(cur);
     layoutChapter(cur);
@@ -552,13 +593,14 @@
       if (el) el.style.opacity = (smooth(an[1], an[1] + 0.02, cur) * (1 - smooth(an[2] - 0.02, an[2], cur))).toFixed(3);
     }
 
-    px += (mx - px) * 0.06;
-    py += (my - py) * 0.06;
+    const useGyro = gyroOn && performance.now() - lastPointer > 1500;
+    const tx = useGyro ? 0.5 + gx * 0.22 : mx;
+    const ty = useGyro ? 0.5 + gy * 0.18 : my;
+    px += (tx - px) * 0.06;
+    py += (ty - py) * 0.06;
 
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = "#000";
-    ctx.fillRect(0, 0, W, H);
 
     drawStars(cur, tGlobal);
     drawHorizon(cur);
@@ -580,7 +622,7 @@
   }
 
   function resize() {
-    DPR = Math.min(2, window.devicePixelRatio || 1);
+    DPR = Math.min(W < 700 ? 1.5 : 1.75, window.devicePixelRatio || 1);
     W = window.innerWidth;
     H = window.innerHeight;
     canvas.width = Math.round(W * DPR);
