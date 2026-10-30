@@ -12,20 +12,18 @@ const AMBER = "229,139,53";
 const CYAN = "60,228,214";
 
 const CH = [
-  { w: "THE SLAB",      l: "One surface. One truth.",                          split: .50, shatter: 0,   grain: .10, scan: .04, tilt: 0,    zoom: 1.00, seamA: .35, photo: 0,   caustic: 0 },
-  { w: "THE SEAM",      l: "Drag it. Two realities share one stone.",          split: .50, shatter: 0,   grain: .18, scan: .14, tilt: .02,  zoom: 1.02, seamA: .90, photo: 0,   caustic: 0 },
-  { w: "NOISE",         l: "Grain is a fingerprint the sensor cannot help leaving.", split: .50, shatter: 0, grain: .55, scan: .08, tilt: -.03, zoom: 1.05, seamA: .50, photo: 0,   caustic: 0 },
-  { w: "LIGHT",         l: "Reflections obey geometry. Fakes forget the angle.", split: .62, shatter: 0,  grain: .16, scan: .12, tilt: .05,  zoom: 1.08, seamA: .50, photo: 0,   caustic: 1 },
-  { w: "TEXTURE",       l: "Skin repeats when a machine imagines it.",         split: .50, shatter: .50, grain: .30, scan: .22, tilt: 0,    zoom: 1.05, seamA: .40, photo: 0,   caustic: 0 },
-  { w: "THE FINE PRINT",l: "Small text betrays big models.",                   split: .50, shatter: .85, grain: .32, scan: .26, tilt: -.04, zoom: 1.10, seamA: .35, photo: 0,   caustic: 0 },
-  { w: "PROVENANCE",    l: "Every image remembers where it was made.",         split: .35, shatter: .40, grain: .24, scan: .18, tilt: .03,  zoom: 1.02, seamA: .45, photo: .25, caustic: 0 },
-  { w: "UNBROKEN",      l: "Pull back. It was one photograph all along.",      split: .50, shatter: 0,   grain: .12, scan: 0,   tilt: 0,    zoom: .88,  seamA: 0,   photo: 1,   caustic: 0 }
+  { w: "THE SLAB",       l: "One surface. One truth.",                                split: .50, shatter: 0,   grain: .22, scan: 0,   tilt: 0,    zoom: 1.00, seamA: .35, photo: 0,   caustic: 0 },
+  { w: "THE SEAM",       l: "Drag it. Two realities share one stone.",                split: .50, shatter: 0,   grain: .30, scan: .18, tilt: .02,  zoom: 1.02, seamA: 1,   photo: 0,   caustic: 0 },
+  { w: "NOISE",          l: "Grain is a fingerprint the sensor cannot help leaving.", split: .50, shatter: 0,   grain: .70, scan: .10, tilt: -.03, zoom: 1.05, seamA: .60, photo: 0,   caustic: 0 },
+  { w: "LIGHT",          l: "Reflections obey geometry. Fakes forget the angle.",     split: .62, shatter: 0,   grain: .26, scan: .14, tilt: .05,  zoom: 1.08, seamA: .60, photo: 0,   caustic: 1 },
+  { w: "TEXTURE",        l: "Skin repeats when a machine imagines it.",               split: .50, shatter: .55, grain: .40, scan: .30, tilt: 0,    zoom: 1.05, seamA: .30, photo: 0,   caustic: 0 },
+  { w: "THE FINE PRINT", l: "Small text betrays big models.",                         split: .50, shatter: .90, grain: .42, scan: .34, tilt: -.04, zoom: 1.10, seamA: 0,   photo: 0,   caustic: 0 },
+  { w: "PROVENANCE",     l: "Every image remembers where it was made.",               split: .35, shatter: .45, grain: .34, scan: .24, tilt: .03,  zoom: 1.02, seamA: .40, photo: .25, caustic: 0 },
+  { w: "UNBROKEN",       l: "Pull back. It was one photograph all along.",            split: .50, shatter: 0,   grain: .16, scan: 0,   tilt: 0,    zoom: .88,  seamA: 0,   photo: 1,   caustic: 0 }
 ];
 
 let W = 0, H = 0, DPR = 1;
-let warmTile = null, cyanTile = null;
 let warmPat = null, cyanPat = null;
-
 let facets = [];
 let slabW = 0, slabH = 0;
 
@@ -36,42 +34,29 @@ let dragging = false;
 function rand(a, b) { return a + Math.random() * (b - a); }
 
 function buildNoise() {
-  warmTile = document.createElement("canvas");
+  const warmTile = document.createElement("canvas");
   warmTile.width = warmTile.height = 128;
   const wc = warmTile.getContext("2d");
   const wi = wc.createImageData(128, 128);
   for (let i = 0; i < wi.data.length; i += 4) {
-    const v = Math.random() * 255;
     wi.data[i] = 229; wi.data[i + 1] = 139; wi.data[i + 2] = 53;
-    wi.data[i + 3] = v * 0.55;
+    wi.data[i + 3] = Math.random() * 255 * 0.6;
   }
   wc.putImageData(wi, 0, 0);
 
-  cyanTile = document.createElement("canvas");
+  const cyanTile = document.createElement("canvas");
   cyanTile.width = cyanTile.height = 128;
   const cc = cyanTile.getContext("2d");
   const ci = cc.createImageData(128, 128);
   for (let i = 0; i < ci.data.length; i += 4) {
-    const v = Math.random() < 0.12 ? 255 : 0;
+    const on = Math.random() < 0.10 ? 255 : 0;
     ci.data[i] = 60; ci.data[i + 1] = 228; ci.data[i + 2] = 214;
-    ci.data[i + 3] = v * 0.7;
+    ci.data[i + 3] = on * 0.75;
   }
   cc.putImageData(ci, 0, 0);
 
   warmPat = ctx.createPattern(warmTile, "repeat");
   cyanPat = ctx.createPattern(cyanTile, "repeat");
-}
-
-function buildSites(n) {
-  const cols = 6, rows = 6, sites = [];
-  const cellW = 1 / cols, cellH = 1 / rows;
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      sites.push({ x: (c + 0.15 + Math.random() * 0.7) * cellW, y: (r + 0.15 + Math.random() * 0.7) * cellH });
-    }
-  }
-  while (sites.length > n) sites.splice(Math.floor(Math.random() * sites.length), 1);
-  return sites;
 }
 
 function clipHalf(poly, ax, ay, nx, ny) {
@@ -90,7 +75,13 @@ function clipHalf(poly, ax, ay, nx, ny) {
 }
 
 function buildFacets() {
-  const sites = buildSites(32).map(s => ({ x: s.x * slabW, y: s.y * slabH }));
+  const cols = 6, rows = 6, sites = [];
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      sites.push({ x: (c + 0.15 + Math.random() * 0.7) / cols * slabW, y: (r + 0.15 + Math.random() * 0.7) / rows * slabH });
+    }
+  }
+  while (sites.length > 32) sites.splice(Math.floor(Math.random() * sites.length), 1);
   const rect = [[0, 0], [slabW, 0], [slabW, slabH], [0, slabH]];
   facets = sites.map(s => {
     let poly = rect;
@@ -107,7 +98,7 @@ function buildFacets() {
       poly, cx, cy,
       dirx: (cx - slabW / 2) / (slabW / 2 || 1),
       diry: (cy - slabH / 2) / (slabH / 2 || 1),
-      rot: rand(-0.35, 0.35),
+      rot: rand(-0.4, 0.4),
       jx: rand(-1, 1), jy: rand(-1, 1),
       power: 0.35 + d * 0.9
     };
@@ -120,10 +111,10 @@ function resize() {
   canvas.width = Math.round(W * DPR);
   canvas.height = Math.round(H * DPR);
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-  const oldW = slabW, oldH = slabH;
-  slabH = H * 0.60; slabW = Math.min(slabH * 0.44, W * 0.72);
+  slabH = H * 0.60;
+  slabW = Math.min(slabH * 0.44, W * 0.72);
   slabH = Math.min(slabH, slabW / 0.44);
-  if (Math.abs(oldW - slabW) > 2 || Math.abs(oldH - slabH) > 2 || !facets.length) buildFacets();
+  buildFacets();
   buildNoise();
   needsDraw = true;
 }
@@ -135,7 +126,6 @@ function state() {
   const a = CH[i], b = CH[i + 1];
   const L = (x, y) => x + (y - x) * t;
   return {
-    idx: i, frac: f - i,
     split: L(a.split, b.split), shatter: L(a.shatter, b.shatter),
     grain: L(a.grain, b.grain), scan: L(a.scan, b.scan),
     tilt: L(a.tilt, b.tilt), zoom: L(a.zoom, b.zoom),
@@ -151,111 +141,195 @@ function facetPath(poly) {
   ctx.closePath();
 }
 
+function fillWarm(x0, y0, x1, y1, grain, caustic) {
+  const g = ctx.createLinearGradient(x0, 0, x1, 0);
+  g.addColorStop(0, "#120E0B");
+  g.addColorStop(0.55, "#1A1410");
+  g.addColorStop(1, "#2A1D12");
+  ctx.fillStyle = g;
+  ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
+  if (grain > 0.01) {
+    ctx.globalAlpha = grain;
+    ctx.fillStyle = warmPat;
+    ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
+    ctx.globalAlpha = 1;
+  }
+  if (caustic) {
+    ctx.strokeStyle = "rgba(" + AMBER + ",0.13)";
+    ctx.lineWidth = 9;
+    ctx.beginPath();
+    ctx.moveTo(x0, y0 + (y1 - y0) * 0.25);
+    ctx.quadraticCurveTo((x0 + x1) / 2, y0 + (y1 - y0) * 0.16, x1, y0 + (y1 - y0) * 0.34);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x0, y0 + (y1 - y0) * 0.74);
+    ctx.quadraticCurveTo((x0 + x1) * 0.55, y0 + (y1 - y0) * 0.62, x1, y0 + (y1 - y0) * 0.80);
+    ctx.stroke();
+  }
+}
+
+function fillCyan(x0, y0, x1, y1, scan) {
+  const g = ctx.createLinearGradient(x1, 0, x0, 0);
+  g.addColorStop(0, "#081114");
+  g.addColorStop(0.55, "#0B181C");
+  g.addColorStop(1, "#102428");
+  ctx.fillStyle = g;
+  ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
+  if (scan > 0.01) {
+    ctx.globalAlpha = scan;
+    ctx.fillStyle = cyanPat;
+    ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = "rgba(" + CYAN + ",0.10)";
+    ctx.lineWidth = 1;
+    for (let y = 6; y < y1; y += 26) {
+      ctx.beginPath();
+      ctx.moveTo(x0, y);
+      ctx.lineTo(x1, y);
+      ctx.stroke();
+    }
+  }
+}
+
 function draw() {
   const s = state();
   const cx = W / 2, cy = H * 0.47;
   const sw = slabW * s.zoom, sh = slabH * s.zoom;
+  const depth = Math.max(10, sw * 0.07);
 
   ctx.clearRect(0, 0, W, H);
 
-  const glow = ctx.createRadialGradient(cx - sw * 0.25, cy, 10, cx - sw * 0.25, cy, Math.max(W, H) * 0.7);
-  glow.addColorStop(0, "rgba(" + AMBER + ",0.07)");
+  const glow = ctx.createRadialGradient(cx - sw * 0.3, cy, 10, cx - sw * 0.3, cy, Math.max(W, H) * 0.75);
+  glow.addColorStop(0, "rgba(" + AMBER + ",0.10)");
   glow.addColorStop(1, "rgba(" + AMBER + ",0)");
   ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
-  const glow2 = ctx.createRadialGradient(cx + sw * 0.25, cy, 10, cx + sw * 0.25, cy, Math.max(W, H) * 0.7);
-  glow2.addColorStop(0, "rgba(" + CYAN + ",0.06)");
+  const glow2 = ctx.createRadialGradient(cx + sw * 0.3, cy, 10, cx + sw * 0.3, cy, Math.max(W, H) * 0.75);
+  glow2.addColorStop(0, "rgba(" + CYAN + ",0.09)");
   glow2.addColorStop(1, "rgba(" + CYAN + ",0)");
   ctx.fillStyle = glow2; ctx.fillRect(0, 0, W, H);
 
-  const photoAll = s.photo > 0.5;
-  const seamX = seam * sw;
+  const vig = ctx.createRadialGradient(cx, cy, Math.min(W, H) * 0.25, cx, cy, Math.max(W, H) * 0.85);
+  vig.addColorStop(0, "rgba(8,9,11,0)");
+  vig.addColorStop(1, "rgba(3,4,5,0.55)");
+  ctx.fillStyle = vig; ctx.fillRect(0, 0, W, H);
+
+  const shadow = ctx.createRadialGradient(cx, cy + sh * 0.56, 4, cx, cy + sh * 0.56, sw * 0.9);
+  shadow.addColorStop(0, "rgba(0,0,0,0.5)");
+  shadow.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.save();
+  ctx.translate(0, sh * 0.06);
+  ctx.scale(1, 0.16);
+  ctx.fillStyle = shadow;
+  ctx.fillRect(cx - sw, -sw * 0.9, sw * 2, sw * 2);
+  ctx.restore();
 
   ctx.save();
   ctx.translate(cx, cy);
   ctx.rotate(s.tilt * 0.6);
   ctx.translate(-sw / 2, -sh / 2);
 
-  for (const f of facets) {
-    const side = photoAll || f.cx < seamX ? "warm" : "cyan";
-    const amt = s.shatter;
-    const dx = f.dirx * 0.22 * amt * f.power * sw + (side === "cyan" ? f.jx * 8 * amt : 0);
-    const dy = f.diry * 0.22 * amt * f.power * sh + (side === "cyan" ? f.jy * 8 * amt : 0);
-    const rot = side === "warm" ? f.rot * amt : 0;
+  const seamX = seam * sw;
+  const photoAll = s.photo > 0.5;
+  const shattered = s.shatter > 0.02;
 
-    ctx.save();
-    ctx.translate(f.cx + dx, f.cy + dy);
-    if (rot) ctx.rotate(rot);
-    ctx.translate(-f.cx, -f.cy);
+  if (!shattered) {
+    fillWarm(0, 0, seamX, sh, s.grain, s.caustic);
+    fillCyan(seamX, 0, sw, sh, s.scan);
 
-    facetPath(f.poly);
-    ctx.save();
-    ctx.clip();
-    ctx.fillStyle = side === "warm" ? "#181310" : "#0B1417";
-    ctx.fillRect(0, 0, sw, sh);
+    const rimL = ctx.createLinearGradient(seamX - sw * 0.22, 0, seamX, 0);
+    rimL.addColorStop(0, "rgba(" + AMBER + ",0)");
+    rimL.addColorStop(1, "rgba(" + AMBER + ",0.16)");
+    ctx.fillStyle = rimL; ctx.fillRect(seamX - sw * 0.22, 0, sw * 0.22, sh);
+    const rimR = ctx.createLinearGradient(seamX + sw * 0.22, 0, seamX, 0);
+    rimR.addColorStop(0, "rgba(" + CYAN + ",0)");
+    rimR.addColorStop(1, "rgba(" + CYAN + ",0.13)");
+    ctx.fillStyle = rimR; ctx.fillRect(seamX, 0, sw * 0.22, sh);
 
-    if (side === "warm") {
-      ctx.globalAlpha = s.grain;
-      ctx.fillStyle = warmPat;
-      ctx.fillRect(0, 0, sw, sh);
-      ctx.globalAlpha = 1;
-      if (s.caustic) {
-        ctx.strokeStyle = "rgba(" + AMBER + ",0.10)";
-        ctx.lineWidth = 8;
-        ctx.beginPath();
-        ctx.moveTo(0, sh * 0.25);
-        ctx.quadraticCurveTo(sw * 0.5, sh * 0.18, sw, sh * 0.34);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(0, sh * 0.72);
-        ctx.quadraticCurveTo(sw * 0.55, sh * 0.60, sw, sh * 0.78);
-        ctx.stroke();
-      }
-      ctx.strokeStyle = "rgba(232,225,214,0.05)";
-      ctx.lineWidth = 1;
-      ctx.strokeRect(0.5, 0.5, sw - 1, sh - 1);
-    } else {
-      ctx.globalAlpha = Math.max(s.scan, 0.10);
-      ctx.fillStyle = cyanPat;
-      ctx.fillRect(0, 0, sw, sh);
-      ctx.globalAlpha = 1;
-      ctx.strokeStyle = "rgba(" + CYAN + ",0.16)";
-      ctx.lineWidth = 1;
-      for (let y = 6; y < sh; y += 26) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(sw, y + (f.jy > 0 ? 1.5 : -1.5));
-        ctx.stroke();
-      }
-    }
-    ctx.restore();
+    ctx.strokeStyle = "rgba(0,0,0,0.55)";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(0.5, 0.5, sw - 1, sh - 1);
+  } else {
+    for (const f of facets) {
+      const side = photoAll || f.cx < seamX ? "warm" : "cyan";
+      const amt = s.shatter;
+      const dx = f.dirx * 0.24 * amt * f.power * sw + (side === "cyan" ? f.jx * 5 * amt : 0);
+      const dy = f.diry * 0.24 * amt * f.power * sh + (side === "cyan" ? f.jy * 5 * amt : 0);
+      const rot = side === "warm" ? f.rot * amt : 0;
 
-    if (side === "cyan") {
+      ctx.save();
+      ctx.translate(f.cx + dx, f.cy + dy);
+      if (rot) ctx.rotate(rot);
+      ctx.translate(-f.cx, -f.cy);
+
       facetPath(f.poly);
-      ctx.strokeStyle = "rgba(" + CYAN + ",0.28)";
-      ctx.lineWidth = 1;
-      ctx.stroke();
-    }
-    ctx.restore();
-  }
+      ctx.save();
+      ctx.clip();
+      if (side === "warm") fillWarm(0, 0, sw, sh, s.grain * 0.8, s.caustic);
+      else fillCyan(0, 0, sw, sh, s.scan);
+      ctx.restore();
 
-  if (s.seamA > 0.01 && s.photo < 0.95) {
-    ctx.globalAlpha = s.seamA * (1 - s.photo);
-    const g = ctx.createLinearGradient(seamX, 0, seamX, sh);
-    g.addColorStop(0, "rgba(" + AMBER + ",0.9)");
-    g.addColorStop(1, "rgba(" + CYAN + ",0.9)");
-    ctx.fillStyle = g;
-    ctx.fillRect(seamX - 1, 0, 2, sh);
-    ctx.globalAlpha = 1;
+      if (side === "cyan") {
+        facetPath(f.poly);
+        ctx.strokeStyle = "rgba(" + CYAN + "," + (0.10 + 0.22 * amt).toFixed(3) + ")";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
   }
 
   if (s.photo > 0.01) {
     const pg = ctx.createLinearGradient(0, 0, 0, sh);
     pg.addColorStop(0, "rgba(229,139,53,0)");
-    pg.addColorStop(0.5, "rgba(229,139,53," + (0.16 * s.photo).toFixed(3) + ")");
+    pg.addColorStop(0.5, "rgba(229,139,53," + (0.18 * s.photo).toFixed(3) + ")");
     pg.addColorStop(1, "rgba(229,139,53,0)");
     ctx.fillStyle = pg;
     ctx.fillRect(0, 0, sw, sh);
+    if (s.photo > 0.5) {
+      ctx.globalAlpha = (s.photo - 0.5) * 0.5;
+      ctx.fillStyle = warmPat;
+      ctx.fillRect(0, 0, sw, sh);
+      ctx.globalAlpha = 1;
+    }
   }
+
+  const seamGlow = s.seamA * (1 - s.photo) * (shattered ? 0.35 : 1);
+  if (seamGlow > 0.01) {
+    const band = ctx.createLinearGradient(seamX - 5, 0, seamX + 5, 0);
+    band.addColorStop(0, "rgba(" + AMBER + ",0)");
+    band.addColorStop(0.5, "rgba(" + AMBER + "," + (0.5 * seamGlow).toFixed(3) + ")");
+    band.addColorStop(0.52, "rgba(" + CYAN + "," + (0.5 * seamGlow).toFixed(3) + ")");
+    band.addColorStop(1, "rgba(" + CYAN + ",0)");
+    ctx.fillStyle = band;
+    ctx.fillRect(seamX - 5, 0, 10, sh);
+    ctx.fillStyle = "rgba(240,238,232," + (0.75 * seamGlow).toFixed(3) + ")";
+    ctx.fillRect(seamX - 0.5, 0, 1, sh);
+  }
+
+  ctx.fillStyle = "rgba(10,12,15,0.9)";
+  ctx.beginPath();
+  ctx.moveTo(sw, 0);
+  ctx.lineTo(sw + depth, depth * 0.5);
+  ctx.lineTo(sw + depth, sh + depth * 0.4);
+  ctx.lineTo(sw, sh);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = "rgba(24,20,16,0.9)";
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(depth, -depth * 0.45);
+  ctx.lineTo(sw + depth, -depth * 0.45);
+  ctx.lineTo(sw, 0);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle = "rgba(229,139,53,0.18)";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(depth, -depth * 0.45);
+  ctx.lineTo(sw + depth, -depth * 0.45);
+  ctx.lineTo(sw + depth, sh + depth * 0.4);
+  ctx.stroke();
 
   ctx.restore();
 }
@@ -268,9 +342,9 @@ function setTexts(i) {
   capEl.textContent = CH[i].l;
 }
 
-let needsDraw = true, raf = 0;
+let needsDraw = true;
 function loop() {
-  raf = requestAnimationFrame(loop);
+  requestAnimationFrame(loop);
   const p = scrollP;
   if (!reduced) {
     smoothP += (p - smoothP) * 0.14;
@@ -298,15 +372,14 @@ function loop() {
 function onScroll() {
   const max = track.offsetHeight - innerHeight;
   scrollP = max > 0 ? Math.min(1, Math.max(0, scrollY / max)) : 0;
-  if (!userDragged) { const s = state(); seamTarget = s.split; }
+  if (!userDragged) { seamTarget = state().split; }
   needsDraw = true;
 }
 
 function pointToSeam(e) {
   const rect = canvas.getBoundingClientRect();
-  const cx = rect.width / 2;
   const sw = slabW * state().zoom;
-  const local = e.clientX - (cx - sw / 2);
+  const local = e.clientX - (rect.width / 2 - sw / 2);
   seamTarget = Math.min(1, Math.max(0, local / sw));
   userDragged = true;
   needsDraw = true;
