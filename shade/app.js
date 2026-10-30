@@ -537,6 +537,9 @@ function render(cf) {
   }
 
   wordEl.style.transform = "translate(" + (px * 16).toFixed(1) + "px," + (py * 9).toFixed(1) + "px)";
+
+  const nearEnd = window.scrollY > Math.max(1, track.offsetHeight - H) - H * 0.35;
+  capEl.style.opacity = nearEnd ? "0" : "1";
 }
 
 function tick() {
