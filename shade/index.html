@@ -3,17 +3,52 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="SHADE. A monolith split into two realities. Scroll to move through the chapters, drag the seam.">
+<meta name="description" content="SHADE. A monolith split into two realities. Nine acts on one stone, teaching how to read AI generated images. Drag the seam.">
 <title>SHADE</title>
-<link rel="stylesheet" href="style.v3.css">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="track" id="track"></div>
+<div class="track" id="track">
+  <section class="act" id="overture" aria-label="Overture"></section>
+  <section class="act" id="slab" aria-label="The Slab"></section>
+  <section class="act" id="seam-act" aria-label="The Seam"></section>
+  <section class="act" id="noise-act" aria-label="Noise"></section>
+  <section class="act" id="light-act" aria-label="Light"></section>
+  <section class="act" id="texture-act" aria-label="Texture"></section>
+  <section class="act" id="fine-print" aria-label="The Fine Print"></section>
+  <section class="act" id="provenance-act" aria-label="Provenance"></section>
+  <section class="act" id="unbroken" aria-label="Unbroken"></section>
+</div>
 <header><span class="mark">SHADE</span></header>
-<h1 id="word" aria-live="polite"><span class="wc wl" id="wl">THE SLAB</span><span class="wc wr" id="wr" aria-hidden="true"></span></h1>
+<h1 id="word" aria-live="polite"><span class="wc wl" id="wl">SHADE</span><span class="wc wr" id="wr" aria-hidden="true"></span></h1>
 <canvas id="stage"></canvas>
-<p id="caption" aria-live="polite">One surface. One truth.</p>
-<script src="app.v10.js"></script>
-
+<span class="sl sl-l" id="slL">RENDER</span>
+<span class="sl sl-r" id="slR">PHOTOGRAPH</span>
+<span class="hint" id="hint">DRAG TO YAW</span>
+<aside id="prov" aria-hidden="true">
+  <div class="pc">
+    <span class="ph tl">PHOTOGRAPH</span>
+    <span>LENS 35MM, F1.4</span>
+    <span>EXPOSURE 4MS</span>
+    <span>ISO 200</span>
+    <span>TIME 14:32</span>
+    <span>PLACE LAGOS</span>
+  </div>
+  <div class="pc">
+    <span class="ph tr">RENDER</span>
+    <span>LENS NOT RECORDED</span>
+    <span>EXPOSURE NOT RECORDED</span>
+    <span>ISO NOT RECORDED</span>
+    <span>TIME NOT RECORDED</span>
+    <span>PLACE NOT RECORDED</span>
+  </div>
+</aside>
+<p id="caption" aria-live="polite">A monolith split into two realities.</p>
+<footer id="colo">
+  <span>SHADE. A study in reading images.</span>
+  <span>Nothing here was photographed: the stone, its grain and its light are drawn in code.</span>
+  <span>MMXXVI</span>
+</footer>
+<script src="app.js"></script>
 </body>
 </html>
