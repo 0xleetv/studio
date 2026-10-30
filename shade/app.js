@@ -13,10 +13,6 @@ const slR = document.getElementById("slR");
 const hintEl = document.getElementById("hint");
 const provEl = document.getElementById("prov");
 
-const RM = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const CYN = [60, 228, 214];
-const lightDir = [-0.55, 0.5, 0.65];
-
 const CH = [
   { t: "ovt",   w: "SHADE",          l: "A monolith split into two realities.",                   yaw: 0,   pit: 0,   roll: 0,  zoom: 1.12, seam: 0,    shat: 0,    grain: .28, glow: .12, photo: 0,   scan: .08, deb: .18, fall: 0,   spin: .10 },
   { t: "slab",  w: "THE SLAB",       l: "One surface. One truth.",                                yaw: -6,  pit: 2,   roll: 1,  zoom: 1.00, seam: 0,    shat: 0,    grain: .30, glow: .15, photo: 0,   scan: .10, deb: .10, fall: 0,   spin: .08 },
@@ -31,17 +27,27 @@ const CH = [
 
 let W = 0, H = 0, DPR = 1;
 let warmTex = null, cyanTex = null, warmBase = null, cyanBase = null, grainPat = null;
-let facets = [], plates = [];
-let dragging = false, dragX0 = 0, dragYaw = 0;
-let lastIdx = -1;
-let etchStep = -1;
-let raf = false;
+let shards = [], orbit = [];
+let dragging = false, dragX0 = 0, dragY0 = 0, orbY = 0, orbP = 0, yawVel = 0;
+let lastIdx = -1, etchStep = -1, raf = false;
 let cur = -1, prevCur = 0, smoothVel = 0;
 let tx = 0, ty = 0, px = 0, py = 0;
 let gSpin = 0, gFall = 0;
+let idleOrbit = 0;
+let monoPath = null;
 
 function rand(a, b) { return a + Math.random() * (b - a); }
 function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+function sub3(a, b) { return [a[0] - b[0], a[1] - b[1], a[2] - b[2]]; }
+function dot3(a, b) { return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]; }
+function cross3(a, b) { return [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]]; }
+function norm3(a) { const l = Math.hypot(a[0], a[1], a[2]) || 1; return [a[0] / l, a[1] / l, a[2] / l]; }
+function rotAxis(v, ax, ang) {
+  const c = Math.cos(ang), s = Math.sin(ang);
+  const d = dot3(ax, v);
+  const cr = cross3(ax, v);
+  return [v[0] * c + cr[0] * s + ax[0] * d * (1 - c), v[1] * c + cr[1] * s + ax[1] * d * (1 - c), v[2] * c + cr[2] * s + ax[2] * d * (1 - c)];
+}
 
 const FINE_LINES = ["MADE WITH LIGHT, NOT PAINT", "35MM, F1.4, ISO 200", "GRAIN STRUCTURED, EVEN", "A SURFACE THAT REMEMBERS"];
 const SUB = { A: "R", B: "8", C: "G", D: "0", E: "F", F: "E", G: "C", H: "N", I: "1", K: "X", L: "I", M: "N", N: "M", O: "0", P: "R", R: "P", S: "5", T: "7", U: "V", V: "U", W: "V", X: "K", Y: "V", Z: "2", "0": "O", "1": "I", "4": "A", "5": "S", "7": "T", "8": "B" };
@@ -127,142 +133,313 @@ function etchFine(step) {
   etch(cyanBase, cyanTex, "left", 10, "rgba(190,255,244,0.5)", decay);
 }
 
-function buildFacets() {
-  const w2 = .485, h2 = 1.1, COLS = 6, ROWS = 7;
-  const xs = [-w2], ys = [-h2];
-  for (let i = 1; i < COLS; i++) xs.push(-w2 + 2 * w2 * i / COLS + rand(-.03, .03));
-  xs.push(w2);
-  for (let j = 1; j < ROWS; j++) ys.push(-h2 + 2 * h2 * j / ROWS + rand(-.025, .025));
-  ys.push(h2);
-  for (let i = 0; i < COLS; i++) {
-    for (let j = 0; j < ROWS; j++) {
-      const pts = [[xs[i], ys[j]], [xs[i + 1], ys[j]], [xs[i + 1], ys[j + 1]], [xs[i], ys[j + 1]]];
-      const cx = (xs[i] + xs[i + 1]) / 2, cy = (ys[j] + ys[j + 1]) / 2;
-      const side = cx < 0 ? -1 : 1;
-      facets.push({
-        pts, cx, cy, side,
-        rot: rand(-.5, .5), ry: rand(-.8, .8),
-        dx: side * rand(.2, .8), dy: rand(-.55, .55), dz: rand(-.2, 1.1)
-      });
+const HH = 1.25, HW = 0.5, HD = 0.2;
+const GRID_C = 4, GRID_R = 7;
+
+function buildShards() {
+  shards = [];
+  for (let half = 0; half < 2; half++) {
+    const kind = half === 0 ? 0 : 1;
+    const cx = half === 0 ? -HW : HW;
+    for (let side = 0; side < 2; side++) {
+      const zn = side === 0 ? 1 : -1;
+      const z0 = zn * HD;
+      for (let i = 0; i < GRID_C; i++) {
+        for (let j = 0; j < GRID_R; j++) {
+          const x0 = cx - HW + (2 * HW) * i / GRID_C;
+          const x1 = cx - HW + (2 * HW) * (i + 1) / GRID_C;
+          const y0 = -HH + (2 * HH) * j / GRID_R;
+          const y1 = -HH + (2 * HH) * (j + 1) / GRID_R;
+          const fu0 = (x0 - (cx - HW)) / (2 * HW), fu1 = (x1 - (cx - HW)) / (2 * HW);
+          const fv0 = (y0 + HH) / (2 * HH), fv1 = (y1 + HH) / (2 * HH);
+          const tex = kind === 0 ? warmTex : cyanTex;
+          shards.push({
+            c: [(x0 + x1) / 2, (y0 + y1) / 2, z0],
+            n: [0, 0, zn],
+            u: [(x1 - x0) / 2, 0, 0],
+            v: [0, (y1 - y0) / 2, 0],
+            dr: rand(0.35, 1.3), dx: rand(-0.35, 0.35), dy: rand(-0.3, 0.3),
+            r1: rand(0.0004, 0.0013) * (Math.random() < .5 ? -1 : 1),
+            r2: rand(0.0003, 0.0009) * (Math.random() < .5 ? -1 : 1),
+            k: rand(0, 1),
+            rot1: 0, rot2: 0, fy: 0,
+            tex, kind,
+            u0: fu0 * tex.width, v0: fv0 * tex.height,
+            u1: fu1 * tex.width, v1: fv1 * tex.height
+          });
+        }
+      }
     }
   }
 }
 
-function buildPlates() {
-  for (let i = 0; i < 10; i++) {
-    const side = i % 2 ? 1 : -1;
-    plates.push({
-      side,
-      u0: 30 + Math.floor(rand(0, 170)), v0: 40 + Math.floor(rand(0, 380)),
-      us: rand(24, 52), vs: rand(18, 40),
-      r0: rand(0.95, 1.95), a0: rand(0, 6.283), y0: rand(-0.85, 0.85),
-      w: rand(0.15, 0.32), h: rand(0.11, 0.24),
-      s1: rand(0.5, 1.4), s2: rand(0.4, 1.2), s3: rand(0.3, 1.0),
-      ang: rand(0, 6.283),
-      fallY: 0
+function buildOrbit() {
+  orbit = [];
+  for (let i = 0; i < 12; i++) {
+    orbit.push({
+      r0: rand(1.15, 2.3),
+      w0: rand(0.05, 0.16) * (Math.random() < .5 ? -1 : 1),
+      a0: rand(0, Math.PI * 2),
+      y0: rand(-1.1, 1.1),
+      ph: rand(0, Math.PI * 2),
+      size: rand(0.14, 0.34),
+      s1: rand(0.0005, 0.0016) * (Math.random() < .5 ? -1 : 1),
+      s2: rand(0.0004, 0.001) * (Math.random() < .5 ? -1 : 1),
+      k: rand(0, 1),
+      rot1: 0, rot2: 0, fw: 0,
+      kind: Math.random() < .55 ? 0 : 1
     });
   }
 }
 
-function rot3(p, ax, ay, az) {
-  let x = p[0], y = p[1], z = p[2];
-  let c = Math.cos(ax), s = Math.sin(ax);
-  let y1 = y * c - z * s, z1 = y * s + z * c; y = y1; z = z1;
-  c = Math.cos(ay); s = Math.sin(ay);
-  let x1 = x * c + z * s; z1 = -x * s + z * c; x = x1; z = z1;
-  c = Math.cos(az); s = Math.sin(az);
-  const x2 = x * c - y * s, y2 = x * s + y * c;
-  return [x2, y2, z1];
+const lightDir = [-0.55, 0.5, 0.75];
+const L2FIX = [0.7, 0.25, 0.55];
+
+function shadeN(n) {
+  const b = 0.34 + 0.52 * Math.max(0, dot3(n, lightDir)) + 0.22 * Math.max(0, dot3(n, L2FIX));
+  return clamp(b, 0.08, 1.25);
 }
 
-function proj(p, cam) {
-  let x = p[0] * cam.cy + p[2] * cam.sy;
-  let z = -p[0] * cam.sy + p[2] * cam.cy;
-  let y = p[1] * cam.cp - z * cam.sp;
-  z = p[1] * cam.sp + z * cam.cp;
-  const xr = x * cam.cr - y * cam.sr, yr = x * cam.sr + y * cam.cr;
-  const dz = cam.d - z;
-  const s = cam.f / Math.max(.35, dz);
-  return [W / 2 + xr * s, H / 2 - yr * s, dz];
+function buildCam(yaw, pit, roll, R) {
+  const cp = Math.cos(pit), sp = Math.sin(pit), cy = Math.cos(yaw), sy = Math.sin(yaw);
+  const dir = [sy * cp, sp, cy * cp];
+  const tgt = [0, 0.08, 0];
+  const pos = [tgt[0] + R * dir[0], tgt[1] + R * dir[1], tgt[2] + R * dir[2]];
+  const fw = norm3([-dir[0], -dir[1], -dir[2]]);
+  let rt = norm3(cross3(fw, [0, 1, 0]));
+  let up = norm3(cross3(rt, fw));
+  if (roll) {
+    rt = rotAxis(rt, fw, roll);
+    up = rotAxis(up, fw, roll);
+  }
+  return { pos, fw, rt, up, f: Math.min(H * 0.8, W * 1.5) };
 }
 
-function shade(n, base) {
-  const L1 = lightDir, L2 = [.7, .25, .55];
-  const d1 = Math.max(0, n[0] * L1[0] + n[1] * L1[1] + n[2] * L1[2]);
-  const d2 = Math.max(0, n[0] * L2[0] + n[1] * L2[1] + n[2] * L2[2]);
-  const k = .35 + .65 * d1;
-  const r = Math.min(255, base[0] * k + CYN[0] * d2 * .28);
-  const g = Math.min(255, base[1] * k + CYN[1] * d2 * .28);
-  const b = Math.min(255, base[2] * k + CYN[2] * d2 * .28);
-  return "rgb(" + (r | 0) + "," + (g | 0) + "," + (b | 0) + ")";
+let CAM = null;
+
+function proj(p) {
+  const rx = p[0] - CAM.pos[0], ry = p[1] - CAM.pos[1], rz = p[2] - CAM.pos[2];
+  const cz = dot3([rx, ry, rz], CAM.fw);
+  if (cz < 0.25) return null;
+  const cx = dot3([rx, ry, rz], CAM.rt);
+  const cy = dot3([rx, ry, rz], CAM.up);
+  return [W / 2 + CAM.f * cx / cz, H / 2 - CAM.f * cy / cz, cz];
 }
 
-function facePath(pp) {
-  const P = new Path2D();
-  P.moveTo(pp[0][0], pp[0][1]);
-  for (let k = 1; k < pp.length; k++) P.lineTo(pp[k][0], pp[k][1]);
-  P.closePath();
-  return P;
+let faces = [];
+
+function quadFace(pts, n, opts) {
+  faces.push(Object.assign({ pts, n }, opts));
 }
 
-function strokeLine(a, b, style) {
-  ctx.strokeStyle = style; ctx.lineWidth = 1.4;
-  ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke();
+function buildMonolithFaces(g, shat, glow) {
+  for (let half = 0; half < 2; half++) {
+    const sgn = half === 0 ? -1 : 1;
+    const kind = half === 0 ? 0 : 1;
+    const cx = sgn * (HW + g);
+    const tex = kind === 0 ? warmTex : cyanTex;
+    const x0 = cx - HW, x1 = cx + HW, yb = -HH, yt = HH, z0 = -HD, z1 = HD;
+    const emis = kind === 0 ? "rgba(229,139,53," : "rgba(60,228,214,";
+    if (shat <= 0.02) {
+      quadFace([[x0, yb, z1], [x1, yb, z1], [x1, yt, z1], [x0, yt, z1]], [0, 0, 1], { tex, uvr: [0, 0, tex.width, tex.height], kind, solid: true });
+      quadFace([[x1, yb, z0], [x0, yb, z0], [x0, yt, z0], [x1, yt, z0]], [0, 0, -1], { tex, uvr: [0, 0, tex.width, tex.height], kind, solid: true });
+    }
+    const ox = half === 0 ? x0 : x1;
+    const onx = half === 0 ? -1 : 1;
+    quadFace([[ox, yb, z1], [ox, yb, z0], [ox, yt, z0], [ox, yt, z1]], [onx, 0, 0], { tex, uvr: [0, 0, tex.width, tex.height], kind, solid: true });
+    const ix = half === 0 ? x1 : x0;
+    const inx = half === 0 ? 1 : -1;
+    quadFace([[ix, yb, z1], [ix, yb, z0], [ix, yt, z0], [ix, yt, z1]], [inx, 0, 0], { emis: emis, glow: Math.max(0.12, glow), solid: true });
+    quadFace([[x0, yt, z1], [x1, yt, z1], [x1, yt, z0], [x0, yt, z0]], [0, 1, 0], { tex, uvr: [0, 0, tex.width, tex.height], kind, solid: true });
+    quadFace([[x0, yb, z0], [x1, yb, z0], [x1, yb, z1], [x0, yb, z1]], [0, -1, 0], { tex, uvr: [0, 0, tex.width, tex.height], kind, solid: true });
+  }
+  if (g > 0.02 && glow > 0.04) {
+    quadFace([[-0.06, -HH, 0], [0.06, -HH, 0], [0.06, HH, 0], [-0.06, HH, 0]], [0, 0, 1], { grad: true, glow, two: true });
+  }
 }
 
-function texTri(img, pA, pB, pC, tA, tB, tC) {
-  const det = (tB[0] - tA[0]) * (tC[1] - tA[1]) - (tC[0] - tA[0]) * (tB[1] - tA[1]);
-  if (Math.abs(det) < 1e-6) return;
-  const a = ((pB[0] - pA[0]) * (tC[1] - tA[1]) - (pC[0] - pA[0]) * (tB[1] - tA[1])) / det;
-  const c = ((pC[0] - pA[0]) * (tB[0] - tA[0]) - (pB[0] - pA[0]) * (tC[0] - tA[0])) / det;
-  const e = pA[0] - a * tA[0] - c * tA[1];
-  const b = ((pB[1] - pA[1]) * (tC[1] - tA[1]) - (pC[1] - pA[1]) * (tB[1] - tA[1])) / det;
-  const d = ((pC[1] - pA[1]) * (tB[0] - tA[0]) - (pB[1] - pA[1]) * (tC[0] - tA[0])) / det;
-  const f = pA[1] - b * tA[0] - d * tA[1];
-  const sx = Math.max(0, Math.floor(Math.min(tA[0], tB[0], tC[0])));
-  const sy = Math.max(0, Math.floor(Math.min(tA[1], tB[1], tC[1])));
-  const sw = Math.min(img.width - sx, Math.ceil(Math.max(tA[0], tB[0], tC[0])) - sx);
-  const sh = Math.min(img.height - sy, Math.ceil(Math.max(tA[1], tB[1], tC[1])) - sy);
-  if (sw <= 0 || sh <= 0) return;
+function buildShardFaces(shat, g, spinA, fall) {
+  if (shat <= 0.02) return;
+  for (const p of shards) {
+    const sgn = p.kind === 0 ? -1 : 1;
+    const cx = p.c[0] + sgn * g;
+    const cz = p.c[2];
+    const cyw = p.c[1];
+    const off = shat * p.dr;
+    const ox = cx + shat * p.dx;
+    const oy = cyw + shat * p.dy - p.fy * shat;
+    const oz = cz + p.n[2] * off;
+    const u1 = rotAxis(p.u, p.n, p.rot1 * shat);
+    const v1 = rotAxis(p.v, p.n, p.rot1 * shat);
+    const ua = norm3(u1);
+    const v2 = rotAxis(v1, ua, p.rot2 * shat);
+    const pts = [
+      [ox - u1[0] - v2[0], oy - u1[1] - v2[1], oz - u1[2] - v2[2]],
+      [ox + u1[0] - v2[0], oy + u1[1] - v2[1], oz + u1[2] - v2[2]],
+      [ox + u1[0] + v2[0], oy + u1[1] + v2[1], oz + u1[2] + v2[2]],
+      [ox - u1[0] + v2[0], oy - u1[1] + v2[1], oz - u1[2] + v2[2]]
+    ];
+    quadFace(pts, p.n, { tex: p.tex, uvr: [p.u0, p.v0, p.u1, p.v1], kind: p.kind, two: true, solid: true, shard: p });
+  }
+}
+
+function buildOrbitFaces(deb, tNow) {
+  if (deb < 0.04) return;
+  for (const p of orbit) {
+    const ang = p.a0 + tNow * 0.0001 * p.w0 * 60 * (1 + gSpin * 4);
+    const r = p.r0 * (0.55 + deb * 0.9);
+    const pxw = Math.cos(ang) * r;
+    const pzw = Math.sin(ang) * r;
+    const pyw = p.y0 + Math.sin(tNow * 0.0004 + p.ph) * 0.3 - p.fw;
+    const tex = p.kind === 0 ? warmTex : cyanTex;
+    const ax = norm3([Math.cos(p.a0), 0.3, Math.sin(p.a0)]);
+    const u1 = rotAxis([1, 0, 0], ax, p.rot1);
+    const v1 = rotAxis([0, 1, 0], ax, p.rot1);
+    const ua = norm3(u1);
+    const v2 = rotAxis(v1, ua, p.rot2);
+    const s = p.size * (0.7 + deb * 0.5);
+    const uu = [u1[0] * s, u1[1] * s, u1[2] * s];
+    const vv = [v2[0] * s, v2[1] * s, v2[2] * s];
+    const pts = [
+      [pxw - uu[0] - vv[0], pyw - uu[1] - vv[1], pzw - uu[2] - vv[2]],
+      [pxw + uu[0] - vv[0], pyw + uu[1] - vv[1], pzw + uu[2] - vv[2]],
+      [pxw + uu[0] + vv[0], pyw + uu[1] + vv[1], pzw + uu[2] + vv[2]],
+      [pxw - uu[0] + vv[0], pyw - uu[1] + vv[1], pzw - uu[2] + vv[2]]
+    ];
+    quadFace(pts, [0, 1, 0], { tex, uvr: [0, 0, tex.width, tex.height], kind: p.kind, two: true, shard: p });
+  }
+}
+
+function drawShadow(cam, deb) {
+  const c = proj([0, -HH, 0]);
+  if (!c) return;
+  const pts = [];
+  for (let i = 0; i < 12; i++) {
+    const a = i / 12 * Math.PI * 2;
+    const q = proj([Math.cos(a) * 1.35, -HH, Math.sin(a) * 1.35]);
+    if (!q) return;
+    pts.push(q);
+  }
+  let rad = 0;
+  for (const q of pts) rad += Math.hypot(q[0] - c[0], q[1] - c[1]);
+  rad = rad / pts.length;
   ctx.save();
   ctx.beginPath();
-  ctx.moveTo(pA[0], pA[1]); ctx.lineTo(pB[0], pB[1]); ctx.lineTo(pC[0], pC[1]);
-  ctx.closePath(); ctx.clip();
-  ctx.transform(a, b, c, d, e, f);
-  ctx.drawImage(img, sx, sy, sw, sh, sx, sy, sw, sh);
+  ctx.moveTo(pts[0][0], pts[0][1]);
+  for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+  ctx.closePath();
+  const gr = ctx.createRadialGradient(c[0], c[1], rad * 0.15, c[0], c[1], rad);
+  gr.addColorStop(0, "rgba(1,1,3,0.6)");
+  gr.addColorStop(1, "rgba(1,1,3,0)");
+  ctx.fillStyle = gr;
+  ctx.fill();
   ctx.restore();
 }
 
-function loupe(x, y, r, tex, sx0, sy0, label, col, v) {
+function texTri(img, p0, p1, p2, t0, t1, t2, dark) {
   ctx.save();
-  ctx.globalAlpha = v;
-  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
-  ctx.save(); ctx.clip();
-  ctx.drawImage(tex, sx0, sy0, 46, 46, x - r, y - r, r * 2, r * 2);
-  ctx.restore();
-  ctx.lineWidth = 1.4;
-  ctx.strokeStyle = "rgba(" + col + "," + (0.75 * v) + ")";
-  ctx.stroke();
-  ctx.beginPath(); ctx.arc(x, y, r + 6, 0, Math.PI * 2);
-  ctx.strokeStyle = "rgba(" + col + "," + (0.3 * v) + ")";
-  ctx.stroke();
-  ctx.font = "10px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
-  ctx.textAlign = "center";
-  ctx.fillStyle = "rgba(" + col + "," + (0.95 * v) + ")";
-  ctx.fillText(label, x, y + r + 24);
+  ctx.beginPath();
+  ctx.moveTo(p0[0], p0[1]); ctx.lineTo(p1[0], p1[1]); ctx.lineTo(p2[0], p2[1]);
+  ctx.closePath();
+  ctx.clip();
+  const den = (t1[0] - t0[0]) * (t2[1] - t0[1]) - (t2[0] - t0[0]) * (t1[1] - t0[1]);
+  if (Math.abs(den) > 1e-6) {
+    const a = ((p1[0] - p0[0]) * (t2[1] - t0[1]) - (p2[0] - p0[0]) * (t1[1] - t0[1])) / den;
+    const b = ((p2[0] - p0[0]) * (t1[0] - t0[0]) - (p1[0] - p0[0]) * (t2[0] - t0[0])) / den;
+    const c = ((p1[1] - p0[1]) * (t2[1] - t0[1]) - (p2[1] - p0[1]) * (t1[1] - t0[1])) / den;
+    const dd = ((p2[1] - p0[1]) * (t1[0] - t0[0]) - (p1[1] - p0[1]) * (t2[0] - t0[0])) / den;
+    const e = p0[0] - a * t0[0] - b * t0[1];
+    const f2 = p0[1] - c * t0[0] - dd * t0[1];
+    ctx.transform(a, c, b, dd, e, f2);
+    ctx.drawImage(img, 0, 0);
+    if (dark > 0.02) {
+      ctx.fillStyle = "rgba(5,3,2," + dark.toFixed(3) + ")";
+      ctx.fillRect(0, 0, img.width, img.height);
+    }
+  }
   ctx.restore();
 }
 
-function resize() {
-  DPR = Math.min(window.devicePixelRatio || 1, 2);
-  W = window.innerWidth; H = window.innerHeight;
-  canvas.width = W * DPR; canvas.height = H * DPR;
-  canvas.style.width = W + "px"; canvas.style.height = H + "px";
+function drawFace(f) {
+  const sp = f.sp;
+  const area = Math.abs((sp[1][0] - sp[0][0]) * (sp[2][1] - sp[0][1]) - (sp[2][0] - sp[0][0]) * (sp[1][1] - sp[0][1]));
+  const b = f.grad ? 1 : shadeN(f.n);
+  const dark = clamp(1 - b, 0, 0.86);
+  if (f.grad) {
+    ctx.save();
+    if (f.two) ctx.globalCompositeOperation = "lighter";
+    const gr = ctx.createLinearGradient(sp[0][0], sp[0][1], sp[1][0], sp[1][1]);
+    gr.addColorStop(0, "rgba(229,139,53," + (0.8 * f.glow).toFixed(3) + ")");
+    gr.addColorStop(1, "rgba(60,228,214," + (0.8 * f.glow).toFixed(3) + ")");
+    ctx.fillStyle = gr;
+    path(sp);
+    ctx.fill();
+    ctx.restore();
+  } else if (f.tex && area > 60) {
+    const uvr = f.uvr;
+    texTri(f.tex, sp[0], sp[1], sp[2], [uvr[0], uvr[3]], [uvr[2], uvr[3]], [uvr[2], uvr[1]], dark);
+    texTri(f.tex, sp[0], sp[2], sp[3], [uvr[0], uvr[3]], [uvr[2], uvr[1]], [uvr[0], uvr[1]], dark);
+  } else if (f.emis) {
+    ctx.fillStyle = f.emis + clamp(f.glow, 0.08, 1).toFixed(3) + ")";
+    path(sp);
+    ctx.fill();
+  } else {
+    ctx.fillStyle = f.kind === 0 ? "#4a2c10" : "#0e3438";
+    path(sp);
+    ctx.fill();
+  }
+  if (f.solid) {
+    monoPath.moveTo(sp[0][0], sp[0][1]);
+    for (let i = 1; i < sp.length; i++) monoPath.lineTo(sp[i][0], sp[i][1]);
+    monoPath.closePath();
+  }
 }
 
-function render(cf, dCur) {
-  const max = Math.max(1, track.offsetHeight - H);
-  const P = clamp(window.scrollY / max, 0, 1);
+function path(sp) {
+  ctx.beginPath();
+  ctx.moveTo(sp[0][0], sp[0][1]);
+  for (let i = 1; i < sp.length; i++) ctx.lineTo(sp[i][0], sp[i][1]);
+  ctx.closePath();
+}
+
+function drawFaces() {
+  for (const f of faces) {
+    f.sp = [];
+    let zsum = 0, ok = true;
+    for (const p of f.pts) {
+      const q = proj(p);
+      if (!q) { ok = false; break; }
+      f.sp.push(q);
+      zsum += q[2];
+    }
+    f.z = ok ? zsum / f.pts.length : -1;
+    f.ok = ok;
+  }
+  faces = faces.filter(f => f.ok);
+  for (const f of faces) {
+    if (f.two) continue;
+    const ctr = [(f.pts[0][0] + f.pts[2][0]) / 2, (f.pts[0][1] + f.pts[2][1]) / 2, (f.pts[0][2] + f.pts[2][2]) / 2];
+    if (dot3(f.n, sub3(CAM.pos, ctr)) < 0) f.ok = false;
+  }
+  faces = faces.filter(f => f.ok);
+  faces.sort((a, b) => b.z - a.z);
+  const mx = (px + 1) * .5 * W, my = (py + 1) * .5 * H;
+  for (const f of faces) {
+    if (f.shard) {
+      const cxp = (f.sp[0][0] + f.sp[2][0]) * .5, cyp = (f.sp[0][1] + f.sp[2][1]) * .5;
+      const dxp = cxp - mx, dyp = cyp - my;
+      const dist = Math.hypot(dxp, dyp);
+      if (dist < 280 && dist > 0.01) {
+        const push = Math.pow(1 - dist / 280, 2) * 52;
+        const ox = dxp / dist * push, oy = dyp / dist * push;
+        for (const q of f.sp) { q[0] += ox; q[1] += oy; }
+      }
+    }
+    drawFace(f);
+  }
+}
+
+function render(cf) {
   const i = Math.min(CH.length - 2, Math.floor(cf));
   let fr = cf - i; fr = fr * fr * (3 - 2 * fr);
   const a = CH[i], b = CH[i + 1];
@@ -280,264 +457,85 @@ function render(cf, dCur) {
     provEl.classList.toggle("on", c.t === "prov");
   }
   gSpin = L("spin"); gFall = L("fall");
-
   const tNow = performance.now();
-  lightDir[0] = -0.55 + px * 0.6; lightDir[1] = 0.5 + py * 0.35;
-  const yaw = (L("yaw") + dragYaw + px * 2.6 + Math.sin(tNow * 0.00035) * 1.4) * Math.PI / 180;
-  const pit = (L("pit") - py * 1.8 + Math.cos(tNow * 0.00023) * 0.8) * Math.PI / 180;
+  lightDir[0] = -0.55 + px * 0.7; lightDir[1] = 0.5 + py * 0.4; lightDir[2] = 0.75;
+  const ll = Math.hypot(lightDir[0], lightDir[1], lightDir[2]) || 1;
+  lightDir[0] /= ll; lightDir[1] /= ll; lightDir[2] /= ll;
+
+  const yawDeg = L("yaw") + orbY + idleOrbit + px * 3 + Math.sin(tNow * 0.00035) * 1.2;
+  const pitDeg = clamp(L("pit") + orbP - py * 2 + Math.cos(tNow * 0.00023) * 0.7, -55, 55);
   const roll = (L("roll") + clamp(smoothVel * 220, -9, 9)) * Math.PI / 180;
-  const cam = {
-    sy: Math.sin(yaw), cy: Math.cos(yaw),
-    sp: Math.sin(pit), cp: Math.cos(pit),
-    sr: Math.sin(roll), cr: Math.cos(roll),
-    d: 3.2 / L("zoom"),
-    f: (W < 640 ? .74 : .87) * H
-  };
+  const R = 5.0 / L("zoom");
+  CAM = buildCam(yawDeg * Math.PI / 180, pitDeg * Math.PI / 180, roll, R);
+
   const seam = L("seam"), shat = L("shat"), grain = L("grain");
-  const glow = L("glow"), tint = L("photo"), scan = L("scan");
-  const deb = L("deb");
-  const w2 = .485, h2 = 1.1, t2 = .09, g2 = seam * .045;
+  const glow = L("glow"), tint = L("photo"), scan = L("scan"), deb = L("deb");
 
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-  ctx.globalAlpha = 1;
   ctx.clearRect(0, 0, W, H);
 
-  const sb = proj([0, -h2 - .18, 0], cam);
-  const sw = w2 * 1.5 * (cam.f / cam.d);
+  faces = [];
+  monoPath = new Path2D();
+
+  drawShadow(0, 0);
+
+  buildMonolithFaces(seam * 0.3, shat, glow);
+  buildShardFaces(shat, seam * 0.3);
+  buildOrbitFaces(deb, tNow);
+
+  drawFaces();
+
   ctx.save();
-  ctx.translate(sb[0], sb[1]); ctx.scale(1, .16); ctx.translate(-sb[0], -sb[1]);
-  const shG = ctx.createRadialGradient(sb[0], sb[1], 0, sb[0], sb[1], sw);
-  shG.addColorStop(0, "rgba(0,0,0,0.55)"); shG.addColorStop(1, "rgba(0,0,0,0)");
-  ctx.fillStyle = shG;
-  ctx.beginPath(); ctx.arc(sb[0], sb[1], sw, 0, Math.PI * 2); ctx.fill();
+  ctx.clip(monoPath);
+  ctx.globalCompositeOperation = "lighter";
+  const lx = (px + 1) * .5 * W, ly = (py + 1) * .5 * H;
+  const lr = Math.min(W, H) * .42;
+  const lg = ctx.createRadialGradient(lx, ly, 0, lx, ly, lr);
+  lg.addColorStop(0, "rgba(255,238,214,0.20)");
+  lg.addColorStop(.5, "rgba(255,214,160,0.08)");
+  lg.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.fillStyle = lg;
+  ctx.fillRect(0, 0, W, H);
   ctx.restore();
 
-  const FL = [[-w2 - g2, h2, t2], [-g2, h2, t2], [-g2, -h2, t2], [-w2 - g2, -h2, t2]];
-  const FR = [[g2, h2, t2], [w2, h2, t2], [w2, -h2, t2], [g2, -h2, t2]];
-  const BK = [[-w2 - g2, h2, -t2], [w2, h2, -t2], [w2, -h2, -t2], [-w2 - g2, -h2, -t2]];
-  const RS = [[w2, h2, t2], [w2, h2, -t2], [w2, -h2, -t2], [w2, -h2, t2]];
-  const LS = [[-w2 - g2, h2, t2], [-w2 - g2, h2, -t2], [-w2 - g2, -h2, -t2], [-w2 - g2, -h2, t2]];
-  const TP = [[-w2 - g2, h2, t2], [w2, h2, t2], [w2, h2, -t2], [-w2 - g2, h2, -t2]];
-  const BT = [[-w2 - g2, -h2, t2], [w2, -h2, t2], [w2, -h2, -t2], [-w2 - g2, -h2, -t2]];
-
-  const faces = [];
-  const addP = (pp, kind, data) => {
-    let dz = 0;
-    for (const q of pp) dz += q[2];
-    faces.push({ pp, dz: dz / pp.length, kind, data });
-  };
-  const addW = (pts3, kind, data) => addP(pts3.map(q => proj(q, cam)), kind, data);
-
-  if (shat < .02) {
-    addW(FL, "texL"); addW(FR, "texR");
-  } else {
-    for (const f of facets) {
-      const cR = Math.cos(f.rot * shat), sR = Math.sin(f.rot * shat);
-      const cY = Math.cos(f.ry * shat), sY = Math.sin(f.ry * shat);
-      const ox = f.cx + f.dx * shat * .55, oy = f.cy + f.dy * shat * .55, oz = f.dz * shat * .5;
-      const pp = f.pts.map(pt => {
-        let x = pt[0] - f.cx, y = pt[1] - f.cy;
-        const xr = x * cR - y * sR, yr = x * sR + y * cR;
-        const z2 = xr * sY;
-        const wx = ox + xr * cY, wy = oy + yr, wz = oz + z2;
-        return proj([wx, wy, wz], cam);
-      });
-      addP(pp, "fac", f);
-    }
-  }
-  addW(BK, "solid", { n: [0, 0, -1], base: [10, 12, 14] });
-  addW(RS, "solid", { n: [1, 0, 0], base: [26, 15, 7] });
-  addW(LS, "solid", { n: [-1, 0, 0], base: [8, 11, 13] });
-  addW(TP, "solid", { n: [0, 1, 0], base: [30, 20, 10] });
-  addW(BT, "solid", { n: [0, -1, 0], base: [8, 9, 10] });
-
-  const mx = (px + 1) * .5 * W, my = (py + 1) * .5 * H;
-  const debAlpha = clamp(.25 + deb * 1.1, 0, 1);
-  if (debAlpha > 0.03) {
-    for (const p of plates) {
-      const an = p.a0 + cf * 0.4 * p.side;
-      const r = p.r0 * (0.45 + deb * 1.15);
-      const x = Math.cos(an) * r;
-      const z = 0.25 + Math.sin(an) * r * 0.35;
-      const y = p.y0 + p.fallY + Math.sin(tNow * 0.0005 + p.a0 * 7) * 0.07;
-      const ax = p.ang * p.s1, ay = p.ang * p.s2, az = p.ang * p.s3;
-      const c0 = rot3([-p.w, -p.h, 0], ax, ay, az);
-      const c1 = rot3([p.w, -p.h, 0], ax, ay, az);
-      const c2 = rot3([p.w, p.h, 0], ax, ay, az);
-      const c3 = rot3([-p.w, p.h, 0], ax, ay, az);
-      const e1 = [c1[0] - c0[0], c1[1] - c0[1], c1[2] - c0[2]];
-      const e2 = [c3[0] - c0[0], c3[1] - c0[1], c3[2] - c0[2]];
-      let nx = e1[1] * e2[2] - e1[2] * e2[1];
-      let ny = e1[2] * e2[0] - e1[0] * e2[2];
-      let nz = e1[0] * e2[1] - e1[1] * e2[0];
-      const nl = Math.hypot(nx, ny, nz) || 1;
-      nx /= nl; ny /= nl; nz /= nl;
-      const tex = p.side < 0 ? warmTex : cyanTex;
-      const quad3 = [[x + c0[0], y + c0[1], z + c0[2]], [x + c1[0], y + c1[1], z + c1[2]], [x + c2[0], y + c2[1], z + c2[2]], [x + c3[0], y + c3[1], z + c3[2]]];
-      const pp = quad3.map(q => proj(q, cam));
-      {
-        const cxp = (pp[0][0] + pp[2][0]) * .5, cyp = (pp[0][1] + pp[2][1]) * .5;
-        const dxp = cxp - mx, dyp = cyp - my;
-        const dist = Math.hypot(dxp, dyp);
-        if (dist < 280 && dist > 0.01) {
-          const push = Math.pow(1 - dist / 280, 2) * 52;
-          const oxp = dxp / dist * push, oyp = dyp / dist * push;
-          for (const q of pp) { q[0] += oxp; q[1] += oyp; }
-        }
-      }
-      const T = [[p.u0, p.v0], [p.u0 + p.us, p.v0], [p.u0 + p.us, p.v0 + p.vs], [p.u0, p.v0 + p.vs]];
-      const d1 = Math.max(0, nx * -0.55 + ny * 0.5 + nz * 0.65);
-      addP(pp, "deb", { tex, T, d1, alpha: debAlpha });
-    }
-  }
-
-  faces.sort((u, v) => v.dz - u.dz);
-
-  const clip = new Path2D();
-  for (const f of faces) {
-    const path = facePath(f.pp);
-    if (f.kind === "texL" || f.kind === "texR") {
-      const tex = f.kind === "texL" ? warmTex : cyanTex;
-      const P0 = f.pp[0], P1 = f.pp[1], P2 = f.pp[3];
-      const m11 = (P1[0] - P0[0]) / 256, m12 = (P1[1] - P0[1]) / 256;
-      const m21 = (P2[0] - P0[0]) / 512, m22 = (P2[1] - P0[1]) / 512;
-      ctx.save();
-      ctx.globalAlpha = 1;
-      ctx.transform(m11, m12, m21, m22, P0[0], P0[1]);
-      ctx.drawImage(tex, 0, 0);
-      ctx.restore();
-      clip.addPath(path);
-    } else if (f.kind === "fac") {
-      const fd = f.data;
-      const tex = fd.side < 0 ? warmTex : cyanTex;
-      const x0 = -w2 - g2, x1 = g2;
-      const T = fd.pts.map(pt => {
-        let u;
-        if (fd.side < 0) u = (pt[0] - x0) / w2 * 256;
-        else u = (pt[0] - x1) / (w2 - x1) * 256;
-        u = clamp(u, 0, 255);
-        const v = clamp((h2 - pt[1]) / (2 * h2) * 512, 0, 511);
-        return [u, v];
-      });
-      texTri(tex, f.pp[0], f.pp[1], f.pp[2], T[0], T[1], T[2]);
-      texTri(tex, f.pp[0], f.pp[2], f.pp[3], T[0], T[2], T[3]);
-      const n = [Math.sin(fd.ry * shat), 0, Math.cos(fd.ry * shat)];
-      const d1 = Math.max(0, n[0] * -0.55 + n[1] * 0.5 + n[2] * 0.65);
-      ctx.fillStyle = "rgba(0,0,0," + ((1 - d1) * 0.45) + ")";
-      ctx.fill(path);
-      ctx.strokeStyle = "rgba(255,255,255,0.05)"; ctx.lineWidth = 1;
-      ctx.stroke(path);
-      clip.addPath(path);
-    } else if (f.kind === "deb") {
-      const dd = f.data;
-      ctx.save();
-      ctx.globalAlpha = dd.alpha;
-      texTri(dd.tex, f.pp[0], f.pp[1], f.pp[2], dd.T[0], dd.T[1], dd.T[2]);
-      texTri(dd.tex, f.pp[0], f.pp[2], f.pp[3], dd.T[0], dd.T[2], dd.T[3]);
-      ctx.fillStyle = "rgba(0,0,0," + ((1 - dd.d1) * 0.5) + ")";
-      ctx.fill(path);
-      ctx.strokeStyle = "rgba(255,255,255,0.06)"; ctx.lineWidth = 1;
-      ctx.stroke(path);
-      ctx.restore();
-    } else {
-      ctx.fillStyle = shade(f.data.n, f.data.base);
-      ctx.fill(path);
-    }
-  }
-
-  if (g2 > 0.001) {
-    const sT = proj([0, h2, t2], cam), sB = proj([0, -h2, t2], cam);
-    const aa = Math.min(1, glow) * .9;
-    const lg = ctx.createLinearGradient(sT[0], sT[1], sB[0], sB[1]);
-    lg.addColorStop(0, "rgba(229,139,53," + (aa * .7) + ")");
-    lg.addColorStop(.5, "rgba(255,214,160," + aa + ")");
-    lg.addColorStop(1, "rgba(60,228,214," + (aa * .6) + ")");
-    ctx.save();
-    ctx.globalCompositeOperation = "lighter";
-    ctx.strokeStyle = lg;
-    ctx.lineWidth = Math.max(1.5, g2 * cam.f / cam.d * 2.2);
-    ctx.lineCap = "round";
-    ctx.beginPath(); ctx.moveTo(sT[0], sT[1]); ctx.lineTo(sB[0], sB[1]); ctx.stroke();
-    ctx.restore();
-    if (shat < .02) {
-      strokeLine(proj([-g2, h2, t2], cam), proj([-g2, -h2, t2], cam), "rgba(229,139,53," + (.25 + .45 * glow) + ")");
-      strokeLine(proj([g2, h2, t2], cam), proj([g2, -h2, t2], cam), "rgba(60,228,214," + (.25 + .45 * glow) + ")");
-    }
-  }
-
   if (scan > 0.01) {
+    const sy2 = H * (0.15 + 0.7 * ((cf % 1 + 1) % 1));
+    const sg = ctx.createLinearGradient(0, sy2 - 90, 0, sy2 + 90);
+    sg.addColorStop(0, "rgba(180,220,255,0)");
+    sg.addColorStop(.5, "rgba(180,220,255," + (scan * 0.10).toFixed(3) + ")");
+    sg.addColorStop(1, "rgba(180,220,255,0)");
+    ctx.fillStyle = sg;
+    ctx.fillRect(0, sy2 - 90, W, 180);
+  }
+
+  if (grain > 0.01 && grainPat) {
     ctx.save();
-    ctx.clip(clip);
-    ctx.globalCompositeOperation = "lighter";
-    const bx = (P * 1.6 - .3) * W;
-    const bg = ctx.createLinearGradient(bx - 180, 0, bx + 180, 0);
-    bg.addColorStop(0, "rgba(255,255,255,0)");
-    bg.addColorStop(.5, "rgba(255,244,220," + (.10 * scan) + ")");
-    bg.addColorStop(1, "rgba(255,255,255,0)");
-    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+    ctx.globalAlpha = grain * 0.16;
+    const off = (tNow * 0.06) % 160;
+    ctx.translate(-off, -off * 0.6);
+    ctx.fillStyle = grainPat;
+    ctx.fillRect(0, 0, W + 160, H + 160);
     ctx.restore();
   }
 
-  if (grain > 0.01) {
-    ctx.save();
-    ctx.clip(clip);
-    ctx.globalAlpha = grain * .5;
-    ctx.globalCompositeOperation = "overlay";
-    ctx.fillStyle = grainPat; ctx.fillRect(0, 0, W, H);
-    ctx.restore();
-  }
+  const vg = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * .35, W / 2, H / 2, Math.max(W, H) * .75);
+  vg.addColorStop(0, "rgba(4,5,8,0)");
+  vg.addColorStop(1, "rgba(2,3,5,0.55)");
+  ctx.fillStyle = vg;
+  ctx.fillRect(0, 0, W, H);
 
   if (tint > 0.01) {
     ctx.save();
-    ctx.clip(clip);
-    ctx.globalAlpha = tint * .65;
+    ctx.globalAlpha = tint * 0.65;
     ctx.globalCompositeOperation = "soft-light";
     ctx.fillStyle = "rgb(214,146,74)"; ctx.fillRect(0, 0, W, H);
-    ctx.globalAlpha = tint * .25;
+    ctx.globalAlpha = tint * 0.25;
     ctx.globalCompositeOperation = "lighter";
     ctx.fillStyle = "rgb(120,84,40)"; ctx.fillRect(0, 0, W, H);
     ctx.restore();
   }
 
-  {
-    ctx.save();
-    ctx.clip(clip);
-    ctx.globalCompositeOperation = "lighter";
-    const lx = (px + 1) * .5 * W, ly = (py + 1) * .5 * H;
-    const lr = Math.min(W, H) * .42;
-    const lg2 = ctx.createRadialGradient(lx, ly, 0, lx, ly, lr);
-    lg2.addColorStop(0, "rgba(255,238,214,0.16)");
-    lg2.addColorStop(.5, "rgba(255,214,160,0.07)");
-    lg2.addColorStop(1, "rgba(255,255,255,0)");
-    ctx.fillStyle = lg2;
-    ctx.fillRect(0, 0, W, H);
-    ctx.restore();
-  }
-
-  const nearN = 1 - Math.min(1, Math.abs(cf - 3));
-  if (nearN > 0.02) {
-    const sy0 = 128 + Math.round((cf % 1) * 180);
-    const r = Math.min(W, H) * 0.135;
-    const y = H * 0.44;
-    loupe(W * 0.30, y, r, warmTex, 64, sy0, "RENDER", "229,139,53", nearN);
-    loupe(W * 0.70, y, r, cyanTex, 92, sy0, "PHOTOGRAPH", "60,228,214", nearN);
-  }
-
-  const nearF = 1 - Math.min(1, Math.abs(cf - 6));
-  const st = Math.round(nearF * 6);
-  if (st !== etchStep) { etchStep = st; etchFine(st); }
-
-  const sxA = proj([-g2, 0, t2], cam)[0], sxB = proj([g2, 0, t2], cam)[0];
-  const sx = (sxA + sxB) / 2;
-  const gapPx = Math.abs(sxB - sxA);
-  const drift = Math.min(64, gapPx * .55);
-  const wy = (0.5 - cf / (CH.length - 1)) * 44;
-  const wr_ = wordEl.getBoundingClientRect();
-  const lx = sx - wr_.left;
-  wl.style.clipPath = "polygon(0 0," + lx + "px 0," + lx + "px 100%,0 100%)";
-  wr.style.clipPath = "polygon(" + lx + "px 0,100% 0,100% 100%," + lx + "px 100%)";
-  wl.style.transform = "translateY(" + wy + "px) translateX(" + (-drift) + "px)";
-  wr.style.transform = "translateY(" + wy + "px) translateX(" + drift + "px)";
+  wordEl.style.transform = "translate(" + (px * 16).toFixed(1) + "px," + (py * 9).toFixed(1) + "px)";
 }
 
 function tick() {
@@ -551,16 +549,24 @@ function tick() {
   smoothVel += (dCur - smoothVel) * 0.2;
   px += (tx - px) * 0.07; py += (ty - py) * 0.07;
 
-  for (const p of plates) {
-    const auto = 1;
-    p.ang += 0.002 * p.s1 * (1 + gSpin * 4) * auto + Math.abs(dCur) * 0.12 * p.s2;
-    p.fallY += gFall * 0.0035 * (0.4 + p.s2) * auto + Math.abs(dCur) * 0.05 * gFall;
-    if (p.fallY > 1.7) p.fallY -= 3.4;
-    if (p.fallY < -1.7) p.fallY += 3.4;
+  if (!dragging) { orbY += yawVel; yawVel *= 0.93; idleOrbit += 0.012; }
+
+  for (const p of shards) {
+    p.rot1 += p.r1 * (1 + gSpin * 3);
+    p.rot2 += p.r2 * (1 + gSpin * 3);
+    if (gFall > 0.01 || Math.abs(dCur) > 0.002) p.fy += (gFall * 0.0045 + Math.abs(dCur) * 0.05) * (0.5 + p.k);
+    if (p.fy > 1.6) p.fy -= 3.2; else if (p.fy < -1.6) p.fy += 3.2;
   }
+  for (const p of orbit) {
+    p.rot1 += p.s1 * (1 + gSpin * 3);
+    p.rot2 += p.s2 * (1 + gSpin * 3);
+    p.fw += gFall * 0.004 + Math.abs(dCur) * 0.03;
+    if (p.fw > 1.7) p.fw -= 3.4;
+  }
+  const st = clamp(Math.round((cur - 5.8) * 2), 0, 6);
+  if (st !== etchStep) { etchStep = st; etchFine(st); }
 
-  render(cur, dCur);
-
+  render(cur);
   poke();
 }
 
@@ -569,7 +575,7 @@ function poke() {
 }
 
 canvas.addEventListener("pointerdown", e => {
-  dragging = true; dragX0 = e.clientX;
+  dragging = true; dragX0 = e.clientX; dragY0 = e.clientY; yawVel = 0;
   document.body.classList.add("drag");
   try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
   poke();
@@ -577,7 +583,11 @@ canvas.addEventListener("pointerdown", e => {
 window.addEventListener("pointermove", e => {
   tx = (e.clientX / Math.max(1, W) - .5) * 2; ty = (e.clientY / Math.max(1, H) - .5) * 2;
   if (!dragging) { poke(); return; }
-  dragYaw = Math.max(-32, Math.min(32, (e.clientX - dragX0) * .12));
+  const dx = e.clientX - dragX0, dy = e.clientY - dragY0;
+  dragX0 = e.clientX; dragY0 = e.clientY;
+  orbY += dx * 0.28;
+  yawVel = dx * 0.28;
+  orbP = clamp(orbP - dy * 0.16, -40, 40);
   poke();
 });
 window.addEventListener("pointerup", () => { dragging = false; document.body.classList.remove("drag"); poke(); });
@@ -588,7 +598,7 @@ window.addEventListener("resize", () => { resize(); poke(); });
 resize();
 buildTextures();
 etchFine(0);
-buildFacets();
-buildPlates();
+buildShards();
+buildOrbit();
 poke();
 })();
