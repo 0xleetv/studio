@@ -595,6 +595,13 @@ window.addEventListener("pointercancel", () => { dragging = false; document.body
 window.addEventListener("scroll", poke, { passive: true });
 window.addEventListener("resize", () => { resize(); poke(); });
 
+function resize() {
+  DPR = Math.min(window.devicePixelRatio || 1, 2);
+  W = window.innerWidth; H = window.innerHeight;
+  canvas.width = W * DPR; canvas.height = H * DPR;
+  canvas.style.width = W + "px"; canvas.style.height = H + "px";
+}
+
 resize();
 buildTextures();
 etchFine(0);
