@@ -35,25 +35,25 @@ function buildTextures() {
   warmTex.width = 256; warmTex.height = 512;
   let g = warmTex.getContext("2d");
   let gr = g.createLinearGradient(0, 0, 256, 0);
-  gr.addColorStop(0, "#0e0a07"); gr.addColorStop(.5, "#241608");
-  gr.addColorStop(.8, "#452a10"); gr.addColorStop(1, "#6b4018");
+  gr.addColorStop(0, "#140d08"); gr.addColorStop(.45, "#2e1c0c");
+  gr.addColorStop(.7, "#5a3614"); gr.addColorStop(.9, "#8a5420"); gr.addColorStop(1, "#a86a28");
   g.fillStyle = gr; g.fillRect(0, 0, 256, 512);
   let img = g.getImageData(0, 0, 256, 512), d = img.data;
   for (let i = 0; i < d.length; i += 4) {
-    const n = Math.random() * 34 - 17;
+    const n = Math.random() * 40 - 20;
     d[i] += n; d[i + 1] += n * .8; d[i + 2] += n * .5;
   }
   g.putImageData(img, 0, 0);
   let e = g.createLinearGradient(170, 0, 256, 0);
-  e.addColorStop(0, "rgba(229,139,53,0)"); e.addColorStop(1, "rgba(229,139,53,0.5)");
-  g.fillStyle = e; g.fillRect(170, 0, 86, 512);
+  e.addColorStop(0, "rgba(229,139,53,0)"); e.addColorStop(1, "rgba(233,153,70,0.75)");
+  g.fillStyle = e; g.fillRect(150, 0, 106, 512);
 
   cyanTex = document.createElement("canvas");
   cyanTex.width = 256; cyanTex.height = 512;
   g = cyanTex.getContext("2d");
   gr = g.createLinearGradient(0, 0, 256, 0);
-  gr.addColorStop(0, "#3aa79c"); gr.addColorStop(.22, "#1c6a68");
-  gr.addColorStop(.55, "#0d333c"); gr.addColorStop(1, "#0a1420");
+  gr.addColorStop(0, "#4fd2c2"); gr.addColorStop(.25, "#2a8d86");
+  gr.addColorStop(.55, "#123c46"); gr.addColorStop(1, "#0b1a24");
   g.fillStyle = gr; g.fillRect(0, 0, 256, 512);
   img = g.getImageData(0, 0, 256, 512); d = img.data;
   for (let i = 0; i < d.length; i += 4) {
@@ -62,8 +62,8 @@ function buildTextures() {
   }
   g.putImageData(img, 0, 0);
   e = g.createLinearGradient(0, 0, 70, 0);
-  e.addColorStop(0, "rgba(60,228,214,0.5)"); e.addColorStop(1, "rgba(60,228,214,0)");
-  g.fillStyle = e; g.fillRect(0, 0, 70, 512);
+  e.addColorStop(0, "rgba(80,236,222,0.65)"); e.addColorStop(1, "rgba(60,228,214,0)");
+  g.fillStyle = e; g.fillRect(0, 0, 90, 512);
 
   const gt = document.createElement("canvas");
   gt.width = gt.height = 160;
@@ -240,7 +240,7 @@ function render() {
     } else if (f.kind === "fac") {
       const fd = f.data;
       const n = [Math.sin(fd.ry * shat), 0, Math.cos(fd.ry * shat)];
-      ctx.fillStyle = shade(n, fd.side < 0 ? [58, 36, 16] : [16, 52, 58]);
+      ctx.fillStyle = shade(n, fd.side < 0 ? [96, 58, 24] : [24, 74, 80]);
       ctx.fill(path);
       ctx.strokeStyle = "rgba(255,255,255,0.05)"; ctx.lineWidth = 1;
       ctx.stroke(path);
