@@ -104,7 +104,7 @@ function proj(p, cam) {
   let y = p[1] * cam.cp - z * cam.sp;
   z = p[1] * cam.sp + z * cam.cp;
   const xr = x * cam.cr - y * cam.sr, yr = x * cam.sr + y * cam.cr;
-  const dz = z + cam.d;
+  const dz = cam.d - z;
   const s = cam.f / Math.max(.35, dz);
   return [W / 2 + xr * s, H / 2 - yr * s, dz];
 }
