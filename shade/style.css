@@ -36,6 +36,6 @@ header {
   color: rgba(226,219,208,0.62);
 }
 @media (max-width: 640px) {
-  #word { font-size: clamp(44px, 15vw, 90px); top: 24vh; }
+  #word { font-size: clamp(46px, 16vw, 96px); top: 11vh; }
   #caption { font-size: 13px; }
 }
