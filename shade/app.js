@@ -13,28 +13,34 @@ const slR = document.getElementById("slR");
 const hintEl = document.getElementById("hint");
 const provEl = document.getElementById("prov");
 
+const RM = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const CYN = [60, 228, 214];
 
 const CH = [
-  { t: "ovt",   w: "SHADE",          l: "A monolith split into two realities.",                   yaw: 0,   pit: 0,   roll: 0,  zoom: 1.12, seam: 0,    shat: 0,    grain: .28, glow: .12, photo: 0,   scan: .08 },
-  { t: "slab",  w: "THE SLAB",       l: "One surface. One truth.",                                yaw: -6,  pit: 2,   roll: 1,  zoom: 1.00, seam: 0,    shat: 0,    grain: .30, glow: .15, photo: 0,   scan: .10 },
-  { t: "seam",  w: "THE SEAM",       l: "Drag it. Two realities share one stone.",                yaw: -14, pit: -3,  roll: -2, zoom: 0.97, seam: .55,  shat: 0,    grain: .35, glow: .60, photo: 0,   scan: .18 },
-  { t: "noise", w: "NOISE",          l: "Grain is a fingerprint the sensor cannot help leaving.", yaw: 10,  pit: 4,   roll: 3,  zoom: 1.06, seam: .12,  shat: 0,    grain: 1,   glow: .30, photo: 0,   scan: .25 },
-  { t: "light", w: "LIGHT",          l: "Reflections obey geometry. Fakes forget the angle.",     yaw: -6,  pit: -6,  roll: -1, zoom: 0.88, seam: .70,  shat: 0,    grain: .50, glow: 1,   photo: .05, scan: .35 },
-  { t: "tex",   w: "TEXTURE",        l: "Skin repeats when a machine imagines it.",               yaw: 16,  pit: 8,   roll: -6, zoom: 0.95, seam: .85,  shat: .75,  grain: .75, glow: .40, photo: .05, scan: .30 },
-  { t: "fine",  w: "THE FINE PRINT", l: "Small text betrays big models.",                         yaw: -8,  pit: -4,  roll: 2,  zoom: 1.25, seam: 1,    shat: 0,    grain: .55, glow: .35, photo: .10, scan: .15 },
-  { t: "prov",  w: "PROVENANCE",     l: "Every image remembers where it was made.",               yaw: 10,  pit: 4,   roll: -2, zoom: 0.92, seam: .55,  shat: .30,  grain: .60, glow: .40, photo: .10, scan: .20 },
-  { t: "unbr",  w: "UNBROKEN",       l: "Pull back. It was one photograph all along.",            yaw: 0,   pit: 0,   roll: 0,  zoom: 1.32, seam: 0,    shat: 0,    grain: .28, glow: .10, photo: 1,   scan: 0 }
+  { t: "ovt",   w: "SHADE",          l: "A monolith split into two realities.",                   yaw: 0,   pit: 0,   roll: 0,  zoom: 1.12, seam: 0,    shat: 0,    grain: .28, glow: .12, photo: 0,   scan: .08, deb: .18, fall: 0,   spin: .10 },
+  { t: "slab",  w: "THE SLAB",       l: "One surface. One truth.",                                yaw: -6,  pit: 2,   roll: 1,  zoom: 1.00, seam: 0,    shat: 0,    grain: .30, glow: .15, photo: 0,   scan: .10, deb: .10, fall: 0,   spin: .08 },
+  { t: "seam",  w: "THE SEAM",       l: "Drag it. Two realities share one stone.",                yaw: -14, pit: -3,  roll: -2, zoom: 0.97, seam: .55,  shat: 0,    grain: .35, glow: .60, photo: 0,   scan: .18, deb: .38, fall: .05, spin: .30 },
+  { t: "noise", w: "NOISE",          l: "Grain is a fingerprint the sensor cannot help leaving.", yaw: 10,  pit: 4,   roll: 3,  zoom: 1.06, seam: .12,  shat: 0,    grain: 1,   glow: .30, photo: 0,   scan: .25, deb: .22, fall: 0,   spin: .15 },
+  { t: "light", w: "LIGHT",          l: "Reflections obey geometry. Fakes forget the angle.",     yaw: -6,  pit: -6,  roll: -1, zoom: 0.88, seam: .70,  shat: 0,    grain: .50, glow: 1,   photo: .05, scan: .35, deb: .50, fall: .10, spin: .55 },
+  { t: "tex",   w: "TEXTURE",        l: "Skin repeats when a machine imagines it.",               yaw: 16,  pit: 8,   roll: -6, zoom: 0.95, seam: .85,  shat: .75,  grain: .75, glow: .40, photo: .05, scan: .30, deb: 1,   fall: .55, spin: 1 },
+  { t: "fine",  w: "THE FINE PRINT", l: "Small text betrays big models.",                         yaw: -8,  pit: -4,  roll: 2,  zoom: 1.25, seam: 1,    shat: 0,    grain: .55, glow: .35, photo: .10, scan: .15, deb: .30, fall: .20, spin: .30 },
+  { t: "prov",  w: "PROVENANCE",     l: "Every image remembers where it was made.",               yaw: 10,  pit: 4,   roll: -2, zoom: 0.92, seam: .55,  shat: .30,  grain: .60, glow: .40, photo: .10, scan: .20, deb: .65, fall: .85, spin: .60 },
+  { t: "unbr",  w: "UNBROKEN",       l: "Pull back. It was one photograph all along.",            yaw: 0,   pit: 0,   roll: 0,  zoom: 1.32, seam: 0,    shat: 0,    grain: .28, glow: .10, photo: 1,   scan: 0,   deb: .06, fall: 0,   spin: .05 }
 ];
 
 let W = 0, H = 0, DPR = 1;
 let warmTex = null, cyanTex = null, warmBase = null, cyanBase = null, grainPat = null;
-let facets = [];
+let facets = [], plates = [];
 let dragging = false, dragX0 = 0, dragYaw = 0;
 let lastIdx = -1;
 let etchStep = -1;
+let raf = false;
+let cur = -1, prevCur = 0, smoothVel = 0;
+let tx = 0, ty = 0, px = 0, py = 0;
+let gSpin = 0, gFall = 0;
 
 function rand(a, b) { return a + Math.random() * (b - a); }
+function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
 
 const FINE_LINES = ["MADE WITH LIGHT, NOT PAINT", "35MM, F1.4, ISO 200", "GRAIN STRUCTURED, EVEN", "A SURFACE THAT REMEMBERS"];
 const SUB = { A: "R", B: "8", C: "G", D: "0", E: "F", F: "E", G: "C", H: "N", I: "1", K: "X", L: "I", M: "N", N: "M", O: "0", P: "R", R: "P", S: "5", T: "7", U: "V", V: "U", W: "V", X: "K", Y: "V", Z: "2", "0": "O", "1": "I", "4": "A", "5": "S", "7": "T", "8": "B" };
@@ -141,6 +147,33 @@ function buildFacets() {
   }
 }
 
+function buildPlates() {
+  for (let i = 0; i < 10; i++) {
+    const side = i % 2 ? 1 : -1;
+    plates.push({
+      side,
+      u0: 30 + Math.floor(rand(0, 170)), v0: 40 + Math.floor(rand(0, 380)),
+      us: rand(24, 52), vs: rand(18, 40),
+      r0: rand(0.95, 1.95), a0: rand(0, 6.283), y0: rand(-0.85, 0.85),
+      w: rand(0.15, 0.32), h: rand(0.11, 0.24),
+      s1: rand(0.5, 1.4), s2: rand(0.4, 1.2), s3: rand(0.3, 1.0),
+      ang: rand(0, 6.283),
+      fallY: 0
+    });
+  }
+}
+
+function rot3(p, ax, ay, az) {
+  let x = p[0], y = p[1], z = p[2];
+  let c = Math.cos(ax), s = Math.sin(ax);
+  let y1 = y * c - z * s, z1 = y * s + z * c; y = y1; z = z1;
+  c = Math.cos(ay); s = Math.sin(ay);
+  let x1 = x * c + z * s; z1 = -x * s + z * c; x = x1; z = z1;
+  c = Math.cos(az); s = Math.sin(az);
+  const x2 = x * c - y * s, y2 = x * s + y * c;
+  return [x2, y2, z1];
+}
+
 function proj(p, cam) {
   let x = p[0] * cam.cy + p[2] * cam.sy;
   let z = -p[0] * cam.sy + p[2] * cam.cy;
@@ -176,6 +209,29 @@ function strokeLine(a, b, style) {
   ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke();
 }
 
+function texTri(img, pA, pB, pC, tA, tB, tC) {
+  const det = (tB[0] - tA[0]) * (tC[1] - tA[1]) - (tC[0] - tA[0]) * (tB[1] - tA[1]);
+  if (Math.abs(det) < 1e-6) return;
+  const a = ((pB[0] - pA[0]) * (tC[1] - tA[1]) - (pC[0] - pA[0]) * (tB[1] - tA[1])) / det;
+  const c = ((pC[0] - pA[0]) * (tB[0] - tA[0]) - (pB[0] - pA[0]) * (tC[0] - tA[0])) / det;
+  const e = pA[0] - a * tA[0] - c * tA[1];
+  const b = ((pB[1] - pA[1]) * (tC[1] - tA[1]) - (pC[1] - pA[1]) * (tB[1] - tA[1])) / det;
+  const d = ((pC[1] - pA[1]) * (tB[0] - tA[0]) - (pB[1] - pA[1]) * (tC[0] - tA[0])) / det;
+  const f = pA[1] - b * tA[0] - d * tA[1];
+  const sx = Math.max(0, Math.floor(Math.min(tA[0], tB[0], tC[0])));
+  const sy = Math.max(0, Math.floor(Math.min(tA[1], tB[1], tC[1])));
+  const sw = Math.min(img.width - sx, Math.ceil(Math.max(tA[0], tB[0], tC[0])) - sx);
+  const sh = Math.min(img.height - sy, Math.ceil(Math.max(tA[1], tB[1], tC[1])) - sy);
+  if (sw <= 0 || sh <= 0) return;
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(pA[0], pA[1]); ctx.lineTo(pB[0], pB[1]); ctx.lineTo(pC[0], pC[1]);
+  ctx.closePath(); ctx.clip();
+  ctx.transform(a, b, c, d, e, f);
+  ctx.drawImage(img, sx, sy, sw, sh, sx, sy, sw, sh);
+  ctx.restore();
+}
+
 function loupe(x, y, r, tex, sx0, sy0, label, col, v) {
   ctx.save();
   ctx.globalAlpha = v;
@@ -203,10 +259,9 @@ function resize() {
   canvas.style.width = W + "px"; canvas.style.height = H + "px";
 }
 
-function render() {
+function render(cf, dCur) {
   const max = Math.max(1, track.offsetHeight - H);
-  const P = Math.min(1, Math.max(0, window.scrollY / max));
-  const cf = P * (CH.length - 1);
+  const P = clamp(window.scrollY / max, 0, 1);
   const i = Math.min(CH.length - 2, Math.floor(cf));
   let fr = cf - i; fr = fr * fr * (3 - 2 * fr);
   const a = CH[i], b = CH[i + 1];
@@ -223,10 +278,11 @@ function render() {
     hintEl.classList.toggle("on", c.t === "light");
     provEl.classList.toggle("on", c.t === "prov");
   }
+  gSpin = L("spin"); gFall = L("fall");
 
-  const yaw = (L("yaw") + dragYaw) * Math.PI / 180;
-  const pit = L("pit") * Math.PI / 180;
-  const roll = L("roll") * Math.PI / 180;
+  const yaw = (L("yaw") + dragYaw + (RM ? 0 : px * 2.6)) * Math.PI / 180;
+  const pit = (L("pit") + (RM ? 0 : -py * 1.8)) * Math.PI / 180;
+  const roll = (L("roll") + clamp(smoothVel * 220, -9, 9)) * Math.PI / 180;
   const cam = {
     sy: Math.sin(yaw), cy: Math.cos(yaw),
     sp: Math.sin(pit), cp: Math.cos(pit),
@@ -236,6 +292,7 @@ function render() {
   };
   const seam = L("seam"), shat = L("shat"), grain = L("grain");
   const glow = L("glow"), tint = L("photo"), scan = L("scan");
+  const deb = L("deb");
   const w2 = .485, h2 = 1.1, t2 = .09, g2 = seam * .045;
 
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
@@ -290,6 +347,36 @@ function render() {
   addW(LS, "solid", { n: [-1, 0, 0], base: [8, 11, 13] });
   addW(TP, "solid", { n: [0, 1, 0], base: [30, 20, 10] });
   addW(BT, "solid", { n: [0, -1, 0], base: [8, 9, 10] });
+
+  const debAlpha = clamp(.25 + deb * 1.1, 0, 1);
+  if (debAlpha > 0.03) {
+    for (const p of plates) {
+      const an = p.a0 + cf * 0.4 * p.side;
+      const r = p.r0 * (0.45 + deb * 1.15);
+      const x = Math.cos(an) * r;
+      const z = 0.25 + Math.sin(an) * r * 0.35;
+      const y = p.y0 + p.fallY;
+      const ax = p.ang * p.s1, ay = p.ang * p.s2, az = p.ang * p.s3;
+      const c0 = rot3([-p.w, -p.h, 0], ax, ay, az);
+      const c1 = rot3([p.w, -p.h, 0], ax, ay, az);
+      const c2 = rot3([p.w, p.h, 0], ax, ay, az);
+      const c3 = rot3([-p.w, p.h, 0], ax, ay, az);
+      const e1 = [c1[0] - c0[0], c1[1] - c0[1], c1[2] - c0[2]];
+      const e2 = [c3[0] - c0[0], c3[1] - c0[1], c3[2] - c0[2]];
+      let nx = e1[1] * e2[2] - e1[2] * e2[1];
+      let ny = e1[2] * e2[0] - e1[0] * e2[2];
+      let nz = e1[0] * e2[1] - e1[1] * e2[0];
+      const nl = Math.hypot(nx, ny, nz) || 1;
+      nx /= nl; ny /= nl; nz /= nl;
+      const tex = p.side < 0 ? warmTex : cyanTex;
+      const quad3 = [[x + c0[0], y + c0[1], z + c0[2]], [x + c1[0], y + c1[1], z + c1[2]], [x + c2[0], y + c2[1], z + c2[2]], [x + c3[0], y + c3[1], z + c3[2]]];
+      const pp = quad3.map(q => proj(q, cam));
+      const T = [[p.u0, p.v0], [p.u0 + p.us, p.v0], [p.u0 + p.us, p.v0 + p.vs], [p.u0, p.v0 + p.vs]];
+      const d1 = Math.max(0, nx * -0.55 + ny * 0.5 + nz * 0.65);
+      addP(pp, "deb", { tex, T, d1, alpha: debAlpha });
+    }
+  }
+
   faces.sort((u, v) => v.dz - u.dz);
 
   const clip = new Path2D();
@@ -308,12 +395,36 @@ function render() {
       clip.addPath(path);
     } else if (f.kind === "fac") {
       const fd = f.data;
+      const tex = fd.side < 0 ? warmTex : cyanTex;
+      const x0 = -w2 - g2, x1 = g2;
+      const T = fd.pts.map(pt => {
+        let u;
+        if (fd.side < 0) u = (pt[0] - x0) / w2 * 256;
+        else u = (pt[0] - x1) / (w2 - x1) * 256;
+        u = clamp(u, 0, 255);
+        const v = clamp((h2 - pt[1]) / (2 * h2) * 512, 0, 511);
+        return [u, v];
+      });
+      texTri(tex, f.pp[0], f.pp[1], f.pp[2], T[0], T[1], T[2]);
+      texTri(tex, f.pp[0], f.pp[2], f.pp[3], T[0], T[2], T[3]);
       const n = [Math.sin(fd.ry * shat), 0, Math.cos(fd.ry * shat)];
-      ctx.fillStyle = shade(n, fd.side < 0 ? [96, 58, 24] : [24, 74, 80]);
+      const d1 = Math.max(0, n[0] * -0.55 + n[1] * 0.5 + n[2] * 0.65);
+      ctx.fillStyle = "rgba(0,0,0," + ((1 - d1) * 0.45) + ")";
       ctx.fill(path);
       ctx.strokeStyle = "rgba(255,255,255,0.05)"; ctx.lineWidth = 1;
       ctx.stroke(path);
       clip.addPath(path);
+    } else if (f.kind === "deb") {
+      const dd = f.data;
+      ctx.save();
+      ctx.globalAlpha = dd.alpha;
+      texTri(dd.tex, f.pp[0], f.pp[1], f.pp[2], dd.T[0], dd.T[1], dd.T[2]);
+      texTri(dd.tex, f.pp[0], f.pp[2], f.pp[3], dd.T[0], dd.T[2], dd.T[3]);
+      ctx.fillStyle = "rgba(0,0,0," + ((1 - dd.d1) * 0.5) + ")";
+      ctx.fill(path);
+      ctx.strokeStyle = "rgba(255,255,255,0.06)"; ctx.lineWidth = 1;
+      ctx.stroke(path);
+      ctx.restore();
     } else {
       ctx.fillStyle = shade(f.data.n, f.data.base);
       ctx.fill(path);
@@ -400,24 +511,56 @@ function render() {
   wr.style.transform = "translateY(" + wy + "px) translateX(" + drift + "px)";
 }
 
+function tick() {
+  raf = false;
+  const max = Math.max(1, track.offsetHeight - H);
+  const target = clamp(window.scrollY / max, 0, 1) * (CH.length - 1);
+  if (cur < 0) { cur = target; prevCur = target; }
+  const step = (target - cur) * 0.085;
+  if (Math.abs(target - cur) < 0.0004) cur = target; else cur += step;
+  const dCur = cur - prevCur; prevCur = cur;
+  smoothVel += (dCur - smoothVel) * 0.2;
+  px += (tx - px) * 0.07; py += (ty - py) * 0.07;
+
+  for (const p of plates) {
+    const auto = (!RM && (gSpin > 0.02 || gFall > 0.02)) ? 1 : 0;
+    p.ang += 0.002 * p.s1 * (1 + gSpin * 4) * auto + Math.abs(dCur) * 0.12 * p.s2;
+    p.fallY += gFall * 0.0035 * (0.4 + p.s2) * auto + Math.abs(dCur) * 0.05 * gFall;
+    if (p.fallY > 1.7) p.fallY -= 3.4;
+    if (p.fallY < -1.7) p.fallY += 3.4;
+  }
+
+  render(cur, dCur);
+
+  const alive = Math.abs(target - cur) > 0.0005 || Math.abs(smoothVel) > 0.00005 || (!RM && (gSpin > 0.02 || gFall > 0.02 || Math.abs(px - tx) > 0.002 || Math.abs(py - ty) > 0.002));
+  if (alive) poke();
+}
+
+function poke() {
+  if (!raf) { raf = true; requestAnimationFrame(tick); }
+}
+
 canvas.addEventListener("pointerdown", e => {
   dragging = true; dragX0 = e.clientX;
   document.body.classList.add("drag");
   try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
+  poke();
 });
 window.addEventListener("pointermove", e => {
-  if (!dragging) return;
+  if (!RM) { tx = (e.clientX / Math.max(1, W) - .5) * 2; ty = (e.clientY / Math.max(1, H) - .5) * 2; }
+  if (!dragging) { poke(); return; }
   dragYaw = Math.max(-32, Math.min(32, (e.clientX - dragX0) * .12));
-  render();
+  poke();
 });
-window.addEventListener("pointerup", () => { dragging = false; document.body.classList.remove("drag"); });
-window.addEventListener("pointercancel", () => { dragging = false; document.body.classList.remove("drag"); });
-window.addEventListener("scroll", render, { passive: true });
-window.addEventListener("resize", () => { resize(); render(); });
+window.addEventListener("pointerup", () => { dragging = false; document.body.classList.remove("drag"); poke(); });
+window.addEventListener("pointercancel", () => { dragging = false; document.body.classList.remove("drag"); poke(); });
+window.addEventListener("scroll", poke, { passive: true });
+window.addEventListener("resize", () => { resize(); poke(); });
 
 resize();
 buildTextures();
 etchFine(0);
 buildFacets();
-render();
+buildPlates();
+poke();
 })();
