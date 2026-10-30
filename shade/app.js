@@ -15,6 +15,7 @@ const provEl = document.getElementById("prov");
 
 const RM = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const CYN = [60, 228, 214];
+const lightDir = [-0.55, 0.5, 0.65];
 
 const CH = [
   { t: "ovt",   w: "SHADE",          l: "A monolith split into two realities.",                   yaw: 0,   pit: 0,   roll: 0,  zoom: 1.12, seam: 0,    shat: 0,    grain: .28, glow: .12, photo: 0,   scan: .08, deb: .18, fall: 0,   spin: .10 },
@@ -186,7 +187,7 @@ function proj(p, cam) {
 }
 
 function shade(n, base) {
-  const L1 = [-.55, .5, .65], L2 = [.7, .25, .55];
+  const L1 = lightDir, L2 = [.7, .25, .55];
   const d1 = Math.max(0, n[0] * L1[0] + n[1] * L1[1] + n[2] * L1[2]);
   const d2 = Math.max(0, n[0] * L2[0] + n[1] * L2[1] + n[2] * L2[2]);
   const k = .35 + .65 * d1;
@@ -280,8 +281,10 @@ function render(cf, dCur) {
   }
   gSpin = L("spin"); gFall = L("fall");
 
-  const yaw = (L("yaw") + dragYaw + (RM ? 0 : px * 2.6)) * Math.PI / 180;
-  const pit = (L("pit") + (RM ? 0 : -py * 1.8)) * Math.PI / 180;
+  const tNow = performance.now();
+  lightDir[0] = -0.55 + px * 0.6; lightDir[1] = 0.5 + py * 0.35;
+  const yaw = (L("yaw") + dragYaw + px * 2.6 + Math.sin(tNow * 0.00035) * 1.4) * Math.PI / 180;
+  const pit = (L("pit") - py * 1.8 + Math.cos(tNow * 0.00023) * 0.8) * Math.PI / 180;
   const roll = (L("roll") + clamp(smoothVel * 220, -9, 9)) * Math.PI / 180;
   const cam = {
     sy: Math.sin(yaw), cy: Math.cos(yaw),
@@ -348,6 +351,7 @@ function render(cf, dCur) {
   addW(TP, "solid", { n: [0, 1, 0], base: [30, 20, 10] });
   addW(BT, "solid", { n: [0, -1, 0], base: [8, 9, 10] });
 
+  const mx = (px + 1) * .5 * W, my = (py + 1) * .5 * H;
   const debAlpha = clamp(.25 + deb * 1.1, 0, 1);
   if (debAlpha > 0.03) {
     for (const p of plates) {
@@ -355,7 +359,7 @@ function render(cf, dCur) {
       const r = p.r0 * (0.45 + deb * 1.15);
       const x = Math.cos(an) * r;
       const z = 0.25 + Math.sin(an) * r * 0.35;
-      const y = p.y0 + p.fallY;
+      const y = p.y0 + p.fallY + Math.sin(tNow * 0.0005 + p.a0 * 7) * 0.07;
       const ax = p.ang * p.s1, ay = p.ang * p.s2, az = p.ang * p.s3;
       const c0 = rot3([-p.w, -p.h, 0], ax, ay, az);
       const c1 = rot3([p.w, -p.h, 0], ax, ay, az);
@@ -371,6 +375,16 @@ function render(cf, dCur) {
       const tex = p.side < 0 ? warmTex : cyanTex;
       const quad3 = [[x + c0[0], y + c0[1], z + c0[2]], [x + c1[0], y + c1[1], z + c1[2]], [x + c2[0], y + c2[1], z + c2[2]], [x + c3[0], y + c3[1], z + c3[2]]];
       const pp = quad3.map(q => proj(q, cam));
+      {
+        const cxp = (pp[0][0] + pp[2][0]) * .5, cyp = (pp[0][1] + pp[2][1]) * .5;
+        const dxp = cxp - mx, dyp = cyp - my;
+        const dist = Math.hypot(dxp, dyp);
+        if (dist < 280 && dist > 0.01) {
+          const push = Math.pow(1 - dist / 280, 2) * 52;
+          const oxp = dxp / dist * push, oyp = dyp / dist * push;
+          for (const q of pp) { q[0] += oxp; q[1] += oyp; }
+        }
+      }
       const T = [[p.u0, p.v0], [p.u0 + p.us, p.v0], [p.u0 + p.us, p.v0 + p.vs], [p.u0, p.v0 + p.vs]];
       const d1 = Math.max(0, nx * -0.55 + ny * 0.5 + nz * 0.65);
       addP(pp, "deb", { tex, T, d1, alpha: debAlpha });
@@ -485,6 +499,21 @@ function render(cf, dCur) {
     ctx.restore();
   }
 
+  {
+    ctx.save();
+    ctx.clip(clip);
+    ctx.globalCompositeOperation = "lighter";
+    const lx = (px + 1) * .5 * W, ly = (py + 1) * .5 * H;
+    const lr = Math.min(W, H) * .42;
+    const lg2 = ctx.createRadialGradient(lx, ly, 0, lx, ly, lr);
+    lg2.addColorStop(0, "rgba(255,238,214,0.16)");
+    lg2.addColorStop(.5, "rgba(255,214,160,0.07)");
+    lg2.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = lg2;
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+  }
+
   const nearN = 1 - Math.min(1, Math.abs(cf - 3));
   if (nearN > 0.02) {
     const sy0 = 128 + Math.round((cf % 1) * 180);
@@ -523,7 +552,7 @@ function tick() {
   px += (tx - px) * 0.07; py += (ty - py) * 0.07;
 
   for (const p of plates) {
-    const auto = (!RM && (gSpin > 0.02 || gFall > 0.02)) ? 1 : 0;
+    const auto = 1;
     p.ang += 0.002 * p.s1 * (1 + gSpin * 4) * auto + Math.abs(dCur) * 0.12 * p.s2;
     p.fallY += gFall * 0.0035 * (0.4 + p.s2) * auto + Math.abs(dCur) * 0.05 * gFall;
     if (p.fallY > 1.7) p.fallY -= 3.4;
@@ -532,8 +561,7 @@ function tick() {
 
   render(cur, dCur);
 
-  const alive = Math.abs(target - cur) > 0.0005 || Math.abs(smoothVel) > 0.00005 || (!RM && (gSpin > 0.02 || gFall > 0.02 || Math.abs(px - tx) > 0.002 || Math.abs(py - ty) > 0.002));
-  if (alive) poke();
+  poke();
 }
 
 function poke() {
@@ -547,7 +575,7 @@ canvas.addEventListener("pointerdown", e => {
   poke();
 });
 window.addEventListener("pointermove", e => {
-  if (!RM) { tx = (e.clientX / Math.max(1, W) - .5) * 2; ty = (e.clientY / Math.max(1, H) - .5) * 2; }
+  tx = (e.clientX / Math.max(1, W) - .5) * 2; ty = (e.clientY / Math.max(1, H) - .5) * 2;
   if (!dragging) { poke(); return; }
   dragYaw = Math.max(-32, Math.min(32, (e.clientX - dragX0) * .12));
   poke();
