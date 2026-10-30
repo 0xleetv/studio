@@ -35,6 +35,9 @@ header {
   font-size: 14px; line-height: 1.55; letter-spacing: 0.01em;
   color: rgba(226,219,208,0.62);
 }
+.wc { letter-spacing: inherit; }
+.wl { display: block; }
+.wr { position: absolute; inset: 0; }
 @media (max-width: 640px) {
   #word { font-size: clamp(46px, 16vw, 96px); top: 11vh; }
   #caption { font-size: 13px; }
