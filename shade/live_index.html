@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="SHADE. A monolith split into two realities. Scroll to move through the chapters, drag the seam.">
+<title>SHADE</title>
+<link rel="stylesheet" href="style.v3.css">
+</head>
+<body>
+<div class="track" id="track"></div>
+<header><span class="mark">SHADE</span></header>
+<h1 id="word" aria-live="polite"><span class="wc wl" id="wl">THE SLAB</span><span class="wc wr" id="wr" aria-hidden="true"></span></h1>
+<canvas id="stage"></canvas>
+<p id="caption" aria-live="polite">One surface. One truth.</p>
+<script src="app.v8.js"></script>
+<script>
+setInterval(function(){
+ try{
+  var c=document.getElementById("stage"),x=c.getContext("2d"),W=c.width,H=c.height;
+  function avg(px){var r=0,g=0,b=0,a2=0,n=0;for(var i=0;i<px.length;i+=4){r+=px[i];g+=px[i+1];b+=px[i+2];a2+=px[i+3];n++;}return Math.round(r/n)+","+Math.round(g/n)+","+Math.round(b/n)+"," + Math.round(a2/n);}
+  var L=avg(x.getImageData(Math.floor(W/2)-10,Math.floor(H/2),8,6).data);
+  var R=avg(x.getImageData(Math.floor(W/2)+6,Math.floor(H/2),8,6).data);
+  var ta="?",d="?";
+  if(window.__dbgTex&&window.__dbgTex.w){
+    var tg=window.__dbgTex.w.getContext("2d");
+    var q=tg.getImageData(200,256,4,4).data;
+    ta=Math.round(q[3]);
+    x.save();x.setTransform(1,0,0,1,0,0);x.drawImage(window.__dbgTex.w,4,4,120,60);x.restore();
+    d=avg(x.getImageData(60,30,8,6).data);
+  }
+  var m=window.__dbgM?window.__dbgM.map(function(v){return Math.round(v*100)/100;}).join(","):"?";
+  document.title="W"+window.innerWidth+" L"+L+" R"+R+" TA"+ta+" D"+d+" M"+m;
+ }catch(e){document.title="ERR "+e.message;}
+},1200);
+</script>
+</body>
+</html>
