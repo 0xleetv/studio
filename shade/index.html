@@ -14,22 +14,6 @@
 <canvas id="stage"></canvas>
 <p id="caption" aria-live="polite">One surface. One truth.</p>
 <script src="app.v10.js"></script>
-<script>
-window.__errfired=false;
-window.onerror=function(m,s,l,c){window.__errfired=true;document.title="E "+String(m).slice(0,120)+" @"+l+":"+c;};
-setInterval(function(){
- if(window.__errfired)return;
- try{
-  var c=document.getElementById("stage"),x=c.getContext("2d"),W=c.width,H=c.height;
-  function avg(px){var r=0,g=0,b=0,a2=0,n=0;for(var i=0;i<px.length;i+=4){r+=px[i];g+=px[i+1];b+=px[i+2];a2+=px[i+3];n++;}return Math.round(r/n)+","+Math.round(g/n)+","+Math.round(b/n)+","+Math.round(a2/n);}
-  var L=avg(x.getImageData(Math.floor(W/2)-10,Math.floor(H/2),8,6).data);
-  var R=avg(x.getImageData(Math.floor(W/2)+6,Math.floor(H/2),8,6).data);
-  var ta="?";
-  if(window.__dbgTex&&window.__dbgTex.w){var tg=window.__dbgTex.w.getContext("2d");ta=Math.round(tg.getImageData(200,256,4,4).data[3]);}
-  var m=window.__dbgM?window.__dbgM.map(function(v){return Math.round(v*100)/100;}).join(","):"?";
-  document.title="W"+window.innerWidth+" L"+L+" R"+R+" TA"+ta+" M"+m;
- }catch(e){document.title="ERR "+e.message;}
-},1200);
-</script>
+
 </body>
 </html>
