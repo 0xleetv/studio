@@ -106,6 +106,7 @@ function buildTextures() {
 }
 
 function etch(base, tex, align, x, color, decay) {
+  if (decay <= 0.001) { return; }
   const g = tex.getContext("2d");
   g.clearRect(0, 0, 256, 512);
   g.drawImage(base, 0, 0);
@@ -133,7 +134,7 @@ function etchFine(step) {
   etch(cyanBase, cyanTex, "left", 10, "rgba(190,255,244,0.5)", decay);
 }
 
-const HH = 1.25, HW = 0.5, HD = 0.2;
+const HH = 1.6, HW = 0.45, HD = 0.2;
 const GRID_C = 4, GRID_R = 7;
 
 function buildShards() {
@@ -177,7 +178,7 @@ function buildOrbit() {
   orbit = [];
   for (let i = 0; i < 12; i++) {
     orbit.push({
-      r0: rand(1.15, 2.3),
+      r0: rand(1.25, 2.45),
       w0: rand(0.05, 0.16) * (Math.random() < .5 ? -1 : 1),
       a0: rand(0, Math.PI * 2),
       y0: rand(-1.1, 1.1),
@@ -316,7 +317,7 @@ function drawShadow(cam, deb) {
   const pts = [];
   for (let i = 0; i < 12; i++) {
     const a = i / 12 * Math.PI * 2;
-    const q = proj([Math.cos(a) * 1.35, -HH, Math.sin(a) * 1.35]);
+    const q = proj([Math.cos(a) * 1.0, -HH, Math.sin(a) * 1.0]);
     if (!q) return;
     pts.push(q);
   }
