@@ -1,309 +1,316 @@
-(() => {
-"use strict";
-const SHOES = [
-  {
-    id: "aj1", img: "assets/aj1.webp", alt: "Air Jordan 1 High OG Royal",
-    giant: "AJ1", name: "AIR JORDAN 1 HIGH OG", cw: "ROYAL. 1985.",
-    price: "$185", year: "ORIGIN 1985", accent: "#2C63E8",
-    line: "The one that started it all.",
-    story: "A basketball boot cut loose from its leather. Royal blue took it off the court and made it street.",
-    specs: [["SILHOUETTE", "HIGH TOP BASKETBALL"], ["CUSHIONING", "ENCAPSULATED AIR"], ["SIGNED", "PETER MOORE, 1985"]]
-  },
-  {
-    id: "aj5", img: "assets/aj5.webp", alt: "Air Jordan 5 Retro OG Halloween",
-    giant: "AJ5", name: "AIR JORDAN 5 RETRO OG", cw: "HALLOWEEN. 1990.",
-    price: "$215", year: "ORIGIN 1990", accent: "#C8332E",
-    line: "Built like a fighter jet, dressed for midnight.",
-    story: "The sole borrows a WWII fighter plane. Shark teeth on the midsole gave it away.",
-    specs: [["SILHOUETTE", "MID TOP BASKETBALL"], ["CUSHIONING", "VISIBLE AIR SOLE"], ["SIGNED", "TINKER HATFIELD, 1990"]]
-  },
-  {
-    id: "af1", img: "assets/af1.webp", alt: "Nike Air Force 1 07",
-    giant: "FORCE 1", name: "NIKE AIR FORCE 1 07", cw: "TRIPLE WHITE.",
-    price: "$115", year: "ORIGIN 1982", accent: "#D8D4CB",
-    line: "Forty years of staying exactly the same.",
-    story: "First to carry Air, first to retire undefeated. Forty years, no redesign.",
-    specs: [["SILHOUETTE", "LOW TOP COURT"], ["CUSHIONING", "AIR SOLE UNIT"], ["SIGNED", "BRUCE KILGORE, 1982"]]
-  },
-  {
-    id: "am270", img: "assets/am270.webp", alt: "Nike Air Max 270",
-    giant: "AIR 270", name: "NIKE AIR MAX 270", cw: "BLACK AND VOLT.",
-    price: "$170", year: "ORIGIN 2018", accent: "#6FB7FF",
-    line: "270 degrees of air, angled for impact.",
-    story: "Shaped by runner pressure maps, named for the 270 degrees of Air it wraps around the heel.",
-    specs: [["SILHOUETTE", "LIFESTYLE RUNNER"], ["CUSHIONING", "270 HEEL AIR UNIT"], ["SIGNED", "NIKE AIR, 2018"]]
-  },
-  {
-    id: "pegasus", img: "assets/pegasus.webp", alt: "Nike Pegasus Plus 2",
-    giant: "PEGASUS", name: "NIKE PEGASUS PLUS 2", cw: "DEEP ROYAL.",
-    price: "$170", year: "LINE SINCE 1983", accent: "#2743D0",
-    line: "The everyday workhorse, tuned.",
-    story: "One question since 1983: what does tomorrow morning need. ReactX foam is the current answer.",
-    specs: [["SILHOUETTE", "ROAD RUNNING"], ["CUSHIONING", "REACTX FOAM"], ["SIGNED", "PEGASUS LINE, 1983"]]
-  },
-  {
-    id: "p6000", img: "assets/p6000.webp", alt: "Nike P-6000",
-    giant: "P6000", name: "NIKE P-6000", cw: "METALLIC SILVER.",
-    price: "$115", year: "ORIGIN 2006", accent: "#B9C4CC",
-    line: "A mid-2000s racer, resurfaced.",
-    story: "Track tooling from 2006, resurfaced for the street. Layered mesh, racing lines.",
-    specs: [["SILHOUETTE", "RETRO RUNNER"], ["CUSHIONING", "FOAM MIDSOLE"], ["SIGNED", "TRACK SERIES, 2006"]]
-  }
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+const CW = [
+  { name:'ROYAL',  body:'#2C63E8', trim:'#E8E8E4', line:'Court blue on black. The loudest blue on the rack, kept quiet everywhere else.' },
+  { name:'CRIMSON',body:'#C8332E', trim:'#EFEAE4', line:'One red carries the whole shoe. Everything else steps back.' },
+  { name:'BONE',   body:'#D8D4CB', trim:'#F2F0EA', line:'Off white head to toe. Quiet on purpose.' },
+  { name:'ICE',    body:'#7FA8E8', trim:'#EAF1F8', line:'Ice blue under a cold light.' },
+  { name:'COBALT', body:'#2743D0', trim:'#E6E9F2', line:'Deep blue, close to midnight.' },
+  { name:'SILVER', body:'#9BA6AE', trim:'#E8EAEC', line:'Raw grey. No color to hide behind.' }
 ];
-window.__SHOES = SHOES;
+const ARCHIVE = [
+  { img:'assets/aj1.webp', alt:'Air Jordan 1 High OG Royal', name:'AIR JORDAN 1 HIGH OG', year:'ORIGIN 1985', price:'FROM $185', accent:'#2C63E8',
+    line:'The one that started it all. Royal blue took it off the court and made it street.',
+    specs:[['SILHOUETTE','HIGH TOP BASKETBALL'],['CUSHIONING','ENCAPSULATED AIR'],['SIGNED','PETER MOORE, 1985']] },
+  { img:'assets/aj5.webp', alt:'Air Jordan 5 Retro OG Halloween', name:'AIR JORDAN 5 RETRO OG', year:'ORIGIN 1990', price:'FROM $215', accent:'#C8332E',
+    line:'Built like a fighter jet, dressed for midnight. Shark teeth on the midsole gave it away.',
+    specs:[['SILHOUETTE','MID TOP BASKETBALL'],['CUSHIONING','VISIBLE AIR SOLE'],['SIGNED','TINKER HATFIELD, 1990']] },
+  { img:'assets/af1.webp', alt:'Nike Air Force 1 07', name:'NIKE AIR FORCE 1 07', year:'ORIGIN 1982', price:'FROM $115', accent:'#D8D4CB',
+    line:'First to carry Air, first to retire undefeated. Forty years, no redesign.',
+    specs:[['SILHOUETTE','LOW TOP COURT'],['CUSHIONING','AIR SOLE UNIT'],['SIGNED','BRUCE KILGORE, 1982']] },
+  { img:'assets/am270.webp', alt:'Nike Air Max 270', name:'NIKE AIR MAX 270', year:'ORIGIN 2018', price:'FROM $170', accent:'#6FB7FF',
+    line:'Shaped by runner pressure maps, named for the degrees of Air it wraps around the heel.',
+    specs:[['SILHOUETTE','LIFESTYLE RUNNER'],['CUSHIONING','270 HEEL AIR UNIT'],['SIGNED','NIKE AIR, 2018']] },
+  { img:'assets/pegasus.webp', alt:'Nike Pegasus Plus 2', name:'NIKE PEGASUS PLUS 2', year:'LINE SINCE 1983', price:'FROM $170', accent:'#2743D0',
+    line:'The everyday workhorse, tuned. ReactX foam is the current answer to tomorrow morning.',
+    specs:[['SILHOUETTE','ROAD RUNNING'],['CUSHIONING','REACTX FOAM'],['SIGNED','PEGASUS LINE, 1983']] },
+  { img:'assets/p6000.webp', alt:'Nike P-6000', name:'NIKE P-6000', year:'ORIGIN 2006', price:'FROM $110', accent:'#B9C4CC',
+    line:'A 2006 runner pulled straight out of the vault, all lines and layered panels.',
+    specs:[['SILHOUETTE','RETRO RUNNER'],['CUSHIONING','FOAM MIDSOLE'],['SIGNED','NIKE SPORTSWEAR, 2006']] }
+];
+const SWATCHES = [
+  { name:'STUDIO',   bg:'#101114', key:'#FFFFFF', ki:1.6, hi:.5 },
+  { name:'COURT',    bg:'#23100A', key:'#FFB37A', ki:1.8, hi:.42 },
+  { name:'MIDNIGHT', bg:'#04060F', key:'#7AA0FF', ki:1.25, hi:.3 },
+  { name:'DAYBREAK', bg:'#2A1108', key:'#FFC9A1', ki:2.0, hi:.55 }
+];
 
-const flow = document.getElementById("flow");
-const rail = document.getElementById("rail");
-const detail = document.getElementById("detail");
-const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-const lerp = (a, b, t) => a + (b - a) * t;
+const canvas = document.getElementById('gl');
+const giant = document.getElementById('giant');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.15;
 
-function buildActs() {
-  SHOES.forEach((s, i) => {
-    if (i === 0) return;
-    const act = document.createElement("section");
-    act.className = "act";
-    act.dataset.i = i;
-    act.innerHTML =
-      '<div class="stage">' +
-        '<span class="giant" aria-hidden="true">' + s.giant + "</span>" +
-        '<div class="glow"></div>' +
-        '<img class="shoe" src="' + s.img + '" alt="' + s.alt + '" loading="lazy" draggable="false">' +
-      "</div>" +
-      '<div class="copy">' +
-        '<h3 class="name" style="font-size:15px;font-weight:700;letter-spacing:0.04em;margin-bottom:10px">' + s.name + "</h3>" +
-        '<p class="line">' + s.line + "</p>" +
-        '<p class="price">' + s.cw + " " + s.price + "</p>" +
-        '<p class="cta">CLICK THE SHOE TO KNOW MORE</p>' +
-      "</div>";
-    flow.appendChild(act);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#08090B');
+scene.fog = new THREE.Fog('#08090B', 7, 14);
+const camera = new THREE.PerspectiveCamera(34, innerWidth/innerHeight, .1, 60);
+camera.position.set(0, .5, 5.2);
+
+const hemi = new THREE.HemisphereLight('#D7DEEA', '#0A0B0E', .5);
+const key = new THREE.DirectionalLight('#FFFFFF', 1.6);
+key.position.set(2.6, 3.8, 2.2);
+key.castShadow = true;
+key.shadow.mapSize.set(1024, 1024);
+Object.assign(key.shadow.camera, { left:-3, right:3, top:3, bottom:-3, near:.5, far:14 });
+const rim = new THREE.PointLight('#2C63E8', 14, 10, 2);
+rim.position.set(-2.4, 1.4, -1.8);
+const cursorL = new THREE.PointLight('#FFFFFF', 7, 7, 2);
+cursorL.position.set(0, .6, 2.4);
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.MeshStandardMaterial({ color:'#08090B', roughness:1 }));
+floor.rotation.x = -Math.PI/2;
+floor.receiveShadow = true;
+scene.add(hemi, key, rim, cursorL, floor);
+
+let wrap = null, bodyMat = null, trimMat = null;
+const tgtBody = new THREE.Color(CW[0].body), tgtTrim = new THREE.Color(CW[0].trim), tgtRim = new THREE.Color(CW[0].body);
+const tgtBg = new THREE.Color('#08090B'), tgtKey = new THREE.Color('#FFFFFF');
+let tgtKi = 1.6, tgtHi = .5;
+
+new GLTFLoader().load('assets/shoe.glb', (g) => {
+  const root = g.scene;
+  root.traverse((o) => {
+    if (!o.isMesh) return;
+    if (/lConv/i.test(o.name)) { o.visible = false; return; }
+    o.castShadow = true;
+    const m = o.material;
+    if (m && !Array.isArray(m)) {
+      if (m.name === 'Mat.3') bodyMat = m; else trimMat = m;
+    }
   });
+  root.updateMatrixWorld(true);
+  const bb = new THREE.Box3();
+  root.traverse((o) => { if (o.isMesh && o.visible) bb.expandByObject(o); });
+  const size = bb.getSize(new THREE.Vector3());
+  const s = 1.55 / Math.max(size.x, size.y, size.z);
+  root.scale.setScalar(s);
+  root.updateMatrixWorld(true);
+  const bb2 = new THREE.Box3();
+  root.traverse((o) => { if (o.isMesh && o.visible) bb2.expandByObject(o); });
+  const c2 = bb2.getCenter(new THREE.Vector3());
+  root.position.x -= c2.x; root.position.z -= c2.z; root.position.y -= bb2.min.y;
+  if (bodyMat) { bodyMat.roughness = .48; bodyMat.metalness = .08; }
+  if (trimMat) { trimMat.roughness = .62; trimMat.metalness = .02; }
+  wrap = new THREE.Group();
+  wrap.add(root);
+  scene.add(wrap);
+});
+
+const acts = Array.from(document.querySelectorAll('.act'));
+acts.forEach((a, i) => a.style.setProperty('--acc', CW[i].body));
+const archiveEl = document.getElementById('archive');
+
+function poses() {
+  const mob = innerWidth < 720;
+  return [
+    [0, 0, 1.0, -0.55],
+    [0, 0, 1.06, 0.40],
+    [0, 0, 1.0, -1.25],
+    [0, 0, 1.04, 0.75],
+    [0, 0, 1.0, -2.05],
+    [0, 0, 1.04, 1.15],
+    mob ? [0, .55, .5, -.5] : [1.15, .15, .72, -.5]
+  ];
+}
+function stopPos() {
+  const s = acts.map((a) => a.offsetTop + a.offsetHeight * .5 - innerHeight * .5);
+  s.push(Math.max(s[5] + innerHeight * .5, archiveEl.offsetTop - innerHeight * .35));
+  s[0] = 0;
+  return s;
+}
+let stops = stopPos();
+const smooth = (f) => f * f * (3 - 2 * f);
+function targetT() {
+  const y = scrollY;
+  if (y <= stops[0]) return 0;
+  for (let k = 0; k < stops.length - 1; k++) {
+    if (y < stops[k + 1]) {
+      const span = Math.max(1, stops[k + 1] - stops[k]);
+      return k + smooth(Math.min(1, Math.max(0, (y - stops[k]) / span)));
+    }
+  }
+  return stops.length - 1;
 }
 
-function buildRail() {
-  SHOES.forEach((s, i) => {
-    const card = document.createElement("button");
-    card.className = "card";
-    card.style.setProperty("--c", s.accent);
-    card.style.setProperty("--k", i);
-    card.setAttribute("aria-label", "Know more, " + s.name);
-    card.innerHTML =
-      '<img src="' + s.img + '" alt="" loading="lazy" draggable="false">' +
-      '<p class="cn">' + s.name + "</p>" +
-      '<p class="cp">' + s.cw + " " + s.price + "</p>";
-    card.addEventListener("click", () => openDetail(i));
-    rail.appendChild(card);
-  });
-}
+let t = 0, cur = [0, 0, 1, -0.55];
+let dragging = false, px = 0, vel = 0, userRot = 0, lastMove = 0, downInfo = null;
+let tilt = 0, tiltT = 0, cx = .5, cy = .5;
 
-let openIdx = -1;
-function openDetail(i) {
-  const s = SHOES[i];
-  openIdx = i;
-  document.documentElement.style.setProperty("--acc", s.accent);
-  const frgb = hexToRgb(s.accent);
-  detail.style.background =
-    "radial-gradient(110% 90% at 72% 18%, rgba(" + frgb.join(",") + ",0.2), rgba(6, 7, 9, 0.94) 60%)";
-  detail.querySelector(".dwrap").style.background =
-    "linear-gradient(165deg, rgba(" + frgb.join(",") + ",0.14), #0D0E11 48%)";
-  document.getElementById("dShoe").src = s.img;
-  document.getElementById("dShoe").alt = s.alt;
-  document.getElementById("dName").textContent = s.name;
-  document.getElementById("dCw").textContent = s.cw;
-  document.getElementById("dLine").textContent = s.story;
-  document.getElementById("dPrice").textContent = s.price;
-  document.getElementById("dYear").textContent = s.year;
-  document.getElementById("dSpecs").innerHTML = s.specs
-    .map(r => '<div><span class="k">' + r[0] + '</span><span class="v">' + r[1] + "</span></div>").join("");
-  document.getElementById("dNote").hidden = true;
-  detail.classList.add("open");
-  document.body.style.overflow = "hidden";
+function overShoe(x, y) {
+  if (!wrap) return false;
+  const v = new THREE.Vector3();
+  wrap.getWorldPosition(v);
+  v.project(camera);
+  const sx = (v.x * .5 + .5) * innerWidth, sy = (-v.y * .5 + .5) * innerHeight;
+  const r = Math.min(innerWidth, innerHeight) * .3 * wrap.scale.x;
+  const dx = x - sx, dy = y - sy;
+  return dx * dx + dy * dy < r * r;
+}
+window.addEventListener('pointerdown', (e) => {
+  if (!overShoe(e.clientX, e.clientY)) return;
+  dragging = true; px = e.clientX; vel = 0;
+  downInfo = { x: e.clientX, y: e.clientY, t: performance.now() };
+});
+window.addEventListener('pointermove', (e) => {
+  cx = e.clientX / innerWidth; cy = e.clientY / innerHeight;
+  tiltT = (cy - .5) * .24;
+  if (dragging) {
+    const dx = e.clientX - px; px = e.clientX;
+    userRot += dx * .006; vel = dx * .006;
+    lastMove = performance.now();
+  }
+});
+window.addEventListener('pointerup', (e) => {
+  if (dragging && downInfo) {
+    const d = Math.hypot(e.clientX - downInfo.x, e.clientY - downInfo.y);
+    const dt = performance.now() - downInfo.t;
+    if (d < 8 && dt < 450) openCw(Math.min(5, Math.round(t)));
+  }
+  dragging = false;
+});
+
+const dback = document.getElementById('dback');
+const detail = document.getElementById('detail');
+const dkick = document.getElementById('dkick'), dname = document.getElementById('dname');
+const dline = document.getElementById('dline'), dpal = document.getElementById('dpal');
+const dspecs = document.getElementById('dspecs'), dnote = document.getElementById('dnote');
+function showDetail(o) {
+  dkick.textContent = o.kick; dname.textContent = o.name; dline.textContent = o.line;
+  dpal.innerHTML = o.pal.map((c) => '<i style="background:' + c + '"></i>').join('');
+  dspecs.innerHTML = o.specs.map((r) => '<div><b>' + r[0] + '</b><span>' + r[1] + '</span></div>').join('');
+  dnote.textContent = o.note;
+  detail.style.setProperty('--acc', o.acc);
+  dback.classList.add('on'); detail.classList.add('open');
+  detail.setAttribute('aria-hidden', 'false');
 }
 function closeDetail() {
-  detail.classList.remove("open");
-  openIdx = -1;
-  document.body.style.overflow = "";
+  dback.classList.remove('on'); detail.classList.remove('open');
+  detail.setAttribute('aria-hidden', 'true');
 }
-document.getElementById("detailClose").addEventListener("click", closeDetail);
-detail.addEventListener("click", e => { if (e.target === detail) closeDetail(); });
-window.addEventListener("keydown", e => { if (e.key === "Escape" && detail.classList.contains("open")) closeDetail(); });
-document.getElementById("dBag").addEventListener("click", () => {
-  document.getElementById("dNote").hidden = false;
+function openCw(i) {
+  const c = CW[i];
+  showDetail({
+    kick: 'COLORWAY 0' + (i + 1), name: c.name, line: c.line,
+    pal: [c.body, c.trim, '#08090B'],
+    specs: [['BASE', c.body.toUpperCase()], ['TRIM', c.trim.toUpperCase()], ['FINISH', 'MATTE. LOW SHEEN']],
+    note: 'CONCEPT SILHOUETTE. NOTHING SHIPS.', acc: c.body
+  });
+}
+function openArc(i) {
+  const s = ARCHIVE[i];
+  showDetail({
+    kick: 'FROM THE ARCHIVE', name: s.name, line: s.line,
+    pal: [s.accent],
+    specs: [['ORIGIN', s.year], ['PRICE', s.price]].concat(s.specs),
+    note: 'PHOTOS BELONG TO NIKE. THIS IS A STUDY.', acc: s.accent
+  });
+}
+document.getElementById('dclose').addEventListener('click', closeDetail);
+dback.addEventListener('click', closeDetail);
+window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDetail(); });
+
+const strip = document.getElementById('strip');
+ARCHIVE.forEach((s, i) => {
+  const d = document.createElement('div');
+  d.className = 'plate';
+  d.style.setProperty('--acc', s.accent);
+  d.innerHTML = '<img src="' + s.img + '" alt="' + s.alt + '"><h4>' + s.name + '</h4><p>' + s.year + '</p>';
+  let mx = 0;
+  d.addEventListener('pointerdown', () => { mx = 0; });
+  d.addEventListener('click', () => { if (mx < 8) openArc(i); });
+  d.addEventListener('pointermove', (e) => { mx = Math.max(mx, Math.abs(e.movementX)); });
+  strip.appendChild(d);
+});
+strip.addEventListener('wheel', (e) => {
+  const max = strip.scrollWidth - strip.clientWidth;
+  if (max <= 0) return;
+  const d = e.deltaX || e.deltaY;
+  const atStart = strip.scrollLeft <= 0 && d < 0;
+  const atEnd = strip.scrollLeft >= max - 1 && d > 0;
+  if (!atStart && !atEnd) { e.preventDefault(); strip.scrollLeft += d; }
+}, { passive: false });
+let sd = false, sx2 = 0, sv = 0;
+strip.addEventListener('pointerdown', (e) => { sd = true; sx2 = e.clientX; sv = 0; strip.classList.add('grab'); });
+window.addEventListener('pointerup', () => { sd = false; strip.classList.remove('grab'); });
+strip.addEventListener('pointermove', (e) => {
+  if (!sd) return;
+  const dx = e.clientX - sx2; sx2 = e.clientX; sv = dx;
+  strip.scrollLeft -= dx;
 });
 
-const shoeIdx = [0, 1, 2, 3, 4, 5];
-
-let mx = 0.5, my = 0.5, sx = 0.5, sy = 0.5;
-window.addEventListener("pointermove", e => {
-  mx = e.clientX / window.innerWidth;
-  my = e.clientY / window.innerHeight;
+const swWrap = document.getElementById('swatches');
+SWATCHES.forEach((s, i) => {
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'sw' + (i === 0 ? ' on' : '');
+  b.style.setProperty('--c', s.bg);
+  b.innerHTML = '<i></i><span>' + s.name + '</span>';
+  b.addEventListener('click', () => {
+    swWrap.querySelectorAll('.sw').forEach((el) => el.classList.remove('on'));
+    b.classList.add('on');
+    tgtBg.set(s.bg); tgtKey.set(s.key); tgtKi = s.ki; tgtHi = s.hi;
+  });
+  swWrap.appendChild(b);
 });
 
-function hexToRgb(h) {
-  const n = parseInt(h.slice(1), 16);
-  return [n >> 16 & 255, n >> 8 & 255, n & 255];
-}
-let cur = hexToRgb("#2C63E8");
-function mixTo(target, t) {
-  const to = hexToRgb(target);
-  for (let c = 0; c < 3; c++) cur[c] = lerp(cur[c], to[c], t);
-  return "rgb(" + cur.map(v => Math.round(v)).join(",") + ")";
-}
-
-function frame() {
-  sx = lerp(sx, mx, 0.075);
-  sy = lerp(sy, my, 0.075);
-  const vh = window.innerHeight;
-  const px = sx - 0.5, py = sy - 0.5;
-  let best = 0, bd = 1e9;
-  acts.forEach((a, k) => {
-    const el = shoesEls[k], g = giantEls[k];
-    if (!el) return;
-    const r = a.getBoundingClientRect();
-    const p = clamp((r.top + r.height * 0.5 - vh * 0.5) / vh, -1.2, 1.2);
-    const off = p * vh;
-    if (Math.abs(off) > vh * 1.35) {
-      a.style.visibility = "hidden";
-      return;
-    }
-    a.style.visibility = "visible";
-    const near = 1 - Math.min(1, Math.abs(p));
-    el.style.transform =
-      "translate(calc(-50% + " + (px * 16).toFixed(1) + "px), calc(-50% + " + (py * 11 - off * 0.32).toFixed(1) + "px))" +
-      " perspective(900px) rotateY(" + (px * 8).toFixed(2) + "deg) rotateX(" + (-py * 5).toFixed(2) + "deg)" +
-      " rotate(" + (p * -3.5).toFixed(2) + "deg) scale(" + (0.94 + near * 0.1).toFixed(3) + ")";
-    g.style.transform =
-      "translate(calc(-50% + " + (-px * 30).toFixed(1) + "px), calc(-50% - " + (off * 0.16).toFixed(1) + "px))";
-    if (glowEls[k]) glowEls[k].style.transform =
-      "translate(calc(-50% + " + (px * 46).toFixed(1) + "px), calc(-50% + " + (py * 34).toFixed(1) + "px))";
-    const d = Math.abs(r.top + r.height * 0.5 - vh * 0.5);
-    if (d < bd) { bd = d; best = k; }
-  });
-  const target = SHOES[shoeIdx[best]] ? SHOES[shoeIdx[best]].accent : "#2C63E8";
-  document.documentElement.style.setProperty("--acc", mixTo(target, 0.055));
-  requestAnimationFrame(frame);
-}
-requestAnimationFrame(frame);
-
-buildActs();
-buildRail();
-
-const acts = Array.from(document.querySelectorAll(".act"));
-const shoesEls = acts.map(a => a.querySelector(".shoe"));
-const giantEls = acts.map(a => a.querySelector(".giant"));
-acts.forEach((a, k) => a.style.setProperty("--a2", SHOES[shoeIdx[k]].accent));
-acts.forEach((a, k) => {
-  const shoe = shoesEls[k];
-  if (!shoe) return;
-  shoe.addEventListener("pointerenter", e => { if (e.pointerType !== "touch") a.classList.add("hover"); });
-  shoe.addEventListener("pointerleave", () => a.classList.remove("hover"));
-  shoe.addEventListener("click", () => openDetail(shoeIdx[k]));
-});
-const glowEls = acts.map(a => a.querySelector(".glow"));
-
-const YEARS = [
-  { y: "1982", img: "assets/af1.webp", n: "AIR FORCE 1", l: "Air enters the court." },
-  { y: "1985", img: "assets/aj1.webp", n: "AIR JORDAN 1", l: "The blueprint drops." },
-  { y: "1990", img: "assets/aj5.webp", n: "AIR JORDAN 5", l: "The fighter jet lands." },
-  { y: "2006", img: "assets/p6000.webp", n: "P-6000", l: "The racer is born." },
-  { y: "2018", img: "assets/am270.webp", n: "AIR MAX 270", l: "The tallest heel Air yet." },
-  { y: "2026", img: "assets/pegasus.webp", n: "PEGASUS PLUS 2", l: "The workhorse, tuned." }
-];
-const strip = document.getElementById("strip");
-YEARS.forEach((t, i) => {
-  const plate = document.createElement("div");
-  plate.className = "plate";
-  plate.style.setProperty("--k", i);
-  plate.innerHTML =
-    '<p class="yr">' + t.y + "</p>" +
-    '<img src="' + t.img + '" alt="' + t.n + '" loading="lazy" draggable="false">' +
-    '<p class="pn">' + t.n + "</p>" +
-    '<p class="pl">' + t.l + "</p>";
-  strip.appendChild(plate);
+const io = new IntersectionObserver((es) => es.forEach((en) => {
+  if (en.isIntersecting) en.target.classList.add('in');
+}), { threshold: .3 });
+document.querySelectorAll('.copy').forEach((c) => {
+  Array.from(c.children).forEach((el, i) => el.style.setProperty('--k', i));
+  io.observe(c);
 });
 
-function swipeInto(el, suppressClicks) {
-  let held = false, sx = 0, lx = 0, v = 0;
-  el.addEventListener("pointerdown", e => {
-    held = true; sx = lx = e.clientX; v = 0;
-    el.classList.add("grab");
-    try { el.setPointerCapture(e.pointerId); } catch (err) {}
-  });
-  el.addEventListener("pointermove", e => {
-    if (!held) return;
-    v = e.clientX - lx;
-    lx = e.clientX;
-    el.scrollLeft -= v;
-  });
-  window.addEventListener("pointerup", () => {
-    if (!held) return;
-    held = false;
-    el.classList.remove("grab");
-    const glide = () => {
-      if (held || Math.abs(v) < 0.35) return;
-      el.scrollLeft -= v;
-      v *= 0.93;
-      requestAnimationFrame(glide);
-    };
-    glide();
-  });
-  if (suppressClicks) {
-    el.addEventListener("click", e => {
-      if (Math.abs(e.clientX - sx) > 8) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-    }, true);
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+  stops = stopPos();
+});
+
+let prev = performance.now(), lastCw = 0;
+function tick(now) {
+  requestAnimationFrame(tick);
+  const dt = Math.min(.05, (now - prev) / 1000); prev = now;
+  t += (targetT() - t) * Math.min(1, dt * 4);
+  const P = poses();
+  const i = Math.min(P.length - 2, Math.floor(t));
+  const f = smooth(Math.min(1, Math.max(0, t - i)));
+  const A = P[i], B = P[i + 1];
+  for (let k = 0; k < 4; k++) cur[k] += ((A[k] + (B[k] - A[k]) * f) - cur[k]) * Math.min(1, dt * 5);
+  if (!dragging) { userRot += vel; vel *= .94; if (now - lastMove > 2200) auto += dt * .22; }
+  tilt += (tiltT - tilt) * Math.min(1, dt * 4);
+  if (wrap) {
+    wrap.position.set(cur[0], cur[1], 0);
+    wrap.scale.setScalar(cur[2]);
+    wrap.rotation.y = cur[3] + userRot + auto;
+    wrap.rotation.x = tilt * .4;
   }
+  const ci = Math.min(5, Math.round(t));
+  tgtBody.set(CW[ci].body); tgtTrim.set(CW[ci].trim); tgtRim.set(CW[ci].body);
+  const label = t > 5.55 ? 'AIRBORNE' : (t < .45 ? 'AIRBORNE' : CW[ci].name);
+  if (label !== giant.textContent) giant.textContent = label;
+  giant.style.opacity = t > 5.55 ? .5 : 1;
+  lastCw = ci;
+  if (bodyMat) bodyMat.color.lerp(tgtBody, dt * 3);
+  if (trimMat) trimMat.color.lerp(tgtTrim, dt * 3);
+  rim.color.lerp(tgtRim, dt * 3);
+  scene.background.lerp(tgtBg, dt * 2.5);
+  scene.fog.color.copy(scene.background);
+  floor.material.color.copy(scene.background);
+  key.color.lerp(tgtKey, dt * 3);
+  key.intensity += (tgtKi - key.intensity) * Math.min(1, dt * 3);
+  hemi.intensity += (tgtHi - hemi.intensity) * Math.min(1, dt * 3);
+  cursorL.position.set((cx - .5) * 3.6, .6 - (cy - .5) * 2.6, 2.4);
+  camera.position.x += ((cx - .5) * .4 - camera.position.x) * Math.min(1, dt * 3);
+  camera.position.y += ((.5 - (cy - .5) * .25) - camera.position.y) * Math.min(1, dt * 3);
+  camera.lookAt(0, .15, 0);
+  if (!sd && Math.abs(sv) > .1) { strip.scrollLeft -= sv; sv *= .94; }
+  renderer.render(scene, camera);
 }
-swipeInto(rail, true);
-swipeInto(strip, false);
-
-document.querySelectorAll("#workshop .dot").forEach(d => {
-  d.addEventListener("click", () => {
-    const on = d.classList.contains("on");
-    document.querySelectorAll("#workshop .dot").forEach(o => o.classList.remove("on"));
-    if (!on) d.classList.add("on");
-  });
-});
-
-const swrap = document.getElementById("stagewrap");
-const sshoe = document.getElementById("stageShoe");
-const bgA = document.getElementById("bgA");
-const bgB = document.getElementById("bgB");
-const bgs = [bgA, bgB];
-let bgOn = 0;
-bgs[1].style.opacity = "0";
-function setStageBG(hex) {
-  const next = bgs[1 - bgOn];
-  next.style.background = "radial-gradient(circle at 50% 45%, " + hex + ", transparent 72%)";
-  next.style.opacity = "1";
-  bgs[bgOn].style.opacity = "0";
-  bgOn = 1 - bgOn;
-}
-document.getElementById("swatches").addEventListener("click", e => {
-  const b = e.target.closest(".sw");
-  if (!b) return;
-  setStageBG(b.dataset.bg);
-  document.querySelectorAll(".sw").forEach(s => s.classList.toggle("on", s === b));
-});
-swrap.addEventListener("pointermove", e => {
-  const r = swrap.getBoundingClientRect();
-  const x = (e.clientX - r.left) / r.width - 0.5;
-  const y = (e.clientY - r.top) / r.height - 0.5;
-  sshoe.style.transform =
-    "translate(calc(-50% + " + (x * 24).toFixed(1) + "px), calc(-50% + " + (y * 16).toFixed(1) + "px))" +
-    " perspective(800px) rotateY(" + (x * 10).toFixed(2) + "deg) rotateX(" + (-y * 7).toFixed(2) + "deg)";
-});
-swrap.addEventListener("pointerleave", () => {
-  sshoe.style.transform = "translate(-50%, -50%)";
-});
-
-const io = new IntersectionObserver(entries => {
-  entries.forEach(en => en.target.classList.toggle("live", en.isIntersecting));
-}, { threshold: 0.3 });
-acts.forEach(a => io.observe(a));
-io.observe(document.getElementById("railsec"));
-io.observe(document.getElementById("workshop"));
-io.observe(document.getElementById("timeline"));
-})();
+let auto = 0;
+requestAnimationFrame(tick);

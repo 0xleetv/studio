@@ -2,84 +2,99 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AIRBORNE. A Nike concept store.</title>
-<meta name="description" content="A concept product site. Six Nike silhouettes, one stage. Click a shoe to know more.">
-<link rel="stylesheet" href="style.css?v=3">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AIRBORNE. One shoe, six colorways, real 3D.</title>
+<link rel="stylesheet" href="style.css?v=9">
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+</script>
 </head>
 <body>
-<header class="top">
-  <span class="brand">AIRBORNE</span>
-  <span class="tag">A NIKE CONCEPT</span>
-</header>
-<main id="flow">
-  <section class="act hero" id="hero">
-    <div class="stage">
-      <span class="giant" aria-hidden="true">AIRBORNE</span>
-      <div class="glow"></div>
-      <img class="shoe" id="heroShoe" src="assets/aj1.webp" alt="Air Jordan 1 High OG Royal" draggable="false">
-    </div>
+<canvas id="gl"></canvas>
+<div id="giant" aria-hidden="true">AIRBORNE</div>
+
+<main>
+  <section class="act" data-cw="0" id="hero">
     <div class="copy">
-      <p class="line">Six silhouettes. One stage.</p>
-      <p class="price">FROM $115</p>
-      <p class="cta">CLICK THE SHOE TO KNOW MORE</p>
+      <p class="kicker">ONE SHOE. SIX COLORWAYS.</p>
+      <p class="line">Real geometry. Drag it around.</p>
+      <p class="cta">DRAG TO SPIN. CLICK TO KNOW MORE.</p>
     </div>
     <p class="hint">SCROLL</p>
   </section>
-</main>
-<section class="room" id="workshop">
-  <p class="rlabel">THE WORKSHOP. HOVER THE DOTS.</p>
-  <div class="hotwrap">
-    <img src="assets/af1.webp" alt="Air Force 1 anatomy" draggable="false">
-    <button class="dot" style="left:42%;top:28%"><span class="chip">Full grain leather, perforated at the toe box for airflow.</span></button>
-    <button class="dot" style="left:57%;top:64%"><span class="chip">The Air unit sits inside the midsole and compresses on impact.</span></button>
-    <button class="dot" style="left:27%;top:56%"><span class="chip">The lacing wraps the midfoot so the fit moves with the foot.</span></button>
-    <button class="dot" style="left:66%;top:18%"><span class="chip">A padded collar locks the ankle without pinching.</span></button>
-  </div>
-</section>
-<section class="room" id="timeline">
-  <p class="rlabel">THE TIMELINE. SWIPE OR SCROLL SIDEWAYS.</p>
-  <div class="strip" id="strip"></div>
-</section>
-<section class="railsec" id="railsec">
-  <p class="raillabel">THE LINEUP. SCROLL OVER THE SHOES TO SWIPE.</p>
-  <div class="rail" id="rail"></div>
-</section>
-<section class="room" id="stage">
-  <p class="rlabel">THE STAGE. PICK THE LIGHT.</p>
-  <div class="stagewrap" id="stagewrap">
-    <div class="bg" id="bgA"></div>
-    <div class="bg" id="bgB"></div>
-    <img id="stageShoe" class="shoe2" src="assets/aj1.webp" alt="Air Jordan 1 on stage" draggable="false">
-  </div>
-  <div class="swatches" id="swatches">
-    <button class="sw on" data-bg="#15171B">STUDIO</button>
-    <button class="sw" data-bg="#35190A">COURT</button>
-    <button class="sw" data-bg="#0C1A2E">MIDNIGHT</button>
-    <button class="sw" data-bg="#2E0F10">DAYBREAK</button>
-  </div>
-</section>
-<footer class="colophon">
-  <p>AIRBORNE. A concept built to show what a product site can feel like.</p>
-  <p>The shoes belong to Nike. This page is a study and is not affiliated with Nike, Inc.</p>
-  <p>MMXXVI</p>
-</footer>
-<div class="detail" id="detail">
-  <button class="close" id="detailClose" aria-label="Close">CLOSE</button>
-  <div class="dwrap">
-    <img class="dshoe" id="dShoe" src="" alt="" draggable="false">
-    <div class="dinfo">
-      <p class="dcw" id="dCw"></p>
-      <h3 class="dname" id="dName"></h3>
-      <p class="dline" id="dLine"></p>
-      <div class="dspecs" id="dSpecs"></div>
-      <p class="dprice" id="dPrice"></p>
-      <p class="dyear" id="dYear"></p>
-      <button class="bag" id="dBag">ADD TO BAG</button>
-      <p class="dnote" id="dNote" hidden>Concept build. Nothing ships.</p>
+
+  <section class="act" data-cw="1">
+    <div class="copy">
+      <p class="kicker">COLORWAY 02</p>
+      <h2 class="name">CRIMSON</h2>
+      <p class="line">One red carries the whole shoe. Everything else steps back.</p>
+      <p class="cta">DRAG THE SHOE.</p>
     </div>
-  </div>
-</div>
-<script src="app.js?v=3"></script>
+  </section>
+
+  <section class="act" data-cw="2">
+    <div class="copy">
+      <p class="kicker">COLORWAY 03</p>
+      <h2 class="name">BONE</h2>
+      <p class="line">Off white head to toe. Quiet on purpose.</p>
+      <p class="cta">DRAG THE SHOE.</p>
+    </div>
+  </section>
+
+  <section class="act" data-cw="3">
+    <div class="copy">
+      <p class="kicker">COLORWAY 04</p>
+      <h2 class="name">ICE</h2>
+      <p class="line">Ice blue under a cold light.</p>
+      <p class="cta">DRAG THE SHOE.</p>
+    </div>
+  </section>
+
+  <section class="act" data-cw="4">
+    <div class="copy">
+      <p class="kicker">COLORWAY 05</p>
+      <h2 class="name">COBALT</h2>
+      <p class="line">Deep blue, close to midnight.</p>
+      <p class="cta">DRAG THE SHOE.</p>
+    </div>
+  </section>
+
+  <section class="act" data-cw="5">
+    <div class="copy">
+      <p class="kicker">COLORWAY 06</p>
+      <h2 class="name">SILVER</h2>
+      <p class="line">Raw grey. No color to hide behind.</p>
+      <p class="cta">DRAG THE SHOE.</p>
+    </div>
+  </section>
+
+  <section class="room" id="archive">
+    <p class="rlabel">THE ARCHIVE. SWIPE OR SCROLL SIDEWAYS.</p>
+    <div class="strip" id="strip"></div>
+  </section>
+
+  <section class="room" id="stagewrap">
+    <p class="rlabel">THE STAGE. PICK THE LIGHT.</p>
+    <div class="swatches" id="swatches"></div>
+  </section>
+
+  <footer>
+    <p>A concept study by 0xleetv Studio. Not affiliated with Nike, Inc. Archive photos belong to Nike.</p>
+    <p>3D model. Sneakers by Poly by Google, CC BY 3.0.</p>
+  </footer>
+</main>
+
+<div id="dback"></div>
+<aside id="detail" aria-hidden="true">
+  <button id="dclose" type="button">CLOSE</button>
+  <p class="dkick" id="dkick"></p>
+  <h3 id="dname"></h3>
+  <p class="dline" id="dline"></p>
+  <div class="dpal" id="dpal"></div>
+  <div class="dspecs" id="dspecs"></div>
+  <p class="dnote" id="dnote"></p>
+</aside>
+
+<script type="module" src="app.js?v=9"></script>
 </body>
 </html>
