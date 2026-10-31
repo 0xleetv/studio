@@ -310,6 +310,7 @@ function onScroll() {
     accTarget.set(a.acc);
     const BASE = new THREE.Color(0x08090B);
     if (i === 6) { keyT.set(swatchSel[0]); fillT.set(swatchSel[1]); renderer.toneMappingExposure = swatchSel[2]; bgT.set(swatchSel[0]).lerp(BASE, .84); }
+    else if (i === 0) { keyT.set(a.lk); fillT.set(a.lf); bgT.set(BASE); }
     else { keyT.set(a.lk); fillT.set(a.lf); bgT.set(a.acc).lerp(BASE, .86); }
     roomBtns.forEach((b, k) => b.classList.toggle('on', k === i));
   }
