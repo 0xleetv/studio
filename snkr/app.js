@@ -115,7 +115,6 @@ function swapTo(id) {
 }
 
 const stops = 8;
-function stopT(t) { return Math.min(1, t * 6.06); }
 
 let t = 0, gi = 0, shownGi = -1, vG = 0, swapWait = 0, dbgDes = 0;
 let rotU = 0, dragging = false;
@@ -123,7 +122,7 @@ let rotU = 0, dragging = false;
 const easeIO = f => f * f * (3 - 2 * f);
 
 function poseAt(tt) {
-  const v = Math.min(1, tt * 6.06);
+  const v = tt * 6.06;
   const i = Math.min(stops - 1, Math.floor(v));
   const f = v - i;
   const h = easeIO(f);
@@ -250,7 +249,7 @@ let accTarget = new THREE.Color(0xEDEDEA);
 function onScroll() {
   const max = document.documentElement.scrollHeight - innerHeight;
   t = max > 0 ? Math.min(1, Math.max(0, scrollY / max)) : 0;
-  const v = Math.min(1, t * 6.06);
+  const v = t * 6.06;
   const i = Math.min(stops - 1, Math.floor(v));
   if (i !== gi) {
     gi = i;
