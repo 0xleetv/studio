@@ -604,15 +604,22 @@ function actLive(i) {
   for (let k = 0; k < acts.length; k++) acts[k].classList.toggle("live", k === i);
 }
 document.querySelectorAll(".split").forEach(function (el) {
-  const txt = el.textContent;
+  const words = el.textContent.split(" ");
   el.textContent = "";
-  const chars = txt.split("");
-  for (let i = 0; i < chars.length; i++) {
-    const s = document.createElement("span");
-    s.className = "ch";
-    s.textContent = chars[i] === " " ? "\u00A0" : chars[i];
-    s.style.transitionDelay = (i * 0.028).toFixed(3) + "s";
-    el.appendChild(s);
+  let ci = 0;
+  for (let w = 0; w < words.length; w++) {
+    const wd = document.createElement("span");
+    wd.className = "wd";
+    for (const c of words[w]) {
+      const s = document.createElement("span");
+      s.className = "ch";
+      s.textContent = c;
+      s.style.transitionDelay = (ci * 0.028).toFixed(3) + "s";
+      ci++;
+      wd.appendChild(s);
+    }
+    el.appendChild(wd);
+    if (w < words.length - 1) el.appendChild(document.createTextNode(" "));
   }
 });
 const DGL = "!<>[]{}=+*#%AXZ";
@@ -771,6 +778,10 @@ function seamfxDraw(tNow, seamX, sa) {
 }
 
 
+resize();
+veilResize();
+seamResize();
+buildTextures();
 etchFine(0);
 buildShards();
 buildOrbit();

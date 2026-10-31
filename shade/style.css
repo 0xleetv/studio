@@ -27,7 +27,8 @@ body {
 #blurband.on { opacity: 1; }
 
 .track { position: relative; z-index: 3; }
-.act { position: relative; min-height: 135vh; display: flex; align-items: center; }
+.act { position: relative; min-height: 135vh; display: flex; align-items: center; pointer-events: none; }
+.bone { pointer-events: auto; }
 .act:first-child { min-height: 100vh; }
 
 header {
@@ -59,10 +60,12 @@ header {
   margin-bottom: 18px;
 }
 .giant {
-  font-size: clamp(52px, 11vw, 178px);
+  font-size: clamp(46px, 10.5vw, 168px);
   font-weight: 800; letter-spacing: 0.01em; line-height: 0.92;
   color: #EDE6DA; margin-bottom: 26px;
 }
+.giant .wd { display: inline-block; white-space: nowrap; }
+.bone.hero .giant, .bone.center .giant { width: max-content; max-width: 94vw; margin-left: auto; margin-right: auto; }
 .giant .ch { display: inline-block; opacity: 0; transform: translateY(0.55em) rotate(4deg); }
 .in .giant .ch {
   opacity: 1; transform: none;
