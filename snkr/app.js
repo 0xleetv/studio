@@ -111,15 +111,17 @@ function requestModel(id, done) {
 }
 
 let cur = null, curId = null, prev = null;
-let phase = 2, phaseT = 0;
-const PHASE_DUR = .95;
+let phase = 0, phaseT = 0; // 0 steady, 1 the old pair exits, 2 the new pair enters
+const EXIT_DUR = .38, ENTER_DUR = 1.05;
+const cwSel = {};
 
 function swapTo(id) {
   if (!cache[id] || curId === id) return;
   if (cur && cur !== cache[id]) { prev = cur; }
   cur = cache[id]; curId = id;
-  cur.visible = true;
-  phase = 1; phaseT = 0;
+  cur.visible = !prev;
+  applyTint(cwSel[id] || null);
+  phase = prev ? 1 : 2; phaseT = 0;
   rotU = 0;
 }
 
@@ -191,16 +193,19 @@ function openInfo(i) {
   const sp = document.getElementById('dspecs'); sp.innerHTML = '';
   d.specs.forEach(([k, v]) => { const el = document.createElement('div'); el.innerHTML = '<b>' + k + '</b>' + v; sp.appendChild(el); });
   const cwEl = document.getElementById('dcw'); cwEl.innerHTML = '';
+  const selHex = cwSel[ACTS[i].model] !== undefined ? cwSel[ACTS[i].model] : null;
   (d.cw || []).forEach(([nm, hex], k) => {
-    const b = document.createElement('button'); b.type = 'button'; b.className = 'cw' + (k === 0 ? ' on' : '');
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'cw' + ((hex || null) === selHex ? ' on' : '');
     b.innerHTML = '<i style="background:' + (hex || '#B9BDC4') + '"></i>' + nm;
     b.addEventListener('click', () => {
       cwEl.querySelectorAll('.cw').forEach(x => x.classList.remove('on'));
       b.classList.add('on');
+      cwSel[curId] = hex || null;
       applyTint(hex);
     });
     cwEl.appendChild(b);
   });
+  applyTint(selHex);
   const szEl = document.getElementById('dsz'); szEl.innerHTML = '';
   curSize = null;
   ['7', '7.5', '8', '8.5', '9', '9.5', '10', '10.5', '11', '11.5', '12', '13'].forEach(s => {
@@ -298,6 +303,7 @@ function onScroll() {
   const f = Math.max(0, Math.min(1, v - i));
   vG = i + f;
   if (i !== gi) {
+    closeInfo();
     gi = i;
     const a = ACTS[i];
     body.style.setProperty('--acc', a.acc);
@@ -359,37 +365,41 @@ function tick() {
   if (desired && cache[ACTS[desired].model] && curId !== ACTS[desired].model) swapTo(ACTS[desired].model);
 
   if (phase === 1) {
-    phaseT += dt / PHASE_DUR;
-    if (phaseT >= 1) { phase = 2; if (prev) prev.visible = false; prev = null; }
+    phaseT += dt / EXIT_DUR;
+    if (prev) {
+      prev.position.y -= dt * 2.0;
+      prev.scale.multiplyScalar(Math.max(.0001, 1 - dt * 4.6));
+      prev.rotation.y += dt * 6.5;
+      if (prev.scale.x < .02 || phaseT >= 1) { prev.visible = false; prev = null; }
+    }
+    if (!prev && phaseT >= .5) { cur.visible = true; phase = 2; phaseT = 0; }
+  }
+  if (phase === 2) {
+    phaseT += dt / ENTER_DUR;
+    if (phaseT >= 1) { phase = 0; phaseT = 0; }
   }
 
   if (cur) {
     const p = poseAt(Math.min(gi, POSE.length - 1), vG - Math.floor(vG));
-    const tp = phase === 1 ? Math.min(1, phaseT) : 1;
+    const tp = phase === 2 ? Math.min(1, phaseT) : 1;
     let scMul = 1, dropY = 0, sweep = 0;
-    if (phase === 1) {
+    if (phase === 2) {
       const e = 1 - Math.pow(1 - tp, 3);
-      const c1 = 1.70158, c3 = c1 + 1;
+      const c1 = 1.35, c3 = c1 + 1;
       scMul = 1 + c3 * Math.pow(tp - 1, 3) + c1 * Math.pow(tp - 1, 2);
-      dropY = (1 - e) * 1.15;
-      sweep = (1 - e) * -2.6;
+      dropY = (1 - e) * 1.35;
+      sweep = (1 - e) * -3.2;
     }
     cur.position.set(p[0], p[1] + dropY + Math.sin(now * .8) * .025, p[2]);
     cur.rotation.set(p[3] + rotX, p[4] + rotU + sweep + Math.sin(now * .35) * .03, p[5]);
     const sc = Math.max(.0001, scMul) * p[6];
     cur.scale.setScalar(sc);
-    if (phase !== 1 && prev) {
-      prev.position.y -= dt * 1.15;
-      prev.scale.multiplyScalar(Math.max(.0001, 1 - dt * 3.4));
-      prev.rotation.y += dt * 5;
-      if (prev.scale.x < .02) { prev.visible = false; prev = null; }
-    }
   }
 
-  rim.color.lerp(accTarget, dt * 3);
-  key.color.lerp(keyT, dt * 3);
-  fill.color.lerp(fillT, dt * 3);
-  scene.background.lerp(bgT, dt * 3);
+  rim.color.lerp(accTarget, dt * 1.8);
+  key.color.lerp(keyT, dt * 1.8);
+  fill.color.lerp(fillT, dt * 1.8);
+  scene.background.lerp(bgT, dt * 1.8);
   cam.position.x += ((nx * .28) - cam.position.x) * dt * 4;
   cam.position.y += ((.55 + ny * .16) - cam.position.y) * dt * 4;
   cam.lookAt(0, .35, 0);
