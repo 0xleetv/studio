@@ -509,6 +509,8 @@ function render(cf) {
     ctx.restore();
   }
 
+  const hd = Math.max(0, 1 - cf) * 0.5;
+  if (hd > 0.005) { ctx.fillStyle = "rgba(8,9,11," + hd.toFixed(3) + ")"; ctx.fillRect(0, 0, W, H); }
   const vg = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * .35, W / 2, H / 2, Math.max(W, H) * .75);
   vg.addColorStop(0, "rgba(4,5,8,0)");
   vg.addColorStop(1, "rgba(2,3,5,0.55)");
@@ -625,7 +627,7 @@ function dustDraw(tNow) {
   for (const p of dust) {
     p.y -= p.s; p.x += Math.sin(tNow * 0.00025 + p.ph) * 0.18;
     if (p.y < -4) { p.y = H + 4; p.x = Math.random() * W; }
-    const a = 0.05 + 0.10 * Math.abs(Math.sin(tNow * 0.0006 + p.ph));
+    const a = 0.07 + 0.13 * Math.abs(Math.sin(tNow * 0.0006 + p.ph));
     dustCx.fillStyle = "rgba(" + (p.warm ? "229,139,53" : "60,228,214") + "," + a.toFixed(3) + ")";
     dustCx.beginPath(); dustCx.arc(p.x, p.y, p.r, 0, 6.283); dustCx.fill();
   }
