@@ -115,8 +115,17 @@ let phase = 0, phaseT = 0; // 0 steady, 1 the old pair exits, 2 the new pair ent
 const EXIT_DUR = .38, ENTER_DUR = 1.05;
 const cwSel = {};
 
+let pendId = null;
 function swapTo(id) {
-  if (!cache[id] || curId === id) return;
+  if (!cache[id] || curId === id) { if (!cache[id]) pendId = id; return; }
+  pendId = null;
+  if (phase === 1 && prev) {
+    if (prev === cache[id]) { cur = prev; prev = null; curId = id; cur.visible = true; phase = 2; phaseT = 0; applyTint(cwSel[id] || null); return; }
+    if (cur) cur.visible = false;
+    cur = cache[id]; curId = id;
+    applyTint(cwSel[id] || null);
+    return;
+  }
   if (cur && cur !== cache[id]) { prev = cur; }
   cur = cache[id]; curId = id;
   cur.visible = !prev;
@@ -269,7 +278,12 @@ const roomBtns = [];
 ACTS.forEach((a, k) => {
   const b = document.createElement('button');
   b.textContent = k === 6 ? 'STAGE' : a.giant;
-  b.addEventListener('click', () => scrollTo({ top: k * actH, behavior: 'smooth' }));
+  b.addEventListener('click', () => {
+    if (k === 6) bgT.set(swatchSel[0]).lerp(new THREE.Color(0x08090B), .84);
+    else if (k === 0) bgT.set(0x08090B);
+    else bgT.set(ACTS[k].acc).lerp(new THREE.Color(0x08090B), .86);
+    scrollTo({ top: k * actH, behavior: 'smooth' });
+  });
   roomsEl.appendChild(b); roomBtns.push(b);
 });
 
@@ -284,7 +298,7 @@ function measure() {
   actH = Math.max(1, secs[0].offsetHeight);
 }
 
-let gi = 0, vG = 0, lastVG = 0, vgVel = 0;
+let gi = 0, vG = 0;
 let giantHold = null, giantHoldOn = true, giantTimer = 0;
 function setGiant(txt, on) {
   if (giantHold === txt && giantHoldOn === on) return;
@@ -308,10 +322,9 @@ function onScroll() {
     const a = ACTS[i];
     body.style.setProperty('--acc', a.acc);
     accTarget.set(a.acc);
-    const BASE = new THREE.Color(0x08090B);
-    if (i === 6) { keyT.set(swatchSel[0]); fillT.set(swatchSel[1]); renderer.toneMappingExposure = swatchSel[2]; bgT.set(swatchSel[0]).lerp(BASE, .84); }
-    else if (i === 0) { keyT.set(a.lk); fillT.set(a.lf); bgT.set(BASE); }
-    else { keyT.set(a.lk); fillT.set(a.lf); bgT.set(a.acc).lerp(BASE, .86); }
+    if (i === 6) { keyT.set(swatchSel[0]); fillT.set(swatchSel[1]); renderer.toneMappingExposure = swatchSel[2]; }
+    else { keyT.set(a.lk); fillT.set(a.lf); }
+    if (a.model) swapTo(a.model);
     roomBtns.forEach((b, k) => b.classList.toggle('on', k === i));
   }
   setGiant(ACTS[i].giant, i < 6);
@@ -361,12 +374,7 @@ function tick() {
 
   for (const idk in cache) { if (cache[idk] !== cur && cache[idk] !== prev) cache[idk].visible = false; }
 
-  let desired = 0;
-  for (let k = 1; k <= 5; k++) if (vG >= k - .12) desired = k;
-  const vgInst = (vG - lastVG) / Math.max(dt, .001);
-  vgVel += (vgInst - vgVel) * Math.min(1, dt * 8);
-  lastVG = vG;
-  if (Math.abs(vgVel) < 3 && cache[ACTS[desired].model] && curId !== ACTS[desired].model) swapTo(ACTS[desired].model);
+  if (pendId && cache[pendId] && curId !== pendId) swapTo(pendId);
 
   if (phase === 1) {
     phaseT += dt / EXIT_DUR;
