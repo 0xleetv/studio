@@ -831,5 +831,5 @@ etchFine(0);
 buildShards();
 buildOrbit();
 poke();
-})();
 fitGiants();
+})();
