@@ -366,6 +366,17 @@ onScroll();
 requestModel('shopify', g => { swapTo('shopify'); bootTick(); cv.style.opacity = 1; openDoor(); });
 ['aj1', 'dunk', 'af1', 'travis', 'peg'].forEach(id => requestModel(id, bootTick));
 
+let dbgErr = '';
+const dbg = document.createElement('div');
+dbg.style.cssText = 'position:fixed;top:4px;left:4px;z-index:9999;background:#000c;color:#0f0;font:11px monospace;padding:4px 6px;pointer-events:none;white-space:pre';
+document.body.appendChild(dbg);
+addEventListener('error', e => { dbgErr = 'ERR ' + e.message + ' @' + (e.lineno || ''); });
+addEventListener('unhandledrejection', e => { dbgErr = 'REJ ' + (e.reason && e.reason.message || e.reason); });
+setInterval(() => {
+  const v = scrollY / actH;
+  dbg.textContent = 'v=' + v.toFixed(3) + ' i=' + Math.floor(v) + ' gi=' + gi + ' cur=' + curId + ' ph=' + phase + ' tpt=' + phaseT.toFixed(2) + ' pend=' + pendId + ' cache=' + Object.keys(cache).join(',') + ' ' + dbgErr;
+}, 250);
+
 const clock = new THREE.Clock();
 function tick() {
   requestAnimationFrame(tick);
