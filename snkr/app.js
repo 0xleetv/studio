@@ -37,12 +37,11 @@ const ACTS = [
   { id: 'af1', model: 'af1', giant: 'AF1', acc: '#E58B35', kick: 'NIKE AIR FORCE 1, 1982', name: 'THE FORCE', line: 'Bruce Kilgore, 1982. The first basketball shoe with Air under the heel. Still the uniform.', cta: 'CLICK THE SHOE.', price: 'RETAIL $115' },
   { id: 'travis', model: 'travis', giant: 'CACTUS', acc: '#D9C6A5', kick: 'TRAVIS SCOTT X AIR FORCE 1, 2019', name: 'CACTUS JACK', line: 'Houston patchwork, corduroy, and a swoosh that comes off and flips. November 2019.', cta: 'CLICK THE SHOE.', price: 'RETAIL $160' },
   { id: 'peg', model: 'peg', giant: 'PEG 36', acc: '#3CE4D6', kick: 'NIKE AIR ZOOM PEGASUS 36, 2019', name: 'THE 36TH', line: 'The running line since 1983. Zoom Air under engineered mesh. 36 turns in.', cta: 'CLICK THE SHOE.', price: 'RETAIL $120' },
-  { id: 'archive', model: null, giant: '', acc: '#EDEDEA' },
   { id: 'stage', model: null, giant: '', acc: '#EDEDEA' }
 ];
 
 const INFO = [
-  { kick: 'AIRBORNE CONCEPT, 2026', name: 'THE CONCEPT', line: 'An original studio shoe that opens the store. Six colorways were never the point. Six legends are.', specs: [['YEAR', '2026'], ['SILHOUETTE', 'STUDIO CONCEPT'], ['STATUS', 'CONCEPT STUDY'], ['MODEL', 'SHOPIFY, CC BY 4.0']] },
+  { kick: 'AIRBORNE CONCEPT, 2026', name: 'THE CONCEPT', line: 'An original studio shoe that opens the store. Six colorways were never the point. Five legends are.', specs: [['YEAR', '2026'], ['SILHOUETTE', 'STUDIO CONCEPT'], ['STATUS', 'CONCEPT STUDY'], ['MODEL', 'SHOPIFY, CC BY 4.0']] },
   { kick: 'OFF WHITE X AIR JORDAN 1, 2017', name: 'THE TEN', line: 'Virgil Abloh deconstructed the 1985 Chicago Jordan 1: cut leather, exposed foam, an industrial zip tie, Helvetica quotes. One of ten shoes that reset sneaker culture in 2017.', specs: [['YEAR', '2017'], ['SILHOUETTE', 'AIR JORDAN 1'], ['RETAIL', '$160'], ['DESIGNER', 'VIRGIL ABLOH']] },
   { kick: 'GRATEFUL DEAD X NIKE SB, 2020', name: 'THE GREEN BEAR', line: 'Fuzzy green faux fur, suede overlays, a jagged swoosh cut like the dancing bear chest, and a stash pocket hidden under the tongue. Released July 2020 in a trio.', specs: [['YEAR', '2020'], ['SILHOUETTE', 'SB DUNK LOW'], ['RETAIL', '$110'], ['ORIGIN', 'GRATEFUL DEAD']] },
   { kick: 'NIKE AIR FORCE 1, 1982', name: 'THE FORCE', line: 'Bruce Kilgore drew the first basketball shoe with Air under the heel. Baltimore shops kept it alive off court until it became the uniform it is now.', specs: [['YEAR', '1982'], ['SILHOUETTE', 'AIR FORCE 1 LOW'], ['RETAIL', '$115'], ['DESIGNER', 'BRUCE KILGORE']] },
@@ -57,7 +56,6 @@ const POSE = [
   [-.85, -.02, 0, .3, 2.7, .1, 1],
   [.85, .03, 0, .35, -2.5, .12, 1],
   [-.85, .05, 0, .3, 2.2, .05, 1],
-  [1.6, 1.45, -2.4, .5, .6, .25, .9],
   [0, -.1, 0, .3, .5, 0, 1]
 ];
 
@@ -72,15 +70,13 @@ const queue = [];
 
 function build(id, obj) {
   const g = new THREE.Group();
-  const inner = new THREE.Group();
   const box = new THREE.Box3().setFromObject(obj);
   const s = box.getSize(new THREE.Vector3());
   const c = box.getCenter(new THREE.Vector3());
   const k = 2.35 / Math.max(s.x, s.z, .0001);
   obj.scale.setScalar(k);
   obj.position.set(-c.x * k, -c.y * k, -c.z * k);
-  inner.add(obj);
-  g.add(inner);
+  g.add(obj);
   g.visible = false;
   scene.add(g);
   return g;
@@ -91,9 +87,9 @@ function pump() {
     const [id, done] = queue.shift();
     if (cache[id]) { done(cache[id]); continue; }
     loader.load('assets/' + MODELS[id].file,
-      gltf => { try { cache[id] = build(id, gltf.scene); console.log('LOADED', id); done(cache[id]); } catch (e) { console.error('BUILDFAIL', id, e && e.message); } },
+      gltf => { try { cache[id] = build(id, gltf.scene); done(cache[id]); } catch (e) { console.error('BUILDFAIL', id); } },
       undefined,
-      e => { console.error('LOADFAIL', id, e && (e.type || e.message || 'unknown')); });
+      () => { console.error('LOADFAIL', id); });
   }
 }
 function requestModel(id, done) {
@@ -101,32 +97,25 @@ function requestModel(id, done) {
   queue.push([id, done]); pump();
 }
 
-let cur = null, curId = null, prev = null, prevId = null;
-let phase = 0, phaseT = 0;
+let cur = null, curId = null, prev = null;
+let phase = 2, phaseT = 0;
 const PHASE_DUR = .62;
 
 function swapTo(id) {
   if (!cache[id] || curId === id) return;
-  if (cur && cur !== cache[id]) { prev = cur; prevId = curId; }
+  if (cur && cur !== cache[id]) { prev = cur; }
   cur = cache[id]; curId = id;
   cur.visible = true;
   phase = 1; phaseT = 0;
   rotU = 0;
 }
 
-const stops = 8;
-
-let t = 0, gi = 0, shownGi = -1, vG = 0, swapWait = 0, dbgDes = 0;
-let rotU = 0, dragging = false;
-
 const easeIO = f => f * f * (3 - 2 * f);
 
-function poseAt(tt) {
-  const v = tt * 6.06;
-  const i = Math.min(stops - 1, Math.floor(v));
-  const f = v - i;
+function poseAt(i, f) {
+  const a = POSE[i];
+  const b = POSE[Math.min(POSE.length - 1, i + 1)];
   const h = easeIO(f);
-  const a = POSE[i], b = POSE[Math.min(stops - 1, i + 1)];
   const L = (x, y) => x + (y - x) * h;
   return [L(a[0], b[0]) * MX, L(a[1], b[1]) + MY, L(a[2], b[2]), L(a[3], b[3]), L(a[4], b[4]), L(a[5], b[5]), L(a[6], b[6]) * MS];
 }
@@ -136,8 +125,9 @@ function resize() {
   renderer.setSize(w, h);
   cam.aspect = w / h;
   cam.updateProjectionMatrix();
+  measure();
 }
-addEventListener('resize', resize); resize();
+addEventListener('resize', resize);
 
 let nx = 0, ny = 0;
 addEventListener('pointermove', e => {
@@ -145,9 +135,9 @@ addEventListener('pointermove', e => {
   ny = -((e.clientY / innerHeight) * 2 - 1);
 });
 
-let dX = 0, dY = 0, moved = 0;
+let dX = 0, dY = 0, moved = 0, rotX = 0, rotU = 0, dragging = false;
 addEventListener('pointerdown', e => {
-  if (e.target.closest('button, a, .strip, .sw, #detail, #dback')) return;
+  if (e.target.closest('button, a, #detail, #dback, #rooms, #intro')) return;
   dragging = true; moved = 0; dX = e.clientX; dY = e.clientY;
 });
 addEventListener('pointermove', e => {
@@ -161,14 +151,13 @@ addEventListener('pointermove', e => {
 addEventListener('pointerup', e => {
   if (!dragging) return;
   dragging = false;
-  if (moved < 7 && cur && phase !== 2) {
+  if (moved < 7 && cur) {
     const r = cv.getBoundingClientRect();
     const p = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
     const ray = new THREE.Raycaster(); ray.setFromCamera(p, cam);
-    if (ray.intersectObject(cur, true).length) openInfo(gi);
+    if (ray.intersectObject(cur, true).length) openInfo(actIdxOfCur());
   }
 });
-let rotX = 0;
 
 const dback = document.getElementById('dback');
 const detail = document.getElementById('detail');
@@ -186,30 +175,16 @@ function openInfo(i) {
   detail.classList.add('open'); dback.classList.add('on');
   detail.setAttribute('aria-hidden', 'false');
 }
+function actIdxOfCur() {
+  const k = ACTS.findIndex(a => a.model === curId);
+  return k >= 0 ? k : Math.min(gi, INFO.length - 1);
+}
 function closeInfo() {
   detail.classList.remove('open'); dback.classList.remove('on');
   detail.setAttribute('aria-hidden', 'true');
 }
 document.getElementById('dclose').addEventListener('click', closeInfo);
 dback.addEventListener('click', closeInfo);
-
-const strip = document.getElementById('strip');
-ACTS.slice(0, 6).forEach((a, i) => {
-  const p = document.createElement('div');
-  p.className = 'plate'; p.style.setProperty('--acc', a.acc);
-  p.innerHTML = '<div class="num">' + String(i + 1).padStart(2, '0') + '</div><p class="pr">' + a.price + '</p><h4>' + a.name + '</h4><p>' + a.kick + '</p>';
-  p.addEventListener('click', () => { if (!stripMoved) openInfo(i); });
-  strip.appendChild(p);
-});
-let stripMoved = false, sDown = false, sX = 0, sL = 0;
-strip.addEventListener('pointerdown', e => { sDown = true; stripMoved = false; sX = e.clientX; sL = strip.scrollLeft; strip.classList.add('grab'); });
-addEventListener('pointermove', e => {
-  if (!sDown) return;
-  const dx = e.clientX - sX;
-  if (Math.abs(dx) > 8) stripMoved = true;
-  strip.scrollLeft = sL - dx;
-});
-addEventListener('pointerup', () => { sDown = false; strip.classList.remove('grab'); });
 
 const sw = document.getElementById('swatches');
 const LIGHTS = [
@@ -230,12 +205,28 @@ LIGHTS.forEach((l, i) => {
   sw.appendChild(b);
 });
 
+const roomsEl = document.getElementById('rooms');
+const roomBtns = [];
+ACTS.forEach((a, k) => {
+  const b = document.createElement('button');
+  b.textContent = k === 6 ? 'STAGE' : a.giant;
+  b.addEventListener('click', () => scrollTo({ top: offs[k], behavior: 'smooth' }));
+  roomsEl.appendChild(b); roomBtns.push(b);
+});
+
 const io = new IntersectionObserver(es => {
   es.forEach(en => { if (en.isIntersecting) en.target.classList.add('in'); });
 }, { threshold: .3 });
 document.querySelectorAll('.copy').forEach(c => io.observe(c));
 
-let giantHold = null;
+const secs = [...document.querySelectorAll('main > section')];
+let offs = [];
+function measure() {
+  offs = secs.map(s => s.offsetTop);
+}
+
+let gi = 0, vG = 0;
+let giantHold = null, giantHoldOn = true, giantTimer = 0;
 function setGiant(txt, on) {
   if (giantHold === txt && giantHoldOn === on) return;
   giantHold = txt; giantHoldOn = on;
@@ -243,59 +234,76 @@ function setGiant(txt, on) {
   clearTimeout(giantTimer);
   giantTimer = setTimeout(() => { giant.textContent = txt; giant.style.opacity = on ? 1 : 0; }, 260);
 }
-let giantHoldOn = true, giantTimer = 0;
 
 let accTarget = new THREE.Color(0xEDEDEA);
 function onScroll() {
-  const max = document.documentElement.scrollHeight - innerHeight;
-  t = max > 0 ? Math.min(1, Math.max(0, scrollY / max)) : 0;
-  const v = t * 6.06;
-  const i = Math.min(stops - 1, Math.floor(v));
+  const yc = scrollY + innerHeight * .5;
+  let i = 0;
+  while (i < offs.length - 1 && yc >= offs[i + 1]) i++;
+  const span = (i < offs.length - 1 ? offs[i + 1] : offs[i] + innerHeight) - offs[i];
+  const f = Math.max(0, Math.min(1, (yc - offs[i]) / Math.max(1, span)));
+  vG = i + f;
   if (i !== gi) {
     gi = i;
     const a = ACTS[i];
     body.style.setProperty('--acc', a.acc);
     accTarget.set(a.acc);
-    if (a.model) requestModel(a.model, g => swapTo(a.model));
+    roomBtns.forEach((b, k) => b.classList.toggle('on', k === i));
   }
-  const f = v - i;
-  vG = v;
   setGiant(ACTS[i].giant, i < 6);
 }
 addEventListener('scroll', onScroll, { passive: true });
-onScroll();
-requestModel('shopify', g => { swapTo('shopify'); cv.style.opacity = 1; });
-for (let k = 1; k <= 5; k++) requestModel(ACTS[k].model, () => {});
 
-const dbg = document.createElement('div');
-dbg.style.cssText = 'position:fixed;left:8px;top:8px;z-index:99;color:#0f0;font:12px monospace;background:#000a;padding:4px 8px;pointer-events:none';
-document.body.appendChild(dbg);
-setInterval(() => { dbg.textContent = 'v=' + vG.toFixed(3) + ' scrollY=' + scrollY + ' gi=' + gi + ' cur=' + curId + ' des=' + dbgDes + ' ph=' + phase + ' cache=' + Object.keys(cache).join(','); }, 400);
+const intro = document.getElementById('intro');
+const ibarf = document.getElementById('ibarf');
+const ienter = document.getElementById('ienter');
+let loadedN = 0;
+function bootTick() {
+  loadedN++;
+  ibarf.style.width = Math.min(100, (loadedN / 6) * 100) + '%';
+  if (loadedN >= 6) { ienter.disabled = false; ienter.textContent = 'ENTER THE STORE'; }
+}
+const ib = document.getElementById('ib');
+'AIRBORNE'.split('').forEach((ch, i) => {
+  const s = document.createElement('span');
+  s.textContent = ch;
+  s.style.animationDelay = (200 + i * 75) + 'ms';
+  ib.appendChild(s);
+});
+ienter.addEventListener('click', () => {
+  intro.classList.add('off');
+  body.style.overflow = '';
+  setTimeout(() => intro.remove(), 800);
+});
+setTimeout(() => { if (ienter.disabled) { ienter.disabled = false; ienter.textContent = 'ENTER THE STORE'; } }, 14000);
+
+body.style.overflow = 'hidden';
+resize();
+onScroll();
+requestModel('shopify', g => { swapTo('shopify'); bootTick(); cv.style.opacity = 1; });
+['aj1', 'dunk', 'af1', 'travis', 'peg'].forEach(id => requestModel(id, bootTick));
 
 const clock = new THREE.Clock();
 function tick() {
   requestAnimationFrame(tick);
   const dt = Math.min(.05, clock.getDelta());
   const now = clock.elapsedTime;
-  const p = poseAt(t);
 
-  if (phase === 1) {
-    phaseT += dt / PHASE_DUR;
-    if (phaseT >= 1) { phase = 2; if (prev) prev.visible = false; prev = null; prevId = null; }
-  }
+  for (const idk in cache) { if (cache[idk] !== cur && cache[idk] !== prev) cache[idk].visible = false; }
 
   let desired = 0;
   for (let k = 1; k <= 5; k++) if (vG >= k - .12) desired = k;
-  dbgDes = desired;
-  if (desired && curId !== ACTS[desired].model) {
-    if (cache[ACTS[desired].model]) swapTo(ACTS[desired].model);
-    else if (!swapWait) { swapWait = 1; console.log('WAITMODEL', ACTS[desired].model, 'cached=', Object.keys(cache)); }
+  if (desired && cache[ACTS[desired].model] && curId !== ACTS[desired].model) swapTo(ACTS[desired].model);
+
+  if (phase === 1) {
+    phaseT += dt / PHASE_DUR;
+    if (phaseT >= 1) { phase = 2; if (prev) prev.visible = false; prev = null; }
   }
 
   if (cur) {
+    const p = poseAt(Math.min(gi, POSE.length - 1), vG - Math.floor(vG));
     const tp = phase === 1 ? Math.min(1, phaseT) : 1;
     const inE = 1 - Math.pow(1 - Math.min(1, tp * 1.15), 3);
-    const outE = 1 - Math.pow(Math.max(0, tp), 2);
     cur.position.set(p[0], p[1] + Math.sin(now * .8) * .025, p[2]);
     cur.rotation.set(p[3] + rotX, p[4] + rotU + Math.sin(now * .35) * .03, p[5]);
     const sc = (phase === 1 ? inE : 1) * p[6];
@@ -303,7 +311,7 @@ function tick() {
     if (phase !== 1 && prev) {
       prev.scale.multiplyScalar(Math.max(.0001, 1 - dt * 4.5));
       prev.rotation.y += dt * 2.2;
-      if (prev.scale.x < .02) { prev.visible = false; prev = null; prevId = null; }
+      if (prev.scale.x < .02) { prev.visible = false; prev = null; }
     }
   }
 

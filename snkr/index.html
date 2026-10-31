@@ -4,7 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>AIRBORNE. A Nike concept store.</title>
-<link rel="stylesheet" href="style.css?v=20">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=26">
 <script type="importmap">
 {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
 </script>
@@ -12,6 +15,16 @@
 <body>
 <canvas id="gl"></canvas>
 <div id="giant" aria-hidden="true">AIRBORNE</div>
+
+<div id="intro">
+  <p class="ik">0XLEETV STUDIO PRESENTS</p>
+  <h1 class="ib" id="ib"></h1>
+  <p class="il">A NIKE CONCEPT STORE</p>
+  <div class="ibar"><i id="ibarf"></i></div>
+  <button id="ienter" type="button" disabled>LOADING THE PAIRS</button>
+</div>
+
+<nav id="rooms" aria-label="Rooms"></nav>
 
 <main>
   <section class="act" id="hero">
@@ -68,11 +81,6 @@
     </div>
   </section>
 
-  <section class="room" id="archive">
-    <p class="rlabel">THE ARCHIVE. SWIPE THROUGH.</p>
-    <div class="strip" id="strip"></div>
-  </section>
-
   <section class="room" id="stagewrap">
     <p class="rlabel">THE STAGE. PICK THE LIGHT.</p>
     <div class="swatches" id="swatches"></div>
@@ -95,6 +103,6 @@
   <p class="dnote" id="dnote"></p>
 </aside>
 
-<script type="module" src="app.js?v=24"></script>
+<script type="module" src="app.js?v=26"></script>
 </body>
 </html>
