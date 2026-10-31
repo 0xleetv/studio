@@ -69,7 +69,6 @@ const MY = mob ? .5 : 0;
 const loader = new GLTFLoader();
 const cache = {};
 const queue = [];
-let loading = false;
 
 function build(id, obj) {
   const g = new THREE.Group();
@@ -88,14 +87,14 @@ function build(id, obj) {
 }
 
 function pump() {
-  if (loading || !queue.length) return;
-  loading = true;
-  const [id, done] = queue.shift();
-  if (cache[id]) { loading = false; done(cache[id]); pump(); return; }
-  loader.load('assets/' + MODELS[id].file,
-    gltf => { cache[id] = build(id, gltf.scene); loading = false; done(cache[id]); pump(); },
-    undefined,
-    () => { loading = false; pump(); });
+  while (queue.length) {
+    const [id, done] = queue.shift();
+    if (cache[id]) { done(cache[id]); continue; }
+    loader.load('assets/' + MODELS[id].file,
+      gltf => { cache[id] = build(id, gltf.scene); done(cache[id]); },
+      undefined,
+      () => {});
+  }
 }
 function requestModel(id, done) {
   if (cache[id]) { done(cache[id]); return; }
@@ -118,7 +117,7 @@ function swapTo(id) {
 const stops = 8;
 function stopT(t) { return Math.min(1, t * 6.06); }
 
-let t = 0, gi = 0, shownGi = -1;
+let t = 0, gi = 0, shownGi = -1, vG = 0;
 let rotU = 0, dragging = false;
 
 const easeIO = f => f * f * (3 - 2 * f);
@@ -261,14 +260,13 @@ function onScroll() {
     if (a.model) requestModel(a.model, g => swapTo(a.model));
   }
   const f = v - i;
-  for (let k = 1; k <= 5; k++) {
-    if (!cache[ACTS[k].model] && !queue.some(q => q[0] === ACTS[k].model) && v > k - .8) requestModel(ACTS[k].model, g => { if (gi === k) swapTo(ACTS[k].model); });
-  }
+  vG = v;
   setGiant(ACTS[i].giant, i < 6);
 }
 addEventListener('scroll', onScroll, { passive: true });
 onScroll();
 requestModel('shopify', g => { swapTo('shopify'); cv.style.opacity = 1; });
+for (let k = 1; k <= 5; k++) requestModel(ACTS[k].model, () => {});
 
 const clock = new THREE.Clock();
 function tick() {
@@ -281,6 +279,10 @@ function tick() {
     phaseT += dt / PHASE_DUR;
     if (phaseT >= 1) { phase = 2; if (prev) prev.visible = false; prev = null; prevId = null; }
   }
+
+  let desired = 0;
+  for (let k = 1; k <= 5; k++) if (vG >= k - .12) desired = k;
+  if (desired && cache[ACTS[desired].model] && curId !== ACTS[desired].model) swapTo(ACTS[desired].model);
 
   if (cur) {
     const tp = phase === 1 ? Math.min(1, phaseT) : 1;
