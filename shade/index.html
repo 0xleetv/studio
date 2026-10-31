@@ -3,52 +3,144 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="SHADE. A monolith split into two realities. Nine acts on one stone, teaching how to read AI generated images. Drag the seam.">
+<meta name="description" content="SHADE. A monolith split into two realities. A study in reading AI generated images, carved into a site.">
 <title>SHADE</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
-<div class="track" id="track">
-  <section class="act" id="overture" aria-label="Overture"></section>
-  <section class="act" id="slab" aria-label="The Slab"></section>
-  <section class="act" id="seam-act" aria-label="The Seam"></section>
-  <section class="act" id="noise-act" aria-label="Noise"></section>
-  <section class="act" id="light-act" aria-label="Light"></section>
-  <section class="act" id="texture-act" aria-label="Texture"></section>
-  <section class="act" id="fine-print" aria-label="The Fine Print"></section>
-  <section class="act" id="provenance-act" aria-label="Provenance"></section>
-  <section class="act" id="unbroken" aria-label="Unbroken"></section>
-</div>
-<header><span class="mark">SHADE</span></header>
-<h1 id="word" aria-live="polite"><span class="wc wl" id="wl">SHADE</span><span class="wc wr" id="wr" aria-hidden="true"></span></h1>
+<canvas id="veil"></canvas>
 <canvas id="stage"></canvas>
-<span class="sl sl-l" id="slL">RENDER</span>
-<span class="sl sl-r" id="slR">PHOTOGRAPH</span>
-<span class="hint" id="hint">DRAG TO ORBIT</span>
-<aside id="prov" aria-hidden="true">
-  <div class="pc">
-    <span class="ph tl">PHOTOGRAPH</span>
-    <span>LENS 35MM, F1.4</span>
-    <span>EXPOSURE 4MS</span>
-    <span>ISO 200</span>
-    <span>TIME 14:32</span>
-    <span>PLACE LAGOS</span>
-  </div>
-  <div class="pc">
-    <span class="ph tr">RENDER</span>
-    <span>LENS NOT RECORDED</span>
-    <span>EXPOSURE NOT RECORDED</span>
-    <span>ISO NOT RECORDED</span>
-    <span>TIME NOT RECORDED</span>
-    <span>PLACE NOT RECORDED</span>
-  </div>
-</aside>
-<p id="caption" aria-live="polite">A monolith split into two realities.</p>
+<canvas id="seamfx"></canvas>
+<div id="blurband"></div>
+
+<div class="track" id="track">
+
+  <section class="act" id="overture" aria-label="Overture">
+    <div class="bone hero">
+      <p class="kick" data-dec>0XLEETV STUDIO. A STUDY IN READING IMAGES.</p>
+      <h1 class="giant split" id="bigword">SHADE</h1>
+      <p class="lead">One stone, two realities. The left face is drawn as a photograph would be. The right face is drawn as a machine would make it. Everything below teaches your eye to tell them apart.</p>
+      <p class="telemetry" data-dec>INPUT 9 ACTS · MODE DRAG TO ORBIT · SOURCE DRAWN IN CODE</p>
+      <span class="scrollcue" data-dec>SCROLL TO READ THE STONE</span>
+    </div>
+  </section>
+
+  <section class="act" id="slab-act" aria-label="The Slab">
+    <div class="bone right">
+      <p class="kick" data-dec>ACT 01. THE SLAB.</p>
+      <h2 class="giant split">THE SLAB</h2>
+      <p class="bodycopy">Photographs come from one uninterrupted exposure. Synthetic images are assembled patch by patch, so their surfaces carry no single moment of light. The left face obeys one sun. The right face obeys nine opinions.</p>
+      <div class="tele" data-dec>
+        <span>SURFACE CONTINUOUS</span><span>EXPOSURE SINGULAR</span><span>LIGHT ONE SOURCE</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="act" id="seam-act" aria-label="The Seam">
+    <div class="bone left">
+      <p class="kick" data-dec>ACT 02. THE SEAM.</p>
+      <h2 class="giant split">THE SEAM</h2>
+      <p class="bodycopy">Between the two faces runs a seam you can drag. Pull it and the stone opens: chrome pours through the cut, an iridescent film settling over the raw geometry before the surface forgets it was ever artificial.</p>
+      <div class="tele" data-dec>
+        <span>DRAG TO ORBIT</span><span>SEAM LIVE</span><span>EDGE GRADED BLUR</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="act" id="noise-act" aria-label="Noise">
+    <div class="bone right">
+      <p class="kick" data-dec>ACT 03. NOISE.</p>
+      <h2 class="giant split">NOISE</h2>
+      <p class="bodycopy">A sensor leaves structured grain, correlated from pixel to pixel by the physics of its own wiring. A generator leaves noise that has never met a sensor: even, uncorrelated, a fingerprint it forgot to fake.</p>
+      <div class="tele" data-dec>
+        <span>GRAIN STRUCTURED</span><span>CORRELATION 0.42</span><span>SENSOR SIGNATURE PRESENT</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="act" id="light-act" aria-label="Light">
+    <div class="bone left">
+      <p class="kick" data-dec>ACT 04. LIGHT.</p>
+      <h2 class="giant split">LIGHT</h2>
+      <p class="bodycopy">Reflections obey geometry. Move your pointer and watch the stone answer: the highlight slides along one consistent sun on the left, while the right face lights from wherever is convenient. Fakes forget the angle.</p>
+      <div class="tele" data-dec>
+        <span>REFLECTION GEOMETRIC</span><span>SPECULAR CONSISTENT</span><span>SHADOW DIRECTION LOCKED</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="act" id="texture-act" aria-label="Texture">
+    <div class="bone right">
+      <p class="kick" data-dec>ACT 05. TEXTURE.</p>
+      <h2 class="giant split">TEXTURE</h2>
+      <p class="bodycopy">Skin repeats when a machine imagines it. Watch the surface shatter: the slab breaks into tiles that drift and spin, each one reusing the same imagined grain. Real wear never tiles. It scars, chips and heals unevenly.</p>
+      <div class="tele" data-dec>
+        <span>TILING DETECTED</span><span>WEAR UNIFORM</span><span>SHATTER 55 PERCENT</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="act" id="fine-print" aria-label="The Fine Print">
+    <div class="bone left">
+      <p class="kick" data-dec>ACT 06. THE FINE PRINT.</p>
+      <h2 class="giant split">THE FINE PRINT</h2>
+      <p class="bodycopy">Small text betrays big models. Zoom into the stone and read the etched lines: characters decay into their mirror glyphs, a hole drilled where an S becomes a 5. Generators paint the idea of text, never the letters.</p>
+      <div class="tele" data-dec>
+        <span>GLYPH DECAY 6 OF 6</span><span>MIRROR SUBSTITUTION LIVE</span><span>READABILITY FAILING</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="act" id="provenance-act" aria-label="Provenance">
+    <div class="bone right">
+      <p class="kick" data-dec>ACT 07. PROVENANCE.</p>
+      <h2 class="giant split">PROVENANCE</h2>
+      <p class="bodycopy">Every image remembers where it was made. A camera records lens, exposure, time and place. A generator records none of it, because none of it happened. Missing metadata is not proof of fakery, but its absence is where the questions start.</p>
+      <aside class="provgrid" aria-label="Provenance records">
+        <div class="pc">
+          <span class="ph" data-dec>PHOTOGRAPH</span>
+          <span data-dec>LENS 35MM F1.4</span>
+          <span data-dec>EXPOSURE 4MS</span>
+          <span data-dec>ISO 200</span>
+          <span data-dec>TIME 14:32</span>
+          <span data-dec>PLACE LAGOS</span>
+        </div>
+        <div class="pc">
+          <span class="ph" data-dec>RENDER</span>
+          <span data-dec>LENS NOT RECORDED</span>
+          <span data-dec>EXPOSURE NOT RECORDED</span>
+          <span data-dec>ISO NOT RECORDED</span>
+          <span data-dec>TIME NOT RECORDED</span>
+          <span data-dec>PLACE NOT RECORDED</span>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="act" id="unbroken" aria-label="Unbroken">
+    <div class="bone center">
+      <p class="kick" data-dec>ACT 08. UNBROKEN.</p>
+      <h2 class="giant split">UNBROKEN</h2>
+      <p class="bodycopy">Pull back. The seam heals, the tiles return, the chrome cools, and it was one photograph all along. Reading an image is not about one tell. It is about knowing which questions to ask, and asking all of them.</p>
+      <div class="tele" data-dec>
+        <span>SEAM SEALED</span><span>QUESTIONS REMAIN</span><span>END OF STUDY</span>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<header>
+  <span class="mark" data-dec>SHADE</span>
+  <span class="mk-sub" data-dec>A STUDY IN READING IMAGES</span>
+</header>
+
 <footer id="colo">
-  <span>SHADE. A study in reading images.</span>
-  <span>Nothing here was photographed: the stone, its grain and its light are drawn in code.</span>
-  <span>MMXXVI</span>
+  <span>SHADE. A STUDY IN READING IMAGES.</span>
+  <span>NOTHING HERE WAS PHOTOGRAPHED. THE STONE, ITS GRAIN AND ITS LIGHT ARE DRAWN IN CODE.</span>
+  <span><a class="maglink" href="https://0xleetvstudio.netlify.app">0XLEETV STUDIO</a> · MMXXVI</span>
 </footer>
-<script src="app.js?v=5"></script>
+
+<script src="app.js?v=6"></script>
 </body>
 </html>

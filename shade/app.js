@@ -3,15 +3,11 @@
 
 const canvas = document.getElementById("stage");
 const ctx = canvas.getContext("2d");
-const wordEl = document.getElementById("word");
-const wl = document.getElementById("wl");
-const wr = document.getElementById("wr");
-const capEl = document.getElementById("caption");
 const track = document.getElementById("track");
-const slL = document.getElementById("slL");
-const slR = document.getElementById("slR");
-const hintEl = document.getElementById("hint");
-const provEl = document.getElementById("prov");
+const veilCv = document.getElementById("veil");
+const seamCv = document.getElementById("seamfx");
+const blurband = document.getElementById("blurband");
+const acts = Array.prototype.slice.call(document.querySelectorAll(".act"));
 
 const CH = [
   { t: "ovt",   w: "SHADE",          l: "A monolith split into two realities.",                   yaw: 0,   pit: 0,   roll: 0,  zoom: 1.12, seam: 0,    shat: 0,    grain: .28, glow: .12, photo: 0,   scan: .08, deb: .18, fall: 0,   spin: .10 },
@@ -449,13 +445,7 @@ function render(cf) {
   const idx = Math.round(cf);
   if (idx !== lastIdx) {
     lastIdx = idx;
-    const c = CH[idx];
-    wl.textContent = c.w; wr.textContent = c.w;
-    capEl.textContent = c.l;
-    slL.classList.toggle("on", c.t === "seam");
-    slR.classList.toggle("on", c.t === "seam");
-    hintEl.classList.toggle("on", c.t === "light");
-    provEl.classList.toggle("on", c.t === "prov");
+    actLive(idx);
   }
   gSpin = L("spin"); gFall = L("fall");
   const tNow = performance.now();
@@ -536,10 +526,12 @@ function render(cf) {
     ctx.restore();
   }
 
-  wordEl.style.transform = "translate(" + (px * 16).toFixed(1) + "px," + (py * 9).toFixed(1) + "px)";
-
-  const nearEnd = window.scrollY > Math.max(1, track.offsetHeight - H) - H * 0.35;
-  capEl.style.opacity = nearEnd ? "0" : "1";
+  const seamP = proj([0, 0, 0]);
+  const seamX = seamP ? clamp(seamP[0] / W, 0.04, 0.96) : 0.5;
+  veilUpdate(tNow, seamX, seam, glow, 0.35 + scan * 0.65);
+  seamfxDraw(tNow, seamX, seam);
+  blurband.style.transform = "translateX(" + (seamX * W - 48).toFixed(1) + "px)";
+  blurband.classList.toggle("on", seam > 0.04);
 }
 
 function tick() {
@@ -597,7 +589,7 @@ window.addEventListener("pointermove", e => {
 window.addEventListener("pointerup", () => { dragging = false; document.body.classList.remove("drag"); poke(); });
 window.addEventListener("pointercancel", () => { dragging = false; document.body.classList.remove("drag"); poke(); });
 window.addEventListener("scroll", poke, { passive: true });
-window.addEventListener("resize", () => { resize(); poke(); });
+window.addEventListener("resize", () => { resize(); veilResize(); seamResize(); poke(); });
 
 function resize() {
   DPR = Math.min(window.devicePixelRatio || 1, 2);
@@ -606,10 +598,182 @@ function resize() {
   canvas.style.width = W + "px"; canvas.style.height = H + "px";
 }
 
-resize();
-buildTextures();
+
+/* ===== acts, split text, decrypt, reveal ===== */
+function actLive(i) {
+  for (let k = 0; k < acts.length; k++) acts[k].classList.toggle("live", k === i);
+}
+document.querySelectorAll(".split").forEach(function (el) {
+  const txt = el.textContent;
+  el.textContent = "";
+  const chars = txt.split("");
+  for (let i = 0; i < chars.length; i++) {
+    const s = document.createElement("span");
+    s.className = "ch";
+    s.textContent = chars[i] === " " ? "\u00A0" : chars[i];
+    s.style.transitionDelay = (i * 0.028).toFixed(3) + "s";
+    el.appendChild(s);
+  }
+});
+const DGL = "!<>[]{}=+*#%AXZ";
+function decrypt(el) {
+  if (el._dec) return; el._dec = true;
+  const txt = el.textContent;
+  const t0 = performance.now();
+  (function step() {
+    const p = Math.min(1, (performance.now() - t0) / 750);
+    const solid = Math.floor(txt.length * p);
+    let s = "";
+    for (let i = 0; i < txt.length; i++) {
+      const c = txt[i];
+      s += (c === " " || i < solid) ? c : DGL[(Math.random() * DGL.length) | 0];
+    }
+    el.textContent = s;
+    if (p < 1) requestAnimationFrame(step); else { el.textContent = txt; el._dec = false; }
+  })();
+}
+const io = new IntersectionObserver(function (es) {
+  for (const e of es) if (e.isIntersecting) {
+    e.target.classList.add("in");
+    const ds = e.target.querySelectorAll("[data-dec]");
+    for (const d of ds) decrypt(d);
+    io.unobserve(e.target);
+  }
+}, { threshold: 0.22 });
+document.querySelectorAll(".bone").forEach(function (b) { io.observe(b); });
+decrypt(document.querySelector("header .mark"));
+decrypt(document.querySelector("header .mk-sub"));
+
+/* ===== magnet link ===== */
+const mag = document.querySelector(".maglink");
+if (mag) {
+  let mrx = 0, mry = 0, mtx = 0, mty = 0, mraf = false;
+  function magLoop() {
+    mrx += (mtx - mrx) * 0.22; mry += (mty - mry) * 0.22;
+    mag.style.transform = "translate(" + mrx.toFixed(2) + "px," + mry.toFixed(2) + "px)";
+    if (Math.abs(mtx - mrx) > 0.15 || Math.abs(mty - mry) > 0.15) requestAnimationFrame(magLoop); else mraf = false;
+  }
+  function magKick() { if (!mraf) { mraf = true; requestAnimationFrame(magLoop); } }
+  window.addEventListener("pointermove", function (e) {
+    const r = mag.getBoundingClientRect();
+    const dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+    const d = Math.hypot(dx, dy);
+    if (d < 90) { mtx = dx * 0.35; mty = dy * 0.35; } else { mtx = 0; mty = 0; }
+    magKick();
+  }, { passive: true });
+}
+
+/* ===== veil: dark veil, grid motion, beams, iridescent seam (one quad) ===== */
+const gl = veilCv.getContext("webgl", { alpha: false, antialias: false, depth: false });
+let veilOk = false, uT, uRes, uSx, uSa, uBm, uGd;
+const VEIL_FS = [
+  "precision mediump float;",
+  "uniform vec2 r;uniform float t,sx,sa,bm,gd;",
+  "float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}",
+  "float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);",
+  "return mix(mix(h(i),h(i+vec2(1.,0.)),f.x),mix(h(i+vec2(0.,1.)),h(i+vec2(1.,1.)),f.x),f.y);}",
+  "float fbm(vec2 p){float v=0.,a=.5;for(int k=0;k<4;k++){v+=a*n(p);p*=2.03;a*=.5;}return v;}",
+  "void main(){",
+  "vec2 uv=gl_FragCoord.xy/r;float asp=r.x/r.y;",
+  "float veil=fbm(vec2(uv.x*asp*2.2,uv.y*1.7)+vec2(t*0.018,-t*0.011));",
+  "vec3 col=mix(vec3(0.024,0.028,0.038),vec3(0.052,0.056,0.072),veil*0.9);",
+  "float hor=0.34;float g=0.;",
+  "if(uv.y<hor){float d=hor-uv.y;float gz=d*9.+t*0.35;",
+  "float lx=abs(fract((uv.x-0.5)*(2.+d*7.)/max(d,0.02)*0.35+0.5)-0.5);",
+  "float lz=abs(fract(gz)-0.5);",
+  "g+=(smoothstep(0.06,0.,lx)+smoothstep(0.05,0.,lz))*smoothstep(0.34,0.02,d);}",
+  "float gv=abs(fract(uv.x*asp*5.-t*0.05)-0.5);g+=smoothstep(0.015,0.,gv)*0.5;",
+  "col+=vec3(0.05,0.10,0.11)*g*gd*0.5;",
+  "float b1=exp(-pow((uv.x-0.30-0.06*sin(t*0.21))*7.,2.));",
+  "float b2=exp(-pow((uv.x-0.72+0.05*sin(t*0.17+2.))*7.,2.));",
+  "float beam=(b1*0.55+b2*0.45)*(0.35+0.65*fbm(vec2(uv.y*3.-t*0.1,t*0.05)));",
+  "col+=mix(vec3(0.55,0.30,0.10),vec3(0.10,0.42,0.44),uv.x)*beam*bm*0.16;",
+  "if(sa>0.003){float dx=(uv.x-sx)*asp;float band=exp(-dx*dx*180.);",
+  "vec2 sp=vec2(uv.x*asp*3.,uv.y*2.);",
+  "float w=fbm(sp+vec2(t*0.06,0.));",
+  "float film=fbm(vec2(sp.x+w*2.2,sp.y*0.6+w*1.4-t*0.05));",
+  "vec3 iri=0.5+0.5*cos(6.2831*(film*1.6+vec3(0.,0.33,0.67))+t*0.15);",
+  "col=mix(col,iri*0.85,band*sa*0.55);",
+  "col+=vec3(0.6,0.7,0.8)*band*sa*0.12*(0.5+0.5*film);}",
+  "float vg=smoothstep(1.25,0.35,length((uv-0.5)*vec2(asp,1.)));",
+  "col*=0.35+0.65*vg;",
+  "gl_FragColor=vec4(col,1.);}"
+].join("\n");
+if (gl) {
+  function mkShader(tp, src) { const o = gl.createShader(tp); gl.shaderSource(o, src); gl.compileShader(o); return o; }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, mkShader(gl.VERTEX_SHADER, "attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}"));
+  gl.attachShader(prog, mkShader(gl.FRAGMENT_SHADER, VEIL_FS));
+  gl.linkProgram(prog);
+  if (gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+    gl.useProgram(prog);
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    const la = gl.getAttribLocation(prog, "a");
+    gl.enableVertexAttribArray(la);
+    gl.vertexAttribPointer(la, 2, gl.FLOAT, false, 0, 0);
+    uT = gl.getUniformLocation(prog, "t");
+    uRes = gl.getUniformLocation(prog, "r");
+    uSx = gl.getUniformLocation(prog, "sx");
+    uSa = gl.getUniformLocation(prog, "sa");
+    uBm = gl.getUniformLocation(prog, "bm");
+    uGd = gl.getUniformLocation(prog, "gd");
+    veilOk = true;
+  }
+}
+function veilResize() {
+  if (!gl) return;
+  veilCv.width = Math.round(W * DPR); veilCv.height = Math.round(H * DPR);
+  gl.viewport(0, 0, veilCv.width, veilCv.height);
+}
+function veilUpdate(tNow, sx, sa, bm, gd) {
+  if (!veilOk) return;
+  gl.uniform1f(uT, tNow * 0.001);
+  gl.uniform2f(uRes, veilCv.width, veilCv.height);
+  gl.uniform1f(uSx, sx);
+  gl.uniform1f(uSa, sa);
+  gl.uniform1f(uBm, bm);
+  gl.uniform1f(uGd, gd);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+}
+
+/* ===== seamfx: magnet lines along the seam ===== */
+const sctx = seamCv.getContext("2d");
+function seamResize() {
+  seamCv.width = Math.round(W * DPR); seamCv.height = Math.round(H * DPR);
+}
+function seamfxDraw(tNow, seamX, sa) {
+  sctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  sctx.clearRect(0, 0, W, H);
+  if (sa <= 0.03) return;
+  const cxp = seamX * W;
+  const half = Math.min(92, W * 0.11);
+  const N = 22;
+  const mpx = (px + 1) * .5 * W, mpy = (py + 1) * .5 * H;
+  for (let i = 0; i < N; i++) {
+    const f = i / (N - 1);
+    const bx = cxp - half + 2 * half * f;
+    sctx.beginPath();
+    for (let y = 0; y <= H + 24; y += 24) {
+      const d = Math.hypot(bx - mpx, y - mpy);
+      const x = bx + (mpx - bx) * Math.exp(-d / 190) * 0.55 * sa
+        + Math.sin(y * 0.012 + tNow * 0.0012 + i * 0.7) * 2.4 * sa;
+      if (y === 0) sctx.moveTo(x, y); else sctx.lineTo(x, y);
+    }
+    const a = 0.08 + 0.16 * sa;
+    sctx.strokeStyle = f < 0.5
+      ? "rgba(229,139,53," + (a + (1 - f) * 0.04 * sa).toFixed(3) + ")"
+      : "rgba(60,228,214," + (a + f * 0.04 * sa).toFixed(3) + ")";
+    sctx.lineWidth = 1;
+    sctx.stroke();
+  }
+}
+
+
 etchFine(0);
 buildShards();
 buildOrbit();
 poke();
 })();
+
