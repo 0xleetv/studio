@@ -137,3 +137,4 @@ header {
   .provgrid { gap: 20px; }
   #colo { padding: 8vh 20px 6vh; }
 }
+@media (max-width: 720px) { .bone.right .giant.one { font-size: clamp(30px, 8vw, 46px); } }

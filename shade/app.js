@@ -592,26 +592,7 @@ window.addEventListener("pointermove", e => {
 window.addEventListener("pointerup", () => { dragging = false; document.body.classList.remove("drag"); poke(); });
 window.addEventListener("pointercancel", () => { dragging = false; document.body.classList.remove("drag"); poke(); });
 window.addEventListener("scroll", poke, { passive: true });
-window.addEventListener("resize", () => { resize(); veilResize(); seamResize(); dustResize(); fitGiants(); poke(); });
-
-function fitGiants() {
-  document.querySelectorAll(".giant").forEach(function (el) {
-    el.style.fontSize = "";
-    for (let pass = 0; pass < 3; pass++) {
-      const rg = document.createRange();
-      rg.selectNodeContents(el);
-      const r = rg.getBoundingClientRect();
-      if (r.width <= 0) break;
-      const limR = window.innerWidth * 0.97, limL = window.innerWidth * 0.03;
-      let over = 0;
-      if (r.right > limR) over = r.right - limR;
-      if (r.left < limL) over = Math.max(over, limL - r.left);
-      if (over <= 0) break;
-      const fs = parseFloat(getComputedStyle(el).fontSize);
-      el.style.fontSize = (fs * (r.width - over) / r.width).toFixed(1) + "px";
-    }
-  });
-}
+window.addEventListener("resize", () => { resize(); veilResize(); seamResize(); dustResize(); poke(); });
 
 const dustCv = document.getElementById("dust");
 const dustCx = dustCv.getContext("2d");
@@ -836,5 +817,4 @@ etchFine(0);
 buildShards();
 buildOrbit();
 poke();
-fitGiants();
 })();
