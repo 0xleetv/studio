@@ -365,7 +365,7 @@ function tick() {
   const vgInst = (vG - lastVG) / Math.max(dt, .001);
   vgVel += (vgInst - vgVel) * Math.min(1, dt * 8);
   lastVG = vG;
-  if (desired && Math.abs(vgVel) < 3 && cache[ACTS[desired].model] && curId !== ACTS[desired].model) swapTo(ACTS[desired].model);
+  if (Math.abs(vgVel) < 3 && cache[ACTS[desired].model] && curId !== ACTS[desired].model) swapTo(ACTS[desired].model);
 
   if (phase === 1) {
     phaseT += dt / EXIT_DUR;
