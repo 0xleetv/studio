@@ -597,9 +597,11 @@ window.addEventListener("resize", () => { resize(); veilResize(); seamResize(); 
 function fitGiants() {
   document.querySelectorAll(".giant").forEach(function (el) {
     el.style.fontSize = "";
+    const rg = document.createRange();
+    rg.selectNodeContents(el);
+    const w = rg.getBoundingClientRect().width;
     const avail = window.innerWidth * 0.94;
-    const w = el.scrollWidth;
-    if (w > avail) {
+    if (w > avail && w > 0) {
       const fs = parseFloat(getComputedStyle(el).fontSize);
       el.style.fontSize = (fs * avail / w).toFixed(1) + "px";
     }
@@ -633,7 +635,6 @@ function dustDraw(tNow) {
   }
 }
 dustResize();
-fitGiants();
 
 function resize() {
   DPR = Math.min(window.devicePixelRatio || 1, 2);
@@ -831,4 +832,4 @@ buildShards();
 buildOrbit();
 poke();
 })();
-
+fitGiants();
