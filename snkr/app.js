@@ -24,6 +24,23 @@ const fill = new THREE.DirectionalLight(0xffffff, .55); fill.position.set(-2.5, 
 const rim = new THREE.DirectionalLight(0xEDEDEA, 2.4); rim.position.set(-1.5, 2, -2.5); scene.add(rim);
 const cursorL = new THREE.PointLight(0xffffff, 14, 6, 2); cursorL.position.set(0, 1, 2.2); scene.add(cursorL);
 
+const back = new THREE.Group();
+const ring1 = new THREE.Mesh(new THREE.RingGeometry(1.62, 1.645, 128),
+  new THREE.MeshBasicMaterial({ color: 0xEDEDEA, transparent: true, opacity: 0.15, side: THREE.DoubleSide, depthWrite: false }));
+const ring2 = new THREE.Mesh(new THREE.RingGeometry(2.15, 2.162, 128),
+  new THREE.MeshBasicMaterial({ color: 0xEDEDEA, transparent: true, opacity: 0.08, side: THREE.DoubleSide, depthWrite: false }));
+const hc = document.createElement('canvas'); hc.width = hc.height = 256;
+const hx = hc.getContext('2d');
+const hg = hx.createRadialGradient(128, 128, 0, 128, 128, 128);
+hg.addColorStop(0, 'rgba(255,255,255,0.55)'); hg.addColorStop(1, 'rgba(255,255,255,0)');
+hx.fillStyle = hg; hx.fillRect(0, 0, 256, 256);
+const halo = new THREE.Mesh(new THREE.PlaneGeometry(7.5, 7.5),
+  new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(hc), transparent: true, opacity: 0.10, depthWrite: false }));
+back.add(ring1, ring2, halo);
+back.position.set(0, 0.35, -2.6);
+back.scale.setScalar(mob ? 0.72 : 1);
+scene.add(back);
+
 const MODELS = {
   shopify: { file: 'shoe2.glb' },
   aj1: { file: 'offwhite_jordan.glb' },
@@ -437,6 +454,14 @@ function tick() {
   cam.position.y += ((.55 + ny * .16) - cam.position.y) * dt * 4;
   cam.lookAt(0, .35, 0);
   cursorL.position.set(nx * 3.4, ny * 2 + .6, 2.1);
+  ring1.rotation.z += dt * .06;
+  ring2.rotation.z -= dt * .035;
+  ring1.material.color.lerp(accTarget, dt * 1.2);
+  ring2.material.color.lerp(accTarget, dt * 1.2);
+  halo.material.color.lerp(accTarget, dt * 1.2);
+  back.position.x = nx * .18;
+  back.position.y = .35 + ny * .1;
+  back.rotation.z = Math.sin(now * .05) * .04;
   if (!dragging) rotU *= (1 - dt * 1.6);
   renderer.render(scene, cam);
 }

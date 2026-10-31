@@ -562,6 +562,7 @@ function tick() {
   const st = clamp(Math.round((cur - 5.8) * 2), 0, 6);
   if (st !== etchStep) { etchStep = st; etchFine(st); }
 
+  dustDraw(performance.now());
   render(cur);
   poke();
 }
@@ -589,7 +590,48 @@ window.addEventListener("pointermove", e => {
 window.addEventListener("pointerup", () => { dragging = false; document.body.classList.remove("drag"); poke(); });
 window.addEventListener("pointercancel", () => { dragging = false; document.body.classList.remove("drag"); poke(); });
 window.addEventListener("scroll", poke, { passive: true });
-window.addEventListener("resize", () => { resize(); veilResize(); seamResize(); poke(); });
+window.addEventListener("resize", () => { resize(); veilResize(); seamResize(); dustResize(); fitGiants(); poke(); });
+
+function fitGiants() {
+  document.querySelectorAll(".giant").forEach(function (el) {
+    el.style.fontSize = "";
+    const avail = window.innerWidth * 0.94;
+    const w = el.scrollWidth;
+    if (w > avail) {
+      const fs = parseFloat(getComputedStyle(el).fontSize);
+      el.style.fontSize = (fs * avail / w).toFixed(1) + "px";
+    }
+  });
+}
+
+const dustCv = document.getElementById("dust");
+const dustCx = dustCv.getContext("2d");
+const dust = [];
+function dustResize() {
+  dustCv.width = W * DPR; dustCv.height = H * DPR;
+  dustCv.style.width = W + "px"; dustCv.style.height = H + "px";
+  dustCx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  if (!dust.length) {
+    const n = Math.min(110, Math.round((W * H) / 16000));
+    for (let i = 0; i < n; i++) dust.push({
+      x: Math.random() * W, y: Math.random() * H,
+      r: 0.6 + Math.random() * 1.7, s: 0.10 + Math.random() * 0.30,
+      ph: Math.random() * 6.283, warm: Math.random() < 0.38
+    });
+  }
+}
+function dustDraw(tNow) {
+  dustCx.clearRect(0, 0, W, H);
+  for (const p of dust) {
+    p.y -= p.s; p.x += Math.sin(tNow * 0.00025 + p.ph) * 0.18;
+    if (p.y < -4) { p.y = H + 4; p.x = Math.random() * W; }
+    const a = 0.05 + 0.10 * Math.abs(Math.sin(tNow * 0.0006 + p.ph));
+    dustCx.fillStyle = "rgba(" + (p.warm ? "229,139,53" : "60,228,214") + "," + a.toFixed(3) + ")";
+    dustCx.beginPath(); dustCx.arc(p.x, p.y, p.r, 0, 6.283); dustCx.fill();
+  }
+}
+dustResize();
+fitGiants();
 
 function resize() {
   DPR = Math.min(window.devicePixelRatio || 1, 2);

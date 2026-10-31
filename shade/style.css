@@ -13,7 +13,9 @@ body {
   position: fixed; inset: 0; width: 100vw; height: 100vh;
   pointer-events: none;
 }
-#veil { z-index: 0; }
+#veil { z-index: 0; animation: veildrift 80s ease-in-out infinite; }
+@keyframes veildrift { 0%, 100% { filter: hue-rotate(0deg); } 50% { filter: hue-rotate(16deg); } }
+#dust { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; }
 #stage { z-index: 1; touch-action: pan-y; cursor: ew-resize; pointer-events: auto; }
 #seamfx { z-index: 2; }
 #blurband {
