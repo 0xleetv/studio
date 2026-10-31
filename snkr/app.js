@@ -155,7 +155,10 @@ addEventListener('pointerup', e => {
     const r = cv.getBoundingClientRect();
     const p = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
     const ray = new THREE.Raycaster(); ray.setFromCamera(p, cam);
-    if (ray.intersectObject(cur, true).length) openInfo(actIdxOfCur());
+    const hitMesh = ray.intersectObject(cur, true).length > 0;
+    const center = new THREE.Vector3(); cur.getWorldPosition(center);
+    const near = ray.ray.distanceToPoint(center) < 1.15;
+    if (hitMesh || near) openInfo(actIdxOfCur());
   }
 });
 
@@ -210,7 +213,7 @@ const roomBtns = [];
 ACTS.forEach((a, k) => {
   const b = document.createElement('button');
   b.textContent = k === 6 ? 'STAGE' : a.giant;
-  b.addEventListener('click', () => scrollTo({ top: offs[k], behavior: 'smooth' }));
+  b.addEventListener('click', () => scrollTo({ top: k * actH, behavior: 'smooth' }));
   roomsEl.appendChild(b); roomBtns.push(b);
 });
 
@@ -220,9 +223,9 @@ const io = new IntersectionObserver(es => {
 document.querySelectorAll('.copy').forEach(c => io.observe(c));
 
 const secs = [...document.querySelectorAll('main > section')];
-let offs = [];
+let actH = 1;
 function measure() {
-  offs = secs.map(s => s.offsetTop);
+  actH = Math.max(1, secs[0].offsetHeight);
 }
 
 let gi = 0, vG = 0;
@@ -237,11 +240,9 @@ function setGiant(txt, on) {
 
 let accTarget = new THREE.Color(0xEDEDEA);
 function onScroll() {
-  const yc = scrollY + innerHeight * .5;
-  let i = 0;
-  while (i < offs.length - 1 && yc >= offs[i + 1]) i++;
-  const span = (i < offs.length - 1 ? offs[i + 1] : offs[i] + innerHeight) - offs[i];
-  const f = Math.max(0, Math.min(1, (yc - offs[i]) / Math.max(1, span)));
+  const v = scrollY / actH;
+  const i = Math.min(6, Math.max(0, Math.floor(v)));
+  const f = Math.max(0, Math.min(1, v - i));
   vG = i + f;
   if (i !== gi) {
     gi = i;
