@@ -91,9 +91,9 @@ function pump() {
     const [id, done] = queue.shift();
     if (cache[id]) { done(cache[id]); continue; }
     loader.load('assets/' + MODELS[id].file,
-      gltf => { cache[id] = build(id, gltf.scene); done(cache[id]); },
+      gltf => { try { cache[id] = build(id, gltf.scene); console.log('LOADED', id); done(cache[id]); } catch (e) { console.error('BUILDFAIL', id, e && e.message); } },
       undefined,
-      () => {});
+      e => { console.error('LOADFAIL', id, e && (e.type || e.message || 'unknown')); });
   }
 }
 function requestModel(id, done) {
@@ -117,7 +117,7 @@ function swapTo(id) {
 const stops = 8;
 function stopT(t) { return Math.min(1, t * 6.06); }
 
-let t = 0, gi = 0, shownGi = -1, vG = 0;
+let t = 0, gi = 0, shownGi = -1, vG = 0, swapWait = 0;
 let rotU = 0, dragging = false;
 
 const easeIO = f => f * f * (3 - 2 * f);
@@ -282,7 +282,10 @@ function tick() {
 
   let desired = 0;
   for (let k = 1; k <= 5; k++) if (vG >= k - .12) desired = k;
-  if (desired && cache[ACTS[desired].model] && curId !== ACTS[desired].model) swapTo(ACTS[desired].model);
+  if (desired && curId !== ACTS[desired].model) {
+    if (cache[ACTS[desired].model]) swapTo(ACTS[desired].model);
+    else if (!swapWait) { swapWait = 1; console.log('WAITMODEL', ACTS[desired].model, 'cached=', Object.keys(cache)); }
+  }
 
   if (cur) {
     const tp = phase === 1 ? Math.min(1, phaseT) : 1;
