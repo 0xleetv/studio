@@ -8,7 +8,7 @@ body { background:#08090B; transition:background-color .9s ease;
 }
 ::selection { background:#2C63E8; color:#fff; }
 
-#gl { position:fixed; inset:0; width:100%; height:100%; display:block; z-index:2; pointer-events:none; }
+#gl { position:fixed; inset:0; width:100%; height:100%; display:block; z-index:2; pointer-events:none; opacity:0; transition:opacity .9s ease; }
 #giant {
   position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
   padding:0 4vw;
@@ -40,7 +40,8 @@ main { position:relative; z-index:3; }
   padding:26px 22px 22px; cursor:pointer;
   transition:transform .35s ease, border-color .35s ease; }
 .plate:hover { transform:translateY(-6px); border-color:var(--acc,#2C63E8); }
-.plate img { width:100%; height:170px; object-fit:contain; display:block; }
+.plate .num { font-size:46px; font-weight:800; color:var(--acc,#2C63E8); line-height:1; }
+.plate .pr { margin-top:14px; font-size:12px; letter-spacing:.22em; color:#EDEDEA; }
 .plate h4 { font-size:14px; letter-spacing:.08em; margin-top:18px; font-weight:600; }
 .plate p { font-size:11px; letter-spacing:.25em; color:#8A8F98; margin-top:8px; }
 
@@ -81,7 +82,6 @@ footer { padding:12svh min(5vw,64px) 9svh; color:#6C7078; font-size:12px; line-h
   .copy { bottom:9svh; max-width:82vw; }
   #giant { font-size:24vw; }
   .plate { width:76vw; }
-  .plate img { height:150px; }
   #detail { padding:56px 6vw 60px; }
   .dspecs b { min-width:104px; }
   .hint { display:none; }

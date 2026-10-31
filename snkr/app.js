@@ -2,30 +2,30 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const CW = [
-  { name:'ROYAL',  body:'#2C63E8', trim:'#E8E8E4', line:'Court blue on black. The loudest blue on the rack, kept quiet everywhere else.' },
-  { name:'CRIMSON',body:'#C8332E', trim:'#EFEAE4', line:'One red carries the whole shoe. Everything else steps back.' },
-  { name:'BONE',   body:'#D8D4CB', trim:'#F2F0EA', line:'Off white head to toe. Quiet on purpose.' },
-  { name:'ICE',    body:'#7FA8E8', trim:'#EAF1F8', line:'Ice blue under a cold light.' },
-  { name:'COBALT', body:'#2743D0', trim:'#E6E9F2', line:'Deep blue, close to midnight.' },
-  { name:'SILVER', body:'#9BA6AE', trim:'#E8EAEC', line:'Raw grey. No color to hide behind.' }
+  { name:'ROYAL',  variant:'midnight', tint:null,      body:'#2C63E8', trim:'#E8E8E4', line:'Court blue on black. The loudest blue on the rack, kept quiet everywhere else.' },
+  { name:'CRIMSON',variant:'beach',    tint:'#C8332E', body:'#C8332E', trim:'#EFEAE4', line:'One red carries the whole shoe. Everything else steps back.' },
+  { name:'BONE',   variant:'beach',    tint:null,      body:'#D8D4CB', trim:'#F2F0EA', line:'Off white head to toe. Quiet on purpose.' },
+  { name:'ICE',    variant:'beach',    tint:'#7FA8E8', body:'#7FA8E8', trim:'#EAF1F8', line:'Ice blue under a cold light.' },
+  { name:'COBALT', variant:'midnight', tint:'#2743D0', body:'#2743D0', trim:'#E6E9F2', line:'Deep blue, close to midnight.' },
+  { name:'SILVER', variant:'beach',    tint:'#9BA6AE', body:'#9BA6AE', trim:'#E8EAEC', line:'Raw grey. No color to hide behind.' }
 ];
 const ARCHIVE = [
-  { img:'assets/aj1.webp', alt:'Air Jordan 1 High OG Royal', name:'AIR JORDAN 1 HIGH OG', year:'ORIGIN 1985', price:'FROM $185', accent:'#2C63E8',
+  { name:'AIR JORDAN 1 HIGH OG', year:'ORIGIN 1985', price:'FROM $185', accent:'#2C63E8',
     line:'The one that started it all. Royal blue took it off the court and made it street.',
     specs:[['SILHOUETTE','HIGH TOP BASKETBALL'],['CUSHIONING','ENCAPSULATED AIR'],['SIGNED','PETER MOORE, 1985']] },
-  { img:'assets/aj5.webp', alt:'Air Jordan 5 Retro OG Halloween', name:'AIR JORDAN 5 RETRO OG', year:'ORIGIN 1990', price:'FROM $215', accent:'#C8332E',
+  { name:'AIR JORDAN 5 RETRO OG', year:'ORIGIN 1990', price:'FROM $215', accent:'#C8332E',
     line:'Built like a fighter jet, dressed for midnight. Shark teeth on the midsole gave it away.',
     specs:[['SILHOUETTE','MID TOP BASKETBALL'],['CUSHIONING','VISIBLE AIR SOLE'],['SIGNED','TINKER HATFIELD, 1990']] },
-  { img:'assets/af1.webp', alt:'Nike Air Force 1 07', name:'NIKE AIR FORCE 1 07', year:'ORIGIN 1982', price:'FROM $115', accent:'#D8D4CB',
+  { name:'NIKE AIR FORCE 1 07', year:'ORIGIN 1982', price:'FROM $115', accent:'#D8D4CB',
     line:'First to carry Air, first to retire undefeated. Forty years, no redesign.',
     specs:[['SILHOUETTE','LOW TOP COURT'],['CUSHIONING','AIR SOLE UNIT'],['SIGNED','BRUCE KILGORE, 1982']] },
-  { img:'assets/am270.webp', alt:'Nike Air Max 270', name:'NIKE AIR MAX 270', year:'ORIGIN 2018', price:'FROM $170', accent:'#6FB7FF',
+  { name:'NIKE AIR MAX 270', year:'ORIGIN 2018', price:'FROM $170', accent:'#6FB7FF',
     line:'Shaped by runner pressure maps, named for the degrees of Air it wraps around the heel.',
     specs:[['SILHOUETTE','LIFESTYLE RUNNER'],['CUSHIONING','270 HEEL AIR UNIT'],['SIGNED','NIKE AIR, 2018']] },
-  { img:'assets/pegasus.webp', alt:'Nike Pegasus Plus 2', name:'NIKE PEGASUS PLUS 2', year:'LINE SINCE 1983', price:'FROM $170', accent:'#2743D0',
+  { name:'NIKE PEGASUS PLUS 2', year:'LINE SINCE 1983', price:'FROM $170', accent:'#2743D0',
     line:'The everyday workhorse, tuned. ReactX foam is the current answer to tomorrow morning.',
     specs:[['SILHOUETTE','ROAD RUNNING'],['CUSHIONING','REACTX FOAM'],['SIGNED','PEGASUS LINE, 1983']] },
-  { img:'assets/p6000.webp', alt:'Nike P-6000', name:'NIKE P-6000', year:'ORIGIN 2006', price:'FROM $110', accent:'#B9C4CC',
+  { name:'NIKE P-6000', year:'ORIGIN 2006', price:'FROM $110', accent:'#B9C4CC',
     line:'A 2006 runner pulled straight out of the vault, all lines and layered panels.',
     specs:[['SILHOUETTE','RETRO RUNNER'],['CUSHIONING','FOAM MIDSOLE'],['SIGNED','NIKE SPORTSWEAR, 2006']] }
 ];
@@ -63,22 +63,20 @@ const cursorL = new THREE.PointLight('#FFFFFF', 7, 7, 2);
 cursorL.position.set(0, .6, 2.4);
 scene.add(hemi, key, rim, cursorL);
 
-let wrap = null, bodyMat = null, trimMat = null;
-const tgtBody = new THREE.Color(CW[0].body), tgtTrim = new THREE.Color(CW[0].trim), tgtRim = new THREE.Color(CW[0].body);
+let wrap = null, cwMats = null;
+const tgtBody = new THREE.Color(CW[0].body), tgtRim = new THREE.Color(CW[0].body);
 const tgtBg = new THREE.Color('#08090B'), tgtKey = new THREE.Color('#FFFFFF');
 let tgtKi = 1.6, tgtHi = .5;
 
-new GLTFLoader().load('assets/shoe.glb', (g) => {
+function applyCw(i) {
+  if (!cwMats) return;
+  cwMats[i].forEach((m, mesh) => { mesh.material = m; });
+}
+
+new GLTFLoader().load('assets/shoe2.glb', async (g) => {
+  const parser = g.parser;
   const root = g.scene;
-  root.traverse((o) => {
-    if (!o.isMesh) return;
-    if (/lConv/i.test(o.name)) { o.visible = false; return; }
-    o.castShadow = true;
-    const m = o.material;
-    if (m && !Array.isArray(m)) {
-      if (m.name === 'Mat.3') bodyMat = m; else trimMat = m;
-    }
-  });
+  root.traverse((o) => { if (o.isMesh) o.castShadow = true; });
   root.updateMatrixWorld(true);
   const bb = new THREE.Box3();
   root.traverse((o) => { if (o.isMesh && o.visible) bb.expandByObject(o); });
@@ -90,11 +88,38 @@ new GLTFLoader().load('assets/shoe.glb', (g) => {
   root.traverse((o) => { if (o.isMesh && o.visible) bb2.expandByObject(o); });
   const c2 = bb2.getCenter(new THREE.Vector3());
   root.position.x -= c2.x; root.position.z -= c2.z; root.position.y -= bb2.min.y;
-  if (bodyMat) { bodyMat.roughness = .48; bodyMat.metalness = .08; }
-  if (trimMat) { trimMat.roughness = .62; trimMat.metalness = .02; }
+  const ext = (parser.json.extensions || {}).KHR_materials_variants;
+  const vIdx = (nm) => ext ? ext.variants.findIndex((v) => v.name === nm) : -1;
+  const mid = vIdx('midnight'), bea = vIdx('beach');
+  const baseMats = [];
+  root.traverse((o) => {
+    if (!o.isMesh) return;
+    const def = (o.userData.gltfExtensions || {}).KHR_materials_variants;
+    if (!def) return;
+    baseMats.push({ mesh: o, def });
+  });
+  const pick = async (b, vi) => {
+    if (vi < 0 || !b) return b.mesh.material;
+    const mp = b.def.mappings.find((m) => m.variants.includes(vi));
+    if (!mp) return b.mesh.material;
+    return await parser.getDependency('material', mp.material);
+  };
+  cwMats = [];
+  for (const c of CW) {
+    const map = new Map();
+    for (const b of baseMats) {
+      const src = await pick(b, c.variant === 'midnight' ? mid : bea);
+      const m = src.clone();
+      if (c.tint) m.color.set(c.tint);
+      map.set(b.mesh, m);
+    }
+    cwMats.push(map);
+  }
+  applyCw(0);
   wrap = new THREE.Group();
   wrap.add(root);
   scene.add(wrap);
+  canvas.style.opacity = 1;
 }, undefined, (e) => { console.warn('glb', e); });
 
 const acts = Array.from(document.querySelectorAll('.act'));
@@ -107,14 +132,14 @@ const GPOS = ['center','flex-start','flex-end','flex-start','flex-end','flex-sta
 function POSES(mob) {
   const mx = mob ? .55 : 1, ms = mob ? .82 : 1;
   const P = [
-    [-0.40,  0.00,  0.0, 1.00, -0.55,  0.00,  0.00, 5.2, 0.50],
-    [-1.05, -0.15,  0.2, 1.16,  2.75,  0.10,  0.10, 4.9, 0.34],
-    [ 0.95,  0.52,  0.0, 0.92, -0.60,  1.05, -0.15, 5.0, 0.78],
-    [-1.00,  0.05,  0.3, 1.20,  0.55, -1.15,  0.18, 4.6, 0.42],
-    [ 1.00, -0.10, -0.2, 1.00,  0.12,  0.00, -0.06, 5.8, 0.55],
-    [-0.45,  0.05,  1.1, 1.50, -0.30,  0.15,  0.00, 4.3, 0.40],
-    [ 1.45,  0.85, -1.6, 0.70,  0.90,  0.25,  0.15, 5.4, 0.88],
-    [ 0.90,  0.05,  0.0, 1.10, -0.55,  0.00,  0.00, 5.2, 0.50]
+    [-0.40,  0.00,  0.0, 1.00,  0.50,  0.00,  0.00, 5.2, 0.50],
+    [-1.05, -0.15,  0.2, 1.16,  2.90,  0.10,  0.10, 4.9, 0.34],
+    [ 0.95,  0.52,  0.0, 0.92, -0.50,  1.05, -0.15, 5.0, 0.78],
+    [-1.00,  0.05,  0.3, 1.20,  0.40, -1.15,  0.18, 4.6, 0.42],
+    [ 1.00, -0.10, -0.2, 1.00,  2.20,  0.00, -0.06, 5.8, 0.55],
+    [-0.45,  0.05,  1.1, 1.50,  0.15,  0.15,  0.00, 4.3, 0.40],
+    [ 1.45,  0.85, -1.6, 0.70,  0.60,  0.25,  0.15, 5.4, 0.88],
+    [ 0.90,  0.05,  0.0, 1.10,  0.50,  0.00,  0.00, 5.2, 0.50]
   ];
   return P.map((p) => [p[0] * mx, p[1], p[2], p[3] * ms, p[4], p[5], p[6], p[7], p[8]]);
 }
@@ -139,9 +164,9 @@ function targetT() {
   return stops.length - 1;
 }
 
-let t = 0, cur = [-0.40, 0, 0, 1, -0.55, 0, 0, 5.2, 0.5];
+let t = 0, cur = [-0.40, 0, 0, 1, 0.50, 0, 0, 5.2, 0.5];
 let dragging = false, px = 0, vel = 0, userRot = 0, lastMove = 0, lastScroll = 0, downInfo = null;
-let tilt = 0, tiltT = 0, cx = .5, cy = .5, auto = 0, lastGi = -1;
+let tilt = 0, tiltT = 0, cx = .5, cy = .5, auto = 0, lastGi = -1, lastCw = 0;
 
 function overShoe(x, y) {
   if (!wrap) return false;
@@ -210,7 +235,7 @@ function openArc(i) {
     kick: 'FROM THE ARCHIVE', name: s.name, line: s.line,
     pal: [s.accent],
     specs: [['ORIGIN', s.year], ['PRICE', s.price]].concat(s.specs),
-    note: 'PHOTOS BELONG TO NIKE. THIS IS A STUDY.', acc: s.accent
+    note: 'A CONCEPT STUDY. NOTHING SHIPS.', acc: s.accent
   });
 }
 document.getElementById('dclose').addEventListener('click', closeDetail);
@@ -222,7 +247,7 @@ ARCHIVE.forEach((s, i) => {
   const d = document.createElement('div');
   d.className = 'plate';
   d.style.setProperty('--acc', s.accent);
-  d.innerHTML = '<img src="' + s.img + '" alt="' + s.alt + '"><h4>' + s.name + '</h4><p>' + s.year + '</p>';
+  d.innerHTML = '<span class="num">0' + (i + 1) + '</span><h4>' + s.name + '</h4><p>' + s.year + '</p><p class="pr">' + s.price + '</p>';
   let mx = 0;
   d.addEventListener('pointerdown', () => { mx = 0; });
   d.addEventListener('click', () => { if (mx < 8) openArc(i); });
@@ -232,10 +257,8 @@ ARCHIVE.forEach((s, i) => {
 strip.addEventListener('wheel', (e) => {
   const max = strip.scrollWidth - strip.clientWidth;
   if (max <= 0) return;
-  const d = e.deltaX || e.deltaY;
-  const atStart = strip.scrollLeft <= 0 && d < 0;
-  const atEnd = strip.scrollLeft >= max - 1 && d > 0;
-  if (!atStart && !atEnd) { e.preventDefault(); strip.scrollLeft += d; }
+  e.preventDefault();
+  strip.scrollLeft += (e.deltaX || e.deltaY);
 }, { passive: false });
 let sd = false, sx2 = 0, sv = 0;
 strip.addEventListener('pointerdown', (e) => { sd = true; sx2 = e.clientX; sv = 0; strip.classList.add('grab'); });
@@ -301,12 +324,11 @@ function tick(now) {
     wrap.rotation.set(cur[5] + tilt * .35, cur[4] + userRot + auto, cur[6]);
   }
   const ci = Math.min(5, Math.round(t));
-  tgtBody.set(CW[ci].body); tgtTrim.set(CW[ci].trim); tgtRim.set(CW[ci].body);
+  if (ci !== lastCw) { applyCw(ci); lastCw = ci; }
+  tgtBody.set(CW[ci].body); tgtRim.set(CW[ci].body);
   const label = t < .45 ? 'AIRBORNE' : (t > 6.3 ? 'AIRBORNE' : CW[ci].name);
   if (label !== giant.textContent) giant.textContent = label;
   giant.style.opacity = t > 6.3 ? .45 : 1;
-  if (bodyMat) bodyMat.color.lerp(tgtBody, dt * 3);
-  if (trimMat) trimMat.color.lerp(tgtTrim, dt * 3);
   rim.color.lerp(tgtRim, dt * 3);
   key.color.lerp(tgtKey, dt * 3);
   key.intensity += (tgtKi - key.intensity) * Math.min(1, dt * 3);
