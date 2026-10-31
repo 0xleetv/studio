@@ -254,12 +254,6 @@ ARCHIVE.forEach((s, i) => {
   d.addEventListener('pointermove', (e) => { mx = Math.max(mx, Math.abs(e.movementX)); });
   strip.appendChild(d);
 });
-strip.addEventListener('wheel', (e) => {
-  const max = strip.scrollWidth - strip.clientWidth;
-  if (max <= 0) return;
-  e.preventDefault();
-  strip.scrollLeft += (e.deltaX || e.deltaY);
-}, { passive: false });
 let sd = false, sx2 = 0, sv = 0;
 strip.addEventListener('pointerdown', (e) => { sd = true; sx2 = e.clientX; sv = 0; strip.classList.add('grab'); });
 window.addEventListener('pointerup', () => { sd = false; strip.classList.remove('grab'); });
