@@ -643,7 +643,7 @@ const io = new IntersectionObserver(function (es) {
   for (const e of es) if (e.isIntersecting) {
     e.target.classList.add("in");
     const ds = e.target.querySelectorAll("[data-dec]");
-    for (const d of ds) decrypt(d);
+    for (const d of ds) if (!d.children.length) decrypt(d);
     io.unobserve(e.target);
   }
 }, { threshold: 0.22 });

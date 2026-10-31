@@ -51,7 +51,11 @@ header {
 .bone.right .tele { justify-content: flex-end; }
 .bone.center { margin: 0 auto; text-align: center; }
 .bone.center .tele { justify-content: center; }
-.bone.hero { text-align: center; margin: 0 auto; }
+.bone.hero {
+  text-align: center; margin: 0 auto;
+  padding: 44px 58px 52px;
+  background: radial-gradient(ellipse 130% 100% at 50% 50%, rgba(8,9,11,0.78) 0%, rgba(8,9,11,0.55) 46%, rgba(8,9,11,0) 74%);
+}
 .bone.hero .tele { justify-content: center; }
 
 .kick {
