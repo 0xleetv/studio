@@ -38,7 +38,7 @@ const halo = new THREE.Mesh(new THREE.PlaneGeometry(7.5, 7.5),
   new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(hc), transparent: true, opacity: 0.10, depthWrite: false }));
 back.add(ring1, ring2, halo);
 back.position.set(0, 0.35, -2.6);
-back.scale.setScalar(mob ? 0.72 : 1);
+back.scale.setScalar(matchMedia('(max-width: 720px)').matches ? 0.72 : 1);
 scene.add(back);
 
 const MODELS = {
