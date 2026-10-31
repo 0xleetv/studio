@@ -284,7 +284,7 @@ function measure() {
   actH = Math.max(1, secs[0].offsetHeight);
 }
 
-let gi = 0, vG = 0;
+let gi = 0, vG = 0, lastVG = 0, vgVel = 0;
 let giantHold = null, giantHoldOn = true, giantTimer = 0;
 function setGiant(txt, on) {
   if (giantHold === txt && giantHoldOn === on) return;
@@ -362,7 +362,10 @@ function tick() {
 
   let desired = 0;
   for (let k = 1; k <= 5; k++) if (vG >= k - .12) desired = k;
-  if (desired && cache[ACTS[desired].model] && curId !== ACTS[desired].model) swapTo(ACTS[desired].model);
+  const vgInst = (vG - lastVG) / Math.max(dt, .001);
+  vgVel += (vgInst - vgVel) * Math.min(1, dt * 8);
+  lastVG = vG;
+  if (desired && Math.abs(vgVel) < 3 && cache[ACTS[desired].model] && curId !== ACTS[desired].model) swapTo(ACTS[desired].model);
 
   if (phase === 1) {
     phaseT += dt / EXIT_DUR;
