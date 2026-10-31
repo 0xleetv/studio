@@ -1,0 +1,32 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>probe</title>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+</script>
+</head><body><pre id="out">starting</pre>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+const out = document.getElementById('out');
+const log = (m) => { out.textContent += '\n' + m; document.title = m.slice(0,60); };
+try {
+  new GLTFLoader().load('assets/shoe.glb', (g) => {
+    let meshes = 0, vis = 0, mats = new Set();
+    g.scene.traverse((o) => {
+      if (o.isMesh) {
+        meshes++;
+        if (o.visible) vis++;
+        const m = o.material;
+        (Array.isArray(m) ? m : [m]).forEach((x) => mats.add(x.name + ':' + JSON.stringify(x.color)));
+      }
+    });
+    const bb = new THREE.Box3().setFromObject(g.scene);
+    const s = bb.getSize(new THREE.Vector3());
+    log('OK meshes=' + meshes + ' vis=' + vis + ' size=' + s.x.toFixed(2) + ',' + s.y.toFixed(2) + ',' + s.z.toFixed(2));
+    log('mats ' + Array.from(mats).join(' | '));
+    const names = [];
+    g.scene.traverse((o) => { if (o.isMesh) names.push(o.name); });
+    log('names ' + names.slice(0, 6).join(' , '));
+  }, undefined, (e) => log('ERR ' + (e && (e.message || e))));
+} catch (e) { log('THROW ' + e.message); }
+</script></body></html>
