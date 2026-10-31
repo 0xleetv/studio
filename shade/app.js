@@ -597,13 +597,18 @@ window.addEventListener("resize", () => { resize(); veilResize(); seamResize(); 
 function fitGiants() {
   document.querySelectorAll(".giant").forEach(function (el) {
     el.style.fontSize = "";
-    const rg = document.createRange();
-    rg.selectNodeContents(el);
-    const w = rg.getBoundingClientRect().width;
-    const avail = window.innerWidth * 0.94;
-    if (w > avail && w > 0) {
+    for (let pass = 0; pass < 3; pass++) {
+      const rg = document.createRange();
+      rg.selectNodeContents(el);
+      const r = rg.getBoundingClientRect();
+      if (r.width <= 0) break;
+      const limR = window.innerWidth * 0.97, limL = window.innerWidth * 0.03;
+      let over = 0;
+      if (r.right > limR) over = r.right - limR;
+      if (r.left < limL) over = Math.max(over, limL - r.left);
+      if (over <= 0) break;
       const fs = parseFloat(getComputedStyle(el).fontSize);
-      el.style.fontSize = (fs * avail / w).toFixed(1) + "px";
+      el.style.fontSize = (fs * (r.width - over) / r.width).toFixed(1) + "px";
     }
   });
 }

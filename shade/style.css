@@ -68,6 +68,7 @@ header {
 }
 .giant .wd { display: inline-block; white-space: nowrap; }
 .bone.hero .giant, .bone.center .giant { width: max-content; max-width: 94vw; margin-left: auto; margin-right: auto; }
+.bone.right .giant.one { width: max-content; max-width: 94vw; margin-left: auto; }
 .giant .ch { display: inline-block; opacity: 0; transform: translateY(0.55em) rotate(4deg); }
 .in .giant .ch {
   opacity: 1; transform: none;
