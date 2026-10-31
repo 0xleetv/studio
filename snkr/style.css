@@ -11,6 +11,7 @@ body { background:#08090B; transition:background-color .9s ease;
 #gl { position:fixed; inset:0; width:100%; height:100%; display:block; z-index:2; pointer-events:none; }
 #giant {
   position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+  padding:0 4vw;
   z-index:1; pointer-events:none; user-select:none;
   font-size:min(20vw,290px); font-weight:800; letter-spacing:.02em; line-height:1;
   color:rgba(235,238,244,.065); transition:opacity .6s ease;
@@ -18,6 +19,7 @@ body { background:#08090B; transition:background-color .9s ease;
 main { position:relative; z-index:3; }
 
 .act { height:100svh; position:relative; }
+.act.r .copy { left:auto; right:min(5vw,64px); }
 .copy { position:absolute; left:min(5vw,64px); bottom:11svh; max-width:540px; }
 .copy > * { opacity:0; transform:translateY(26px);
   transition:opacity .8s cubic-bezier(.2,.8,.2,1), transform .8s cubic-bezier(.2,.8,.2,1);

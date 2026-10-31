@@ -100,22 +100,28 @@ new GLTFLoader().load('assets/shoe.glb', (g) => {
 const acts = Array.from(document.querySelectorAll('.act'));
 acts.forEach((a, i) => a.style.setProperty('--acc', CW[i].body));
 const archiveEl = document.getElementById('archive');
+const stageEl = document.getElementById('stagewrap');
 
-function poses() {
-  const mob = innerWidth < 720;
-  return [
-    [0, 0, 1.0, -0.55],
-    [0, 0, 1.06, 0.40],
-    [0, 0, 1.0, -1.25],
-    [0, 0, 1.04, 0.75],
-    [0, 0, 1.0, -2.05],
-    [0, 0, 1.04, 1.15],
-    mob ? [0, .55, .5, -.5] : [1.15, .15, .72, -.5]
+const GPOS = ['center','flex-start','flex-end','flex-start','flex-end','flex-start','flex-end','center'];
+
+function POSES(mob) {
+  const mx = mob ? .55 : 1, ms = mob ? .82 : 1;
+  const P = [
+    [-0.40,  0.00,  0.0, 1.00, -0.55,  0.00,  0.00, 5.2, 0.50],
+    [-1.05, -0.15,  0.2, 1.16,  2.75,  0.10,  0.10, 4.9, 0.34],
+    [ 0.95,  0.52,  0.0, 0.92, -0.60,  1.05, -0.15, 5.0, 0.78],
+    [-1.00,  0.05,  0.3, 1.20,  0.55, -1.15,  0.18, 4.6, 0.42],
+    [ 1.00, -0.10, -0.2, 1.00,  0.12,  0.00, -0.06, 5.8, 0.55],
+    [-0.45,  0.05,  1.1, 1.50, -0.30,  0.15,  0.00, 4.3, 0.40],
+    [ 1.45,  0.85, -1.6, 0.70,  0.90,  0.25,  0.15, 5.4, 0.88],
+    [ 0.90,  0.05,  0.0, 1.10, -0.55,  0.00,  0.00, 5.2, 0.50]
   ];
+  return P.map((p) => [p[0] * mx, p[1], p[2], p[3] * ms, p[4], p[5], p[6], p[7], p[8]]);
 }
 function stopPos() {
   const s = acts.map((a) => a.offsetTop + a.offsetHeight * .85 - innerHeight * .5);
   s.push(Math.max(s[5] + innerHeight * .5, archiveEl.offsetTop - innerHeight * .35));
+  s.push(Math.max(s[6] + innerHeight * .6, stageEl.offsetTop - innerHeight * .3));
   s[0] = 0;
   return s;
 }
@@ -133,9 +139,9 @@ function targetT() {
   return stops.length - 1;
 }
 
-let t = 0, cur = [0, 0, 1, -0.55];
-let dragging = false, px = 0, vel = 0, userRot = 0, lastMove = 0, downInfo = null;
-let tilt = 0, tiltT = 0, cx = .5, cy = .5;
+let t = 0, cur = [-0.40, 0, 0, 1, -0.55, 0, 0, 5.2, 0.5];
+let dragging = false, px = 0, vel = 0, userRot = 0, lastMove = 0, lastScroll = 0, downInfo = null;
+let tilt = 0, tiltT = 0, cx = .5, cy = .5, auto = 0, lastGi = -1;
 
 function overShoe(x, y) {
   if (!wrap) return false;
@@ -169,6 +175,7 @@ window.addEventListener('pointerup', (e) => {
   }
   dragging = false;
 });
+addEventListener('scroll', () => { lastScroll = performance.now(); }, { passive: true });
 
 const dback = document.getElementById('dback');
 const detail = document.getElementById('detail');
@@ -269,30 +276,35 @@ addEventListener('resize', () => {
   stops = stopPos();
 });
 
-let prev = performance.now(), lastCw = 0;
+let prev = performance.now();
 function tick(now) {
   requestAnimationFrame(tick);
   const dt = Math.min(.05, (now - prev) / 1000); prev = now;
   t += (targetT() - t) * Math.min(1, dt * 4);
-  const P = poses();
+  const P = POSES(innerWidth < 720);
   const i = Math.min(P.length - 2, Math.floor(t));
   const f = smooth(Math.min(1, Math.max(0, t - i)));
   const A = P[i], B = P[i + 1];
-  for (let k = 0; k < 4; k++) cur[k] += ((A[k] + (B[k] - A[k]) * f) - cur[k]) * Math.min(1, dt * 5);
-  if (!dragging) { userRot += vel; vel *= .94; if (now - lastMove > 2200) auto += dt * .22; }
+  for (let k = 0; k < 9; k++) cur[k] += ((A[k] + (B[k] - A[k]) * f) - cur[k]) * Math.min(1, dt * 5);
+  if (!dragging) {
+    userRot += vel; vel *= .94;
+    userRot *= (1 - Math.min(1, dt * .45));
+    if (t < .5 && now - lastScroll > 3500 && now - lastMove > 3500) auto += dt * .2;
+    else auto *= (1 - Math.min(1, dt * 3));
+  }
   tilt += (tiltT - tilt) * Math.min(1, dt * 4);
+  const gi = Math.min(7, Math.round(t));
+  if (gi !== lastGi) { giant.style.justifyContent = GPOS[gi]; lastGi = gi; }
   if (wrap) {
-    wrap.position.set(cur[0], cur[1], 0);
-    wrap.scale.setScalar(cur[2]);
-    wrap.rotation.y = cur[3] + userRot + auto;
-    wrap.rotation.x = tilt * .4;
+    wrap.position.set(cur[0], cur[1], cur[2]);
+    wrap.scale.setScalar(Math.max(.05, cur[3]));
+    wrap.rotation.set(cur[5] + tilt * .35, cur[4] + userRot + auto, cur[6]);
   }
   const ci = Math.min(5, Math.round(t));
   tgtBody.set(CW[ci].body); tgtTrim.set(CW[ci].trim); tgtRim.set(CW[ci].body);
-  const label = t > 5.55 ? 'AIRBORNE' : (t < .45 ? 'AIRBORNE' : CW[ci].name);
+  const label = t < .45 ? 'AIRBORNE' : (t > 6.3 ? 'AIRBORNE' : CW[ci].name);
   if (label !== giant.textContent) giant.textContent = label;
-  giant.style.opacity = t > 5.55 ? .5 : 1;
-  lastCw = ci;
+  giant.style.opacity = t > 6.3 ? .45 : 1;
   if (bodyMat) bodyMat.color.lerp(tgtBody, dt * 3);
   if (trimMat) trimMat.color.lerp(tgtTrim, dt * 3);
   rim.color.lerp(tgtRim, dt * 3);
@@ -301,10 +313,10 @@ function tick(now) {
   hemi.intensity += (tgtHi - hemi.intensity) * Math.min(1, dt * 3);
   cursorL.position.set((cx - .5) * 3.6, .6 - (cy - .5) * 2.6, 2.4);
   camera.position.x += ((cx - .5) * .4 - camera.position.x) * Math.min(1, dt * 3);
-  camera.position.y += ((.5 - (cy - .5) * .25) - camera.position.y) * Math.min(1, dt * 3);
-  camera.lookAt(0, .15, 0);
+  camera.position.y += ((cur[8] - (cy - .5) * .25) - camera.position.y) * Math.min(1, dt * 3);
+  camera.position.z += (cur[7] - camera.position.z) * Math.min(1, dt * 3);
+  camera.lookAt(cur[0] * .4, .12 + cur[1] * .2, 0);
   if (!sd && Math.abs(sv) > .1) { strip.scrollLeft -= sv; sv *= .94; }
   renderer.render(scene, camera);
 }
-let auto = 0;
 requestAnimationFrame(tick);
