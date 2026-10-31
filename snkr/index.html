@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIRBORNE. A Nike concept store.</title>
+<meta name="description" content="A concept product site. Six Nike silhouettes, one stage. Click a shoe to know more.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <span class="brand">AIRBORNE</span>
+  <span class="tag">A NIKE CONCEPT</span>
+</header>
+<main id="flow">
+  <section class="act hero" id="hero">
+    <div class="stage">
+      <span class="giant" aria-hidden="true">AIRBORNE</span>
+      <div class="glow"></div>
+      <img class="shoe" id="heroShoe" src="assets/aj1.webp" alt="Air Jordan 1 High OG Royal" draggable="false">
+    </div>
+    <div class="copy">
+      <p class="line">Six silhouettes. One stage.</p>
+      <p class="price">FROM $115</p>
+      <p class="cta">CLICK THE SHOE TO KNOW MORE</p>
+    </div>
+    <p class="hint">SCROLL</p>
+  </section>
+</main>
+<section class="railsec" id="railsec">
+  <p class="raillabel">THE LINEUP. DRAG SIDEWAYS OR KEEP SCROLLING.</p>
+  <div class="rail" id="rail"></div>
+</section>
+<footer class="colophon">
+  <p>AIRBORNE. A concept built to show what a product site can feel like.</p>
+  <p>The shoes belong to Nike. This page is a study and is not affiliated with Nike, Inc.</p>
+  <p>MMXXVI</p>
+</footer>
+<div class="detail" id="detail" hidden>
+  <button class="close" id="detailClose" aria-label="Close">CLOSE</button>
+  <div class="dwrap">
+    <img class="dshoe" id="dShoe" src="" alt="" draggable="false">
+    <div class="dinfo">
+      <p class="dcw" id="dCw"></p>
+      <h3 class="dname" id="dName"></h3>
+      <p class="dline" id="dLine"></p>
+      <div class="dspecs" id="dSpecs"></div>
+      <p class="dprice" id="dPrice"></p>
+      <p class="dyear" id="dYear"></p>
+      <button class="bag" id="dBag">ADD TO BAG</button>
+      <p class="dnote" id="dNote" hidden>Concept build. Nothing ships.</p>
+    </div>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

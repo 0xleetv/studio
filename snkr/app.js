@@ -1,0 +1,235 @@
+(() => {
+"use strict";
+const SHOES = [
+  {
+    id: "aj1", img: "assets/aj1.webp", alt: "Air Jordan 1 High OG Royal",
+    giant: "AJ1", name: "AIR JORDAN 1 HIGH OG", cw: "ROYAL. 1985.",
+    price: "$185", year: "ORIGIN 1985", accent: "#2C63E8",
+    line: "The blueprint that started everything.",
+    story: "The first Air Jordan took the leather of a basketball boot and cut it loose. Royal was the colorway that proved the silhouette could live away from Chicago red.",
+    specs: [["SILHOUETTE", "HIGH TOP BASKETBALL"], ["CUSHIONING", "ENCAPSULATED AIR"], ["SIGNED", "PETER MOORE, 1985"]]
+  },
+  {
+    id: "aj5", img: "assets/aj5.webp", alt: "Air Jordan 5 Retro OG Halloween",
+    giant: "AJ5", name: "AIR JORDAN 5 RETRO OG", cw: "HALLOWEEN. 1990.",
+    price: "$215", year: "ORIGIN 1990", accent: "#C8332E",
+    line: "Built like a fighter jet, dressed for midnight.",
+    story: "Tinker Hatfield modeled the sole on a WWII fighter plane. Shark teeth, lace locks and a clear midsole carried the idea straight onto the street.",
+    specs: [["SILHOUETTE", "MID TOP BASKETBALL"], ["CUSHIONING", "VISIBLE AIR SOLE"], ["SIGNED", "TINKER HATFIELD, 1990"]]
+  },
+  {
+    id: "af1", img: "assets/af1.webp", alt: "Nike Air Force 1 07",
+    giant: "FORCE 1", name: "NIKE AIR FORCE 1 07", cw: "TRIPLE WHITE.",
+    price: "$115", year: "ORIGIN 1982", accent: "#D8D4CB",
+    line: "Forty years of staying exactly the same.",
+    story: "The first basketball shoe to carry Air in its sole, and the first to retire from the game undefeated. It has not needed a redesign since.",
+    specs: [["SILHOUETTE", "LOW TOP COURT"], ["CUSHIONING", "AIR SOLE UNIT"], ["SIGNED", "BRUCE KILGORE, 1982"]]
+  },
+  {
+    id: "am270", img: "assets/am270.webp", alt: "Nike Air Max 270",
+    giant: "AIR 270", name: "NIKE AIR MAX 270", cw: "BLACK AND VOLT.",
+    price: "$170", year: "ORIGIN 2018", accent: "#6FB7FF",
+    line: "270 degrees of air, angled for impact.",
+    story: "The tallest heel unit Nike had ever built, shaped by the pressure maps of runners and named for the 270 degrees of Air wrapping the foot.",
+    specs: [["SILHOUETTE", "LIFESTYLE RUNNER"], ["CUSHIONING", "270 HEEL AIR UNIT"], ["SIGNED", "NIKE AIR, 2018"]]
+  },
+  {
+    id: "pegasus", img: "assets/pegasus.webp", alt: "Nike Pegasus Plus 2",
+    giant: "PEGASUS", name: "NIKE PEGASUS PLUS 2", cw: "DEEP ROYAL.",
+    price: "$170", year: "LINE SINCE 1983", accent: "#2743D0",
+    line: "The everyday workhorse, tuned.",
+    story: "The Pegasus has been the answer to one question for four decades: what does tomorrow morning need. The Plus 2 answers it with ReactX foam under a double-racer look.",
+    specs: [["SILHOUETTE", "ROAD RUNNING"], ["CUSHIONING", "REACTX FOAM"], ["SIGNED", "PEGASUS LINE, 1983"]]
+  },
+  {
+    id: "p6000", img: "assets/p6000.webp", alt: "Nike P-6000",
+    giant: "P6000", name: "NIKE P-6000", cw: "METALLIC SILVER.",
+    price: "$115", year: "ORIGIN 2006", accent: "#B9C4CC",
+    line: "A mid-2000s racer, resurfaced.",
+    story: "Pulled from the track archives and rebuilt for the street. Layered mesh, racing lines and a silhouette that never tried to be timeless.",
+    specs: [["SILHOUETTE", "RETRO RUNNER"], ["CUSHIONING", "FOAM MIDSOLE"], ["SIGNED", "TRACK SERIES, 2006"]]
+  }
+];
+window.__SHOES = SHOES;
+
+const flow = document.getElementById("flow");
+const rail = document.getElementById("rail");
+const detail = document.getElementById("detail");
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+
+function buildActs() {
+  SHOES.forEach((s, i) => {
+    if (i === 0) return;
+    const act = document.createElement("section");
+    act.className = "act";
+    act.dataset.i = i;
+    act.innerHTML =
+      '<div class="stage">' +
+        '<span class="giant" aria-hidden="true">' + s.giant + "</span>" +
+        '<div class="glow"></div>' +
+        '<img class="shoe" src="' + s.img + '" alt="' + s.alt + '" loading="lazy" draggable="false">' +
+      "</div>" +
+      '<div class="copy">' +
+        '<h3 class="name" style="font-size:15px;font-weight:700;letter-spacing:0.04em;margin-bottom:10px">' + s.name + "</h3>" +
+        '<p class="line">' + s.line + "</p>" +
+        '<p class="price">' + s.cw + " " + s.price + "</p>" +
+        '<p class="cta">CLICK THE SHOE TO KNOW MORE</p>' +
+      "</div>";
+    flow.appendChild(act);
+  });
+}
+
+function buildRail() {
+  SHOES.forEach((s, i) => {
+    const card = document.createElement("button");
+    card.className = "card";
+    card.style.setProperty("--c", s.accent);
+    card.setAttribute("aria-label", "Know more, " + s.name);
+    card.innerHTML =
+      '<img src="' + s.img + '" alt="" loading="lazy" draggable="false">' +
+      '<p class="cn">' + s.name + "</p>" +
+      '<p class="cp">' + s.cw + " " + s.price + "</p>";
+    card.addEventListener("click", () => openDetail(i));
+    rail.appendChild(card);
+  });
+}
+
+let openIdx = -1;
+function openDetail(i) {
+  const s = SHOES[i];
+  openIdx = i;
+  document.documentElement.style.setProperty("--acc", s.accent);
+  document.getElementById("dShoe").src = s.img;
+  document.getElementById("dShoe").alt = s.alt;
+  document.getElementById("dName").textContent = s.name;
+  document.getElementById("dCw").textContent = s.cw;
+  document.getElementById("dLine").textContent = s.story;
+  document.getElementById("dPrice").textContent = s.price;
+  document.getElementById("dYear").textContent = s.year;
+  document.getElementById("dSpecs").innerHTML = s.specs
+    .map(r => '<div><span class="k">' + r[0] + '</span><span class="v">' + r[1] + "</span></div>").join("");
+  document.getElementById("dNote").hidden = true;
+  detail.hidden = false;
+  document.body.style.overflow = "hidden";
+}
+function closeDetail() {
+  detail.hidden = true;
+  openIdx = -1;
+  document.body.style.overflow = "";
+}
+document.getElementById("detailClose").addEventListener("click", closeDetail);
+detail.addEventListener("click", e => { if (e.target === detail) closeDetail(); });
+window.addEventListener("keydown", e => { if (e.key === "Escape" && !detail.hidden) closeDetail(); });
+document.getElementById("dBag").addEventListener("click", () => {
+  document.getElementById("dNote").hidden = false;
+});
+
+const acts = Array.from(document.querySelectorAll(".act"));
+const shoesEls = acts.map(a => a.querySelector(".shoe"));
+const giantEls = acts.map(a => a.querySelector(".giant"));
+const shoeIdx = [0, 1, 2, 3, 4, 5];
+
+let mx = 0.5, my = 0.5, sx = 0.5, sy = 0.5;
+window.addEventListener("pointermove", e => {
+  mx = e.clientX / window.innerWidth;
+  my = e.clientY / window.innerHeight;
+});
+
+acts.forEach((a, k) => {
+  const shoe = shoesEls[k];
+  if (!shoe) return;
+  shoe.addEventListener("pointerenter", e => { if (e.pointerType !== "touch") a.classList.add("hover"); });
+  shoe.addEventListener("pointerleave", () => a.classList.remove("hover"));
+  shoe.addEventListener("click", () => openDetail(shoeIdx[k]));
+});
+
+function hexToRgb(h) {
+  const n = parseInt(h.slice(1), 16);
+  return [n >> 16 & 255, n >> 8 & 255, n & 255];
+}
+let cur = hexToRgb("#2C63E8");
+function mixTo(target, t) {
+  const to = hexToRgb(target);
+  for (let c = 0; c < 3; c++) cur[c] = lerp(cur[c], to[c], t);
+  return "rgb(" + cur.map(v => Math.round(v)).join(",") + ")";
+}
+
+function frame() {
+  sx = lerp(sx, mx, 0.075);
+  sy = lerp(sy, my, 0.075);
+  const vh = window.innerHeight;
+  const px = sx - 0.5, py = sy - 0.5;
+  let best = 0, bd = 1e9;
+  acts.forEach((a, k) => {
+    const el = shoesEls[k], g = giantEls[k];
+    if (!el) return;
+    const r = a.getBoundingClientRect();
+    const p = clamp((r.top + r.height * 0.5 - vh * 0.5) / vh, -1.2, 1.2);
+    const off = p * vh;
+    if (Math.abs(off) > vh * 1.35) {
+      a.style.visibility = "hidden";
+      return;
+    }
+    a.style.visibility = "visible";
+    const near = 1 - Math.min(1, Math.abs(p));
+    el.style.transform =
+      "translate(calc(-50% + " + (px * 16).toFixed(1) + "px), calc(-50% + " + (py * 11 - off * 0.32).toFixed(1) + "px))" +
+      " perspective(900px) rotateY(" + (px * 8).toFixed(2) + "deg) rotateX(" + (-py * 5).toFixed(2) + "deg)" +
+      " rotate(" + (p * -3.5).toFixed(2) + "deg) scale(" + (0.94 + near * 0.1).toFixed(3) + ")";
+    g.style.transform =
+      "translate(calc(-50% + " + (-px * 30).toFixed(1) + "px), calc(-50% - " + (off * 0.16).toFixed(1) + "px))";
+    const d = Math.abs(r.top + r.height * 0.5 - vh * 0.5);
+    if (d < bd) { bd = d; best = k; }
+  });
+  const target = SHOES[shoeIdx[best]] ? SHOES[shoeIdx[best]].accent : "#2C63E8";
+  document.documentElement.style.setProperty("--acc", mixTo(target, 0.055));
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+let down = false, startX = 0, lastX = 0, vel = 0;
+rail.addEventListener("pointerdown", e => {
+  down = true; startX = lastX = e.clientX; vel = 0;
+  rail.classList.add("grab");
+  try { rail.setPointerCapture(e.pointerId); } catch (err) {}
+});
+rail.addEventListener("pointermove", e => {
+  if (!down) return;
+  vel = e.clientX - lastX;
+  lastX = e.clientX;
+  rail.scrollLeft -= vel;
+});
+window.addEventListener("pointerup", () => {
+  if (!down) return;
+  down = false;
+  rail.classList.remove("grab");
+  const glide = () => {
+    if (down || Math.abs(vel) < 0.35) return;
+    rail.scrollLeft -= vel;
+    vel *= 0.93;
+    requestAnimationFrame(glide);
+  };
+  glide();
+});
+rail.addEventListener("click", e => {
+  if (Math.abs(e.clientX - startX) > 8) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+}, true);
+
+const railsec = document.getElementById("railsec");
+railsec.addEventListener("wheel", e => {
+  if (!detail.hidden) return;
+  const goingDown = e.deltaY > 0;
+  const atStart = rail.scrollLeft <= 1;
+  const atEnd = rail.scrollLeft >= rail.scrollWidth - rail.clientWidth - 1;
+  rail.scrollLeft += e.deltaY;
+  if ((atStart && !goingDown) || (atEnd && goingDown)) return;
+  e.preventDefault();
+}, { passive: false });
+
+buildActs();
+buildRail();
+})();
