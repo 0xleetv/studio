@@ -262,7 +262,13 @@ let loadedN = 0;
 function bootTick() {
   loadedN++;
   ibarf.style.width = Math.min(100, (loadedN / 6) * 100) + '%';
-  if (loadedN >= 6) { ienter.disabled = false; ienter.textContent = 'ENTER THE STORE'; }
+  ienter.textContent = 'LOADING THE PAIRS ' + loadedN + '/6';
+  if (loadedN >= 6) openDoor();
+}
+function openDoor() {
+  if (!ienter.disabled) return;
+  ienter.disabled = false;
+  ienter.textContent = 'ENTER THE STORE';
 }
 const ib = document.getElementById('ib');
 'AIRBORNE'.split('').forEach((ch, i) => {
@@ -276,12 +282,12 @@ ienter.addEventListener('click', () => {
   body.style.overflow = '';
   setTimeout(() => intro.remove(), 800);
 });
-setTimeout(() => { if (ienter.disabled) { ienter.disabled = false; ienter.textContent = 'ENTER THE STORE'; } }, 14000);
+setTimeout(openDoor, 14000);
 
 body.style.overflow = 'hidden';
 resize();
 onScroll();
-requestModel('shopify', g => { swapTo('shopify'); bootTick(); cv.style.opacity = 1; });
+requestModel('shopify', g => { swapTo('shopify'); bootTick(); cv.style.opacity = 1; openDoor(); });
 ['aj1', 'dunk', 'af1', 'travis', 'peg'].forEach(id => requestModel(id, bootTick));
 
 const clock = new THREE.Clock();
