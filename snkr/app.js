@@ -5,8 +5,8 @@ const SHOES = [
     id: "aj1", img: "assets/aj1.webp", alt: "Air Jordan 1 High OG Royal",
     giant: "AJ1", name: "AIR JORDAN 1 HIGH OG", cw: "ROYAL. 1985.",
     price: "$185", year: "ORIGIN 1985", accent: "#2C63E8",
-    line: "The blueprint that started everything.",
-    story: "The first Air Jordan took the leather of a basketball boot and cut it loose. Royal was the colorway that proved the silhouette could live away from Chicago red.",
+    line: "The one that started it all.",
+    story: "A basketball boot cut loose from its leather. Royal blue took it off the court and made it street.",
     specs: [["SILHOUETTE", "HIGH TOP BASKETBALL"], ["CUSHIONING", "ENCAPSULATED AIR"], ["SIGNED", "PETER MOORE, 1985"]]
   },
   {
@@ -14,7 +14,7 @@ const SHOES = [
     giant: "AJ5", name: "AIR JORDAN 5 RETRO OG", cw: "HALLOWEEN. 1990.",
     price: "$215", year: "ORIGIN 1990", accent: "#C8332E",
     line: "Built like a fighter jet, dressed for midnight.",
-    story: "Tinker Hatfield modeled the sole on a WWII fighter plane. Shark teeth, lace locks and a clear midsole carried the idea straight onto the street.",
+    story: "The sole borrows a WWII fighter plane. Shark teeth on the midsole gave it away.",
     specs: [["SILHOUETTE", "MID TOP BASKETBALL"], ["CUSHIONING", "VISIBLE AIR SOLE"], ["SIGNED", "TINKER HATFIELD, 1990"]]
   },
   {
@@ -22,7 +22,7 @@ const SHOES = [
     giant: "FORCE 1", name: "NIKE AIR FORCE 1 07", cw: "TRIPLE WHITE.",
     price: "$115", year: "ORIGIN 1982", accent: "#D8D4CB",
     line: "Forty years of staying exactly the same.",
-    story: "The first basketball shoe to carry Air in its sole, and the first to retire from the game undefeated. It has not needed a redesign since.",
+    story: "First to carry Air, first to retire undefeated. Forty years, no redesign.",
     specs: [["SILHOUETTE", "LOW TOP COURT"], ["CUSHIONING", "AIR SOLE UNIT"], ["SIGNED", "BRUCE KILGORE, 1982"]]
   },
   {
@@ -30,7 +30,7 @@ const SHOES = [
     giant: "AIR 270", name: "NIKE AIR MAX 270", cw: "BLACK AND VOLT.",
     price: "$170", year: "ORIGIN 2018", accent: "#6FB7FF",
     line: "270 degrees of air, angled for impact.",
-    story: "The tallest heel unit Nike had ever built, shaped by the pressure maps of runners and named for the 270 degrees of Air wrapping the foot.",
+    story: "Shaped by runner pressure maps, named for the 270 degrees of Air it wraps around the heel.",
     specs: [["SILHOUETTE", "LIFESTYLE RUNNER"], ["CUSHIONING", "270 HEEL AIR UNIT"], ["SIGNED", "NIKE AIR, 2018"]]
   },
   {
@@ -38,7 +38,7 @@ const SHOES = [
     giant: "PEGASUS", name: "NIKE PEGASUS PLUS 2", cw: "DEEP ROYAL.",
     price: "$170", year: "LINE SINCE 1983", accent: "#2743D0",
     line: "The everyday workhorse, tuned.",
-    story: "The Pegasus has been the answer to one question for four decades: what does tomorrow morning need. The Plus 2 answers it with ReactX foam under a double-racer look.",
+    story: "One question since 1983: what does tomorrow morning need. ReactX foam is the current answer.",
     specs: [["SILHOUETTE", "ROAD RUNNING"], ["CUSHIONING", "REACTX FOAM"], ["SIGNED", "PEGASUS LINE, 1983"]]
   },
   {
@@ -46,12 +46,11 @@ const SHOES = [
     giant: "P6000", name: "NIKE P-6000", cw: "METALLIC SILVER.",
     price: "$115", year: "ORIGIN 2006", accent: "#B9C4CC",
     line: "A mid-2000s racer, resurfaced.",
-    story: "Pulled from the track archives and rebuilt for the street. Layered mesh, racing lines and a silhouette that never tried to be timeless.",
+    story: "Track tooling from 2006, resurfaced for the street. Layered mesh, racing lines.",
     specs: [["SILHOUETTE", "RETRO RUNNER"], ["CUSHIONING", "FOAM MIDSOLE"], ["SIGNED", "TRACK SERIES, 2006"]]
   }
 ];
 window.__SHOES = SHOES;
-const AR = { aj1: 1.83, aj5: 1.67, af1: 2.19, am270: 1.90, pegasus: 2.29, p6000: 2.32 };
 
 const flow = document.getElementById("flow");
 const rail = document.getElementById("rail");
@@ -69,18 +68,13 @@ function buildActs() {
       '<div class="stage">' +
         '<span class="giant" aria-hidden="true">' + s.giant + "</span>" +
         '<div class="glow"></div>' +
-        '<div class="shoe spinwrap" style="--ar:' + AR[s.id] + '">' +
-          '<div class="spinbox">' +
-            '<img class="face front" src="' + s.img + '" alt="' + s.alt + '" loading="lazy" draggable="false">' +
-            '<img class="face back" src="' + s.img + '" alt="" aria-hidden="true" loading="lazy" draggable="false">' +
-          '</div>' +
-        '</div>' +
+        '<img class="shoe" src="' + s.img + '" alt="' + s.alt + '" loading="lazy" draggable="false">' +
       "</div>" +
       '<div class="copy">' +
         '<h3 class="name" style="font-size:15px;font-weight:700;letter-spacing:0.04em;margin-bottom:10px">' + s.name + "</h3>" +
         '<p class="line">' + s.line + "</p>" +
         '<p class="price">' + s.cw + " " + s.price + "</p>" +
-        '<p class="cta">HOVER TO SPIN. CLICK TO KNOW MORE.</p>' +
+        '<p class="cta">CLICK THE SHOE TO KNOW MORE</p>' +
       "</div>";
     flow.appendChild(act);
   });
@@ -180,6 +174,8 @@ function frame() {
       " rotate(" + (p * -3.5).toFixed(2) + "deg) scale(" + (0.94 + near * 0.1).toFixed(3) + ")";
     g.style.transform =
       "translate(calc(-50% + " + (-px * 30).toFixed(1) + "px), calc(-50% - " + (off * 0.16).toFixed(1) + "px))";
+    if (glowEls[k]) glowEls[k].style.transform =
+      "translate(calc(-50% + " + (px * 46).toFixed(1) + "px), calc(-50% + " + (py * 34).toFixed(1) + "px))";
     const d = Math.abs(r.top + r.height * 0.5 - vh * 0.5);
     if (d < bd) { bd = d; best = k; }
   });
@@ -197,37 +193,13 @@ const shoesEls = acts.map(a => a.querySelector(".shoe"));
 const giantEls = acts.map(a => a.querySelector(".giant"));
 acts.forEach((a, k) => a.style.setProperty("--a2", SHOES[shoeIdx[k]].accent));
 acts.forEach((a, k) => {
-  const wrap = shoesEls[k];
-  if (!wrap) return;
-  const box = wrap.querySelector(".spinbox");
-  wrap.addEventListener("pointerenter", e => { if (e.pointerType !== "touch") a.classList.add("hover"); });
-  wrap.addEventListener("pointerleave", e => {
-    a.classList.remove("hover");
-    if (e.pointerType !== "touch" && box) box.style.transform = "rotateY(0deg)";
-  });
-  wrap.addEventListener("pointerdown", e => {
-    wrap._px = e.clientX;
-    wrap._moved = 0;
-    wrap._spin = e.pointerType === "touch";
-  });
-  window.addEventListener("pointerup", () => {
-    wrap._movedFinal = wrap._moved || 0;
-    wrap._spin = false;
-    wrap._px = null;
-  });
-  wrap.addEventListener("pointermove", e => {
-    if (wrap._px != null) wrap._moved = Math.max(wrap._moved || 0, Math.abs(e.clientX - wrap._px));
-    if (!box) return;
-    if (e.pointerType === "touch" && !wrap._spin) return;
-    const r = wrap.getBoundingClientRect();
-    const nx = clamp((e.clientX - r.left) / r.width, 0, 1);
-    box.style.transform = "rotateY(" + ((nx - 0.5) * 360).toFixed(1) + "deg)";
-  });
-  wrap.addEventListener("click", () => {
-    if ((wrap._movedFinal || 0) > 12) return;
-    openDetail(shoeIdx[k]);
-  });
+  const shoe = shoesEls[k];
+  if (!shoe) return;
+  shoe.addEventListener("pointerenter", e => { if (e.pointerType !== "touch") a.classList.add("hover"); });
+  shoe.addEventListener("pointerleave", () => a.classList.remove("hover"));
+  shoe.addEventListener("click", () => openDetail(shoeIdx[k]));
 });
+const glowEls = acts.map(a => a.querySelector(".glow"));
 
 const YEARS = [
   { y: "1982", img: "assets/af1.webp", n: "AIR FORCE 1", l: "Air enters the court." },

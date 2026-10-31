@@ -314,3 +314,7 @@ body, .rail { scrollbar-width: none; }
 .detail.open .dinfo > :nth-child(6) { transition-delay: 0.5s; }
 .detail.open .dinfo > :nth-child(7) { transition-delay: 0.56s; }
 .detail.open .dinfo > :nth-child(8) { transition-delay: 0.62s; }
+
+.glow::before, .glow::after { display: none; }
+.shoe { width: auto; max-width: min(56vw, 640px); max-height: 52svh; filter: drop-shadow(0 34px 26px rgba(0, 0, 0, 0.55)); }
+@media (max-width: 720px) { .shoe { max-width: 86vw; max-height: 40svh; } }
