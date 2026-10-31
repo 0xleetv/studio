@@ -1,6 +1,6 @@
 * { margin:0; padding:0; box-sizing:border-box; }
 html { background:#08090B; }
-body {
+body { background:#08090B; transition:background-color .9s ease;
   background:#08090B; color:#EDEDEA;
   font-family:-apple-system, "Segoe UI", system-ui, Roboto, Helvetica, Arial, sans-serif;
   overflow-x:hidden; touch-action:pan-y;

@@ -38,7 +38,7 @@ const SWATCHES = [
 
 const canvas = document.getElementById('gl');
 const giant = document.getElementById('giant');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(innerWidth, innerHeight);
 renderer.shadowMap.enabled = true;
@@ -47,8 +47,7 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.15;
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color('#08090B');
-scene.fog = new THREE.Fog('#08090B', 7, 14);
+scene.background = null;
 const camera = new THREE.PerspectiveCamera(34, innerWidth/innerHeight, .1, 60);
 camera.position.set(0, .5, 5.2);
 
@@ -62,10 +61,7 @@ const rim = new THREE.PointLight('#2C63E8', 14, 10, 2);
 rim.position.set(-2.4, 1.4, -1.8);
 const cursorL = new THREE.PointLight('#FFFFFF', 7, 7, 2);
 cursorL.position.set(0, .6, 2.4);
-const floor = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.MeshStandardMaterial({ color:'#08090B', roughness:1 }));
-floor.rotation.x = -Math.PI/2;
-floor.receiveShadow = true;
-scene.add(hemi, key, rim, cursorL, floor);
+scene.add(hemi, key, rim, cursorL);
 
 let wrap = null, bodyMat = null, trimMat = null;
 const tgtBody = new THREE.Color(CW[0].body), tgtTrim = new THREE.Color(CW[0].trim), tgtRim = new THREE.Color(CW[0].body);
@@ -99,7 +95,8 @@ new GLTFLoader().load('assets/shoe.glb', (g) => {
   wrap = new THREE.Group();
   wrap.add(root);
   scene.add(wrap);
-});
+  document.title = 'GLB OK ' + wrap.children[0].children.length;
+}, undefined, (e) => { document.title = 'GLB ERR ' + (e && (e.message || e)); });
 
 const acts = Array.from(document.querySelectorAll('.act'));
 acts.forEach((a, i) => a.style.setProperty('--acc', CW[i].body));
@@ -253,6 +250,7 @@ SWATCHES.forEach((s, i) => {
     swWrap.querySelectorAll('.sw').forEach((el) => el.classList.remove('on'));
     b.classList.add('on');
     tgtBg.set(s.bg); tgtKey.set(s.key); tgtKi = s.ki; tgtHi = s.hi;
+    document.body.style.backgroundColor = s.bg;
   });
   swWrap.appendChild(b);
 });
@@ -299,9 +297,6 @@ function tick(now) {
   if (bodyMat) bodyMat.color.lerp(tgtBody, dt * 3);
   if (trimMat) trimMat.color.lerp(tgtTrim, dt * 3);
   rim.color.lerp(tgtRim, dt * 3);
-  scene.background.lerp(tgtBg, dt * 2.5);
-  scene.fog.color.copy(scene.background);
-  floor.material.color.copy(scene.background);
   key.color.lerp(tgtKey, dt * 3);
   key.intensity += (tgtKi - key.intensity) * Math.min(1, dt * 3);
   hemi.intensity += (tgtHi - hemi.intensity) * Math.min(1, dt * 3);
