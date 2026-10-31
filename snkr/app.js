@@ -117,7 +117,7 @@ function swapTo(id) {
 const stops = 8;
 function stopT(t) { return Math.min(1, t * 6.06); }
 
-let t = 0, gi = 0, shownGi = -1, vG = 0, swapWait = 0;
+let t = 0, gi = 0, shownGi = -1, vG = 0, swapWait = 0, dbgDes = 0;
 let rotU = 0, dragging = false;
 
 const easeIO = f => f * f * (3 - 2 * f);
@@ -268,6 +268,11 @@ onScroll();
 requestModel('shopify', g => { swapTo('shopify'); cv.style.opacity = 1; });
 for (let k = 1; k <= 5; k++) requestModel(ACTS[k].model, () => {});
 
+const dbg = document.createElement('div');
+dbg.style.cssText = 'position:fixed;left:8px;top:8px;z-index:99;color:#0f0;font:12px monospace;background:#000a;padding:4px 8px;pointer-events:none';
+document.body.appendChild(dbg);
+setInterval(() => { dbg.textContent = 'v=' + vG.toFixed(3) + ' scrollY=' + scrollY + ' gi=' + gi + ' cur=' + curId + ' des=' + dbgDes + ' ph=' + phase + ' cache=' + Object.keys(cache).join(','); }, 400);
+
 const clock = new THREE.Clock();
 function tick() {
   requestAnimationFrame(tick);
@@ -282,6 +287,7 @@ function tick() {
 
   let desired = 0;
   for (let k = 1; k <= 5; k++) if (vG >= k - .12) desired = k;
+  dbgDes = desired;
   if (desired && curId !== ACTS[desired].model) {
     if (cache[ACTS[desired].model]) swapTo(ACTS[desired].model);
     else if (!swapWait) { swapWait = 1; console.log('WAITMODEL', ACTS[desired].model, 'cached=', Object.keys(cache)); }
