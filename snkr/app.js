@@ -132,6 +132,13 @@ function swapTo(id) {
   applyTint(cwSel[id] || null);
   phase = prev ? 1 : 2; phaseT = 0;
   rotU = 0;
+  rack();
+}
+let rackT = 0;
+function rack() {
+  cv.classList.add('rack');
+  clearTimeout(rackT);
+  rackT = setTimeout(() => cv.classList.remove('rack'), 300);
 }
 
 const easeIO = f => f * f * (3 - 2 * f);
@@ -196,7 +203,7 @@ function applyTint(hex) {
 function openInfo(i) {
   const d = INFO[i]; if (!d) return;
   document.getElementById('dkick').textContent = d.kick;
-  document.getElementById('dname').textContent = d.name;
+  scramble(document.getElementById('dname'), d.name, 460);
   document.getElementById('dline').textContent = d.line;
   document.getElementById('dmore').textContent = d.more || '';
   const sp = document.getElementById('dspecs'); sp.innerHTML = '';
@@ -300,12 +307,26 @@ function measure() {
 
 let gi = 0, vG = 0;
 let giantHold = null, giantHoldOn = true, giantTimer = 0;
+const SCR = 'AXEHT0123#%+=';
+function scramble(el, txt, dur) {
+  const t0 = performance.now();
+  const fr = () => {
+    const p = Math.min(1, (performance.now() - t0) / dur);
+    const n = Math.floor(p * txt.length);
+    let s = txt.slice(0, n);
+    for (let i = n; i < txt.length; i++) s += txt[i] === ' ' ? ' ' : SCR[(Math.random() * SCR.length) | 0];
+    el.textContent = s;
+    if (p < 1) requestAnimationFrame(fr);
+  };
+  fr();
+}
 function setGiant(txt, on) {
   if (giantHold === txt && giantHoldOn === on) return;
   giantHold = txt; giantHoldOn = on;
-  giant.style.opacity = 0;
   clearTimeout(giantTimer);
-  giantTimer = setTimeout(() => { giant.textContent = txt; giant.style.opacity = on ? 1 : 0; }, 260);
+  if (!on) { giant.style.opacity = 0; giantTimer = setTimeout(() => { giant.textContent = txt; }, 300); return; }
+  giant.style.opacity = 1;
+  scramble(giant, txt, 460);
 }
 
 let accTarget = new THREE.Color(0xEDEDEA);
@@ -344,7 +365,7 @@ function bootTick() {
 function openDoor() {
   if (!ienter.disabled) return;
   ienter.disabled = false;
-  ienter.textContent = 'ENTER THE STORE';
+  scramble(ienter, 'ENTER THE STORE', 560);
 }
 const ib = document.getElementById('ib');
 'AIRBORNE'.split('').forEach((ch, i) => {
@@ -420,3 +441,19 @@ function tick() {
   renderer.render(scene, cam);
 }
 tick();
+
+const mags = [...document.querySelectorAll('#rooms button, #ienter, #dbag, #dclose')];
+let mRAF = 0, mpX = -1e4, mpY = -1e4;
+addEventListener('pointermove', e => {
+  if (e.pointerType !== 'mouse') return;
+  mpX = e.clientX; mpY = e.clientY;
+  if (!mRAF) mRAF = requestAnimationFrame(() => { mRAF = 0;
+    for (const el of mags) {
+      const r = el.getBoundingClientRect();
+      const dx = mpX - (r.left + r.width / 2), dy = mpY - (r.top + r.height / 2);
+      const d = Math.hypot(dx, dy);
+      if (d < 92) { const f = (1 - d / 92) * .36; el.style.transform = 'translate(' + (dx * f).toFixed(1) + 'px,' + (dy * f).toFixed(1) + 'px)'; }
+      else if (el.style.transform) el.style.transform = '';
+    }
+  });
+});
