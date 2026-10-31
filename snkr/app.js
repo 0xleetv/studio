@@ -85,6 +85,7 @@ function buildRail() {
     const card = document.createElement("button");
     card.className = "card";
     card.style.setProperty("--c", s.accent);
+    card.style.setProperty("--k", i);
     card.setAttribute("aria-label", "Know more, " + s.name);
     card.innerHTML =
       '<img src="' + s.img + '" alt="" loading="lazy" draggable="false">' +
@@ -110,17 +111,17 @@ function openDetail(i) {
   document.getElementById("dSpecs").innerHTML = s.specs
     .map(r => '<div><span class="k">' + r[0] + '</span><span class="v">' + r[1] + "</span></div>").join("");
   document.getElementById("dNote").hidden = true;
-  detail.hidden = false;
+  detail.classList.add("open");
   document.body.style.overflow = "hidden";
 }
 function closeDetail() {
-  detail.hidden = true;
+  detail.classList.remove("open");
   openIdx = -1;
   document.body.style.overflow = "";
 }
 document.getElementById("detailClose").addEventListener("click", closeDetail);
 detail.addEventListener("click", e => { if (e.target === detail) closeDetail(); });
-window.addEventListener("keydown", e => { if (e.key === "Escape" && !detail.hidden) closeDetail(); });
+window.addEventListener("keydown", e => { if (e.key === "Escape" && detail.classList.contains("open")) closeDetail(); });
 document.getElementById("dBag").addEventListener("click", () => {
   document.getElementById("dNote").hidden = false;
 });
@@ -188,48 +189,112 @@ function frame() {
 }
 requestAnimationFrame(frame);
 
-let down = false, startX = 0, lastX = 0, vel = 0;
-rail.addEventListener("pointerdown", e => {
-  down = true; startX = lastX = e.clientX; vel = 0;
-  rail.classList.add("grab");
-  try { rail.setPointerCapture(e.pointerId); } catch (err) {}
-});
-rail.addEventListener("pointermove", e => {
-  if (!down) return;
-  vel = e.clientX - lastX;
-  lastX = e.clientX;
-  rail.scrollLeft -= vel;
-});
-window.addEventListener("pointerup", () => {
-  if (!down) return;
-  down = false;
-  rail.classList.remove("grab");
-  const glide = () => {
-    if (down || Math.abs(vel) < 0.35) return;
-    rail.scrollLeft -= vel;
-    vel *= 0.93;
-    requestAnimationFrame(glide);
-  };
-  glide();
-});
-rail.addEventListener("click", e => {
-  if (Math.abs(e.clientX - startX) > 8) {
-    e.preventDefault();
-    e.stopPropagation();
-  }
-}, true);
-
-const railsec = document.getElementById("railsec");
-railsec.addEventListener("wheel", e => {
-  if (!detail.hidden) return;
-  const goingDown = e.deltaY > 0;
-  const atStart = rail.scrollLeft <= 1;
-  const atEnd = rail.scrollLeft >= rail.scrollWidth - rail.clientWidth - 1;
-  rail.scrollLeft += e.deltaY;
-  if ((atStart && !goingDown) || (atEnd && goingDown)) return;
-  e.preventDefault();
-}, { passive: false });
-
 buildActs();
 buildRail();
+
+const YEARS = [
+  { y: "1982", img: "assets/af1.webp", n: "AIR FORCE 1", l: "Air enters the court." },
+  { y: "1985", img: "assets/aj1.webp", n: "AIR JORDAN 1", l: "The blueprint drops." },
+  { y: "1990", img: "assets/aj5.webp", n: "AIR JORDAN 5", l: "The fighter jet lands." },
+  { y: "2006", img: "assets/p6000.webp", n: "P-6000", l: "The racer is born." },
+  { y: "2018", img: "assets/am270.webp", n: "AIR MAX 270", l: "The tallest heel Air yet." },
+  { y: "2026", img: "assets/pegasus.webp", n: "PEGASUS PLUS 2", l: "The workhorse, tuned." }
+];
+const strip = document.getElementById("strip");
+YEARS.forEach((t, i) => {
+  const plate = document.createElement("div");
+  plate.className = "plate";
+  plate.style.setProperty("--k", i);
+  plate.innerHTML =
+    '<p class="yr">' + t.y + "</p>" +
+    '<img src="' + t.img + '" alt="' + t.n + '" loading="lazy" draggable="false">' +
+    '<p class="pn">' + t.n + "</p>" +
+    '<p class="pl">' + t.l + "</p>";
+  strip.appendChild(plate);
+});
+
+function swipeInto(el, suppressClicks) {
+  let held = false, sx = 0, lx = 0, v = 0;
+  el.addEventListener("pointerdown", e => {
+    held = true; sx = lx = e.clientX; v = 0;
+    el.classList.add("grab");
+    try { el.setPointerCapture(e.pointerId); } catch (err) {}
+  });
+  el.addEventListener("pointermove", e => {
+    if (!held) return;
+    v = e.clientX - lx;
+    lx = e.clientX;
+    el.scrollLeft -= v;
+  });
+  window.addEventListener("pointerup", () => {
+    if (!held) return;
+    held = false;
+    el.classList.remove("grab");
+    const glide = () => {
+      if (held || Math.abs(v) < 0.35) return;
+      el.scrollLeft -= v;
+      v *= 0.93;
+      requestAnimationFrame(glide);
+    };
+    glide();
+  });
+  if (suppressClicks) {
+    el.addEventListener("click", e => {
+      if (Math.abs(e.clientX - sx) > 8) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }, true);
+  }
+}
+swipeInto(rail, true);
+swipeInto(strip, false);
+
+document.querySelectorAll("#workshop .dot").forEach(d => {
+  d.addEventListener("click", () => {
+    const on = d.classList.contains("on");
+    document.querySelectorAll("#workshop .dot").forEach(o => o.classList.remove("on"));
+    if (!on) d.classList.add("on");
+  });
+});
+
+const swrap = document.getElementById("stagewrap");
+const sshoe = document.getElementById("stageShoe");
+const bgA = document.getElementById("bgA");
+const bgB = document.getElementById("bgB");
+const bgs = [bgA, bgB];
+let bgOn = 0;
+bgs[1].style.opacity = "0";
+function setStageBG(hex) {
+  const next = bgs[1 - bgOn];
+  next.style.background = "radial-gradient(circle at 50% 45%, " + hex + ", transparent 72%)";
+  next.style.opacity = "1";
+  bgs[bgOn].style.opacity = "0";
+  bgOn = 1 - bgOn;
+}
+document.getElementById("swatches").addEventListener("click", e => {
+  const b = e.target.closest(".sw");
+  if (!b) return;
+  setStageBG(b.dataset.bg);
+  document.querySelectorAll(".sw").forEach(s => s.classList.toggle("on", s === b));
+});
+swrap.addEventListener("pointermove", e => {
+  const r = swrap.getBoundingClientRect();
+  const x = (e.clientX - r.left) / r.width - 0.5;
+  const y = (e.clientY - r.top) / r.height - 0.5;
+  sshoe.style.transform =
+    "translate(calc(-50% + " + (x * 24).toFixed(1) + "px), calc(-50% + " + (y * 16).toFixed(1) + "px))" +
+    " perspective(800px) rotateY(" + (x * 10).toFixed(2) + "deg) rotateX(" + (-y * 7).toFixed(2) + "deg)";
+});
+swrap.addEventListener("pointerleave", () => {
+  sshoe.style.transform = "translate(-50%, -50%)";
+});
+
+const io = new IntersectionObserver(entries => {
+  entries.forEach(en => en.target.classList.toggle("live", en.isIntersecting));
+}, { threshold: 0.3 });
+acts.forEach(a => io.observe(a));
+io.observe(document.getElementById("railsec"));
+io.observe(document.getElementById("workshop"));
+io.observe(document.getElementById("timeline"));
 })();
