@@ -13,6 +13,8 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.12;
 
 const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x08090B);
+const bgT = new THREE.Color(0x08090B);
 const cam = new THREE.PerspectiveCamera(36, 1, .1, 80);
 cam.position.set(0, .55, 4.7);
 
@@ -42,12 +44,12 @@ const ACTS = [
 ];
 
 const INFO = [
-  { kick: 'AIRBORNE CONCEPT, 2026', name: 'THE CONCEPT', line: 'An original studio shoe that opens the store. Six colorways were never the point. Five legends are.', specs: [['YEAR', '2026'], ['SILHOUETTE', 'STUDIO CONCEPT'], ['STATUS', 'CONCEPT STUDY'], ['MODEL', 'SHOPIFY, CC BY 4.0']] },
-  { kick: 'OFF WHITE X AIR JORDAN 1, 2017', name: 'THE TEN', line: 'Virgil Abloh deconstructed the 1985 Chicago Jordan 1: cut leather, exposed foam, an industrial zip tie, Helvetica quotes. One of ten shoes that reset sneaker culture in 2017.', specs: [['YEAR', '2017'], ['SILHOUETTE', 'AIR JORDAN 1'], ['RETAIL', '$160'], ['DESIGNER', 'VIRGIL ABLOH']] },
-  { kick: 'GRATEFUL DEAD X NIKE SB, 2020', name: 'THE GREEN BEAR', line: 'Fuzzy green faux fur, suede overlays, a jagged swoosh cut like the dancing bear chest, and a stash pocket hidden under the tongue. Released July 2020 in a trio.', specs: [['YEAR', '2020'], ['SILHOUETTE', 'SB DUNK LOW'], ['RETAIL', '$110'], ['ORIGIN', 'GRATEFUL DEAD']] },
-  { kick: 'NIKE AIR FORCE 1, 1982', name: 'THE FORCE', line: 'Bruce Kilgore drew the first basketball shoe with Air under the heel. Baltimore shops kept it alive off court until it became the uniform it is now.', specs: [['YEAR', '1982'], ['SILHOUETTE', 'AIR FORCE 1 LOW'], ['RETAIL', '$115'], ['DESIGNER', 'BRUCE KILGORE']] },
-  { kick: 'TRAVIS SCOTT X AIR FORCE 1, 2019', name: 'CACTUS JACK', line: 'Houston patchwork: corduroy, camo, NRG prints, and a removable swoosh that flips to reveal Cactus Jack underneath. November 2019.', specs: [['YEAR', '2019'], ['SILHOUETTE', 'AIR FORCE 1 LOW'], ['RETAIL', '$160'], ['ORIGIN', 'CACTUS JACK RECORDS']] },
-  { kick: 'NIKE AIR ZOOM PEGASUS 36, 2019', name: 'THE 36TH', line: 'The 36th turn of a line that started in 1983. Engineered mesh, exposed Flywire, Zoom Air under the forefoot. The workhorse.', specs: [['YEAR', '2019'], ['SILHOUETTE', 'AIR ZOOM PEGASUS'], ['RETAIL', '$120'], ['LINE SINCE', '1983']] }
+  { kick: 'AIRBORNE CONCEPT, 2026', name: 'THE CONCEPT', line: 'An original studio shoe that opens the store. Six colorways were never the point. Five legends are.', specs: [['YEAR', '2026'], ['SILHOUETTE', 'STUDIO CONCEPT'], ['STATUS', 'CONCEPT STUDY'], ['MODEL', 'SHOPIFY, CC BY 4.0']], more: 'An original studio study that opens the store. The silhouette stays clean on purpose: one canvas, four light moods, no badging.', cw: [['OG', null], ['SAIL', '#EFE6D8'], ['INK', '#3A4048'], ['RUST', '#C96A3B']] },
+  { kick: 'OFF WHITE X AIR JORDAN 1, 2017', name: 'THE TEN', line: 'Virgil Abloh deconstructed the 1985 Chicago Jordan 1: cut leather, exposed foam, an industrial zip tie, Helvetica quotes. One of ten shoes that reset sneaker culture in 2017.', specs: [['YEAR', '2017'], ['SILHOUETTE', 'AIR JORDAN 1'], ['RETAIL', '$160'], ['DESIGNER', 'VIRGIL ABLOH']], more: 'Abloh restyled ten Nike icons for The Ten in 2017. This AJ1 kept its panels exposed, added a red zip tie and printed quotation marks around every word.', cw: [['OG', null], ['SAIL', '#EDE3CF'], ['INK', '#34383E'], ['RUST', '#C2503A']] },
+  { kick: 'GRATEFUL DEAD X NIKE SB, 2020', name: 'THE GREEN BEAR', line: 'Fuzzy green faux fur, suede overlays, a jagged swoosh cut like the dancing bear chest, and a stash pocket hidden under the tongue. Released July 2020 in a trio.', specs: [['YEAR', '2020'], ['SILHOUETTE', 'SB DUNK LOW'], ['RETAIL', '$110'], ['ORIGIN', 'GRATEFUL DEAD']], more: 'The partnership nods to the band dancing bears. Three colorways landed in July 2020 and the green pair became one of the hardest SB Dunks to find at retail.', cw: [['OG', null], ['SAIL', '#EFE0C8'], ['INK', '#2E3238'], ['MOSS', '#6E7A4A']] },
+  { kick: 'NIKE AIR FORCE 1, 1982', name: 'THE FORCE', line: 'Bruce Kilgore drew the first basketball shoe with Air under the heel. Baltimore shops kept it alive off court until it became the uniform it is now.', specs: [['YEAR', '1982'], ['SILHOUETTE', 'AIR FORCE 1 LOW'], ['RETAIL', '$115'], ['DESIGNER', 'BRUCE KILGORE']], more: 'Released in 1982, the AF1 was the first basketball shoe with Nike Air. Production paused in 1984 until Baltimore retailers brought it back, and it never left.', cw: [['OG', null], ['SAIL', '#EDE6D4'], ['INK', '#3A3D42'], ['RUST', '#C74A44']] },
+  { kick: 'TRAVIS SCOTT X AIR FORCE 1, 2019', name: 'CACTUS JACK', line: 'Houston patchwork: corduroy, camo, NRG prints, and a removable swoosh that flips to reveal Cactus Jack underneath. November 2019.', specs: [['YEAR', '2019'], ['SILHOUETTE', 'AIR FORCE 1 LOW'], ['RETAIL', '$160'], ['ORIGIN', 'CACTUS JACK RECORDS']], more: 'The Cactus Jack AF1 carries a detachable swoosh that flips to reveal hidden branding. Corduroy and NRG prints pull straight from Houston.', cw: [['OG', null], ['MOCHA', '#8A6A4A'], ['SAIL', '#EFE4CC'], ['CACTUS', '#7A8C5A']] },
+  { kick: 'NIKE AIR ZOOM PEGASUS 36, 2019', name: 'THE 36TH', line: 'The 36th turn of a line that started in 1983. Engineered mesh, exposed Flywire, Zoom Air under the forefoot. The workhorse.', specs: [['YEAR', '2019'], ['SILHOUETTE', 'AIR ZOOM PEGASUS'], ['RETAIL', '$120'], ['LINE SINCE', '1983']], more: 'The line started in 1983 and the 36 arrived in 2019 with engineered mesh, Cushlon foam and forefoot Zoom Air. Still the daily trainer benchmark.', cw: [['OG', null], ['GHOST', '#DDE2E6'], ['INK', '#2E3440'], ['FLAME', '#E0642F']] }
 ];
 
 const POSE = [
@@ -80,6 +82,14 @@ function build(id, obj) {
   obj.scale.setScalar(k);
   obj.position.set(-c.x * k, -c.y * k, -c.z * k);
   g.add(obj);
+  const mats = [];
+  obj.traverse(x => {
+    if (!x.isMesh || !x.material) return;
+    (Array.isArray(x.material) ? x.material : [x.material]).forEach(m => {
+      if (m.color && !mats.some(q => q.m === m)) mats.push({ m, oc: m.color.clone() });
+    });
+  });
+  g.userData.mats = mats;
   g.visible = false;
   scene.add(g);
   return g;
@@ -102,7 +112,7 @@ function requestModel(id, done) {
 
 let cur = null, curId = null, prev = null;
 let phase = 2, phaseT = 0;
-const PHASE_DUR = .62;
+const PHASE_DUR = .95;
 
 function swapTo(id) {
   if (!cache[id] || curId === id) return;
@@ -167,18 +177,53 @@ addEventListener('pointerup', e => {
 
 const dback = document.getElementById('dback');
 const detail = document.getElementById('detail');
+let curSize = null, bagTimer = 0;
+function applyTint(hex) {
+  if (!cur || !cur.userData.mats) return;
+  cur.userData.mats.forEach(x => x.m.color.copy(hex ? new THREE.Color(hex) : x.oc));
+}
 function openInfo(i) {
   const d = INFO[i]; if (!d) return;
   document.getElementById('dkick').textContent = d.kick;
   document.getElementById('dname').textContent = d.name;
   document.getElementById('dline').textContent = d.line;
+  document.getElementById('dmore').textContent = d.more || '';
   const sp = document.getElementById('dspecs'); sp.innerHTML = '';
   d.specs.forEach(([k, v]) => { const el = document.createElement('div'); el.innerHTML = '<b>' + k + '</b>' + v; sp.appendChild(el); });
-  const pal = document.getElementById('dpal'); pal.innerHTML = '';
-  [ACTS[i].acc, '#EDEDEA', '#3A3F47'].forEach(c => { const dot = document.createElement('i'); dot.style.background = c; pal.appendChild(dot); });
+  const cwEl = document.getElementById('dcw'); cwEl.innerHTML = '';
+  (d.cw || []).forEach(([nm, hex], k) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'cw' + (k === 0 ? ' on' : '');
+    b.innerHTML = '<i style="background:' + (hex || '#B9BDC4') + '"></i>' + nm;
+    b.addEventListener('click', () => {
+      cwEl.querySelectorAll('.cw').forEach(x => x.classList.remove('on'));
+      b.classList.add('on');
+      applyTint(hex);
+    });
+    cwEl.appendChild(b);
+  });
+  const szEl = document.getElementById('dsz'); szEl.innerHTML = '';
+  curSize = null;
+  ['7', '7.5', '8', '8.5', '9', '9.5', '10', '10.5', '11', '11.5', '12', '13'].forEach(s => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'sz'; b.textContent = s;
+    b.addEventListener('click', () => {
+      curSize = s;
+      szEl.querySelectorAll('.sz').forEach(x => x.classList.remove('on'));
+      b.classList.add('on');
+    });
+    szEl.appendChild(b);
+  });
+  document.getElementById('dprice').textContent = ACTS[i].price || '';
+  const bag = document.getElementById('dbag'); bag.textContent = 'ADD TO BAG';
+  clearTimeout(bagTimer);
+  bag.onclick = () => {
+    bag.textContent = curSize ? 'ADDED' : 'PICK A SIZE';
+    clearTimeout(bagTimer);
+    bagTimer = setTimeout(() => { bag.textContent = 'ADD TO BAG'; }, 1300);
+  };
   document.getElementById('dnote').textContent = '3D MODELS FROM PUBLIC LIBRARIES. CONCEPT STUDY, NOT AFFILIATED WITH NIKE, INC.';
   detail.style.setProperty('--acc', ACTS[i].acc);
   detail.classList.add('open'); dback.classList.add('on');
+  document.body.classList.add('lock');
   detail.setAttribute('aria-hidden', 'false');
 }
 function actIdxOfCur() {
@@ -187,6 +232,7 @@ function actIdxOfCur() {
 }
 function closeInfo() {
   detail.classList.remove('open'); dback.classList.remove('on');
+  document.body.classList.remove('lock');
   detail.setAttribute('aria-hidden', 'true');
 }
 document.getElementById('dclose').addEventListener('click', closeInfo);
@@ -208,6 +254,7 @@ LIGHTS.forEach((l, i) => {
     b.classList.add('on');
     swatchSel = [l[1], l[2], l[3]];
     keyT.set(l[1]); fillT.set(l[2]); key.color.set(l[1]); fill.color.set(l[2]); renderer.toneMappingExposure = l[3];
+    bgT.set(l[1]).lerp(new THREE.Color(0x08090B), .84);
   });
   sw.appendChild(b);
 });
@@ -255,8 +302,9 @@ function onScroll() {
     const a = ACTS[i];
     body.style.setProperty('--acc', a.acc);
     accTarget.set(a.acc);
-    if (i === 6) { keyT.set(swatchSel[0]); fillT.set(swatchSel[1]); renderer.toneMappingExposure = swatchSel[2]; }
-    else { keyT.set(a.lk); fillT.set(a.lf); }
+    const BASE = new THREE.Color(0x08090B);
+    if (i === 6) { keyT.set(swatchSel[0]); fillT.set(swatchSel[1]); renderer.toneMappingExposure = swatchSel[2]; bgT.set(swatchSel[0]).lerp(BASE, .84); }
+    else { keyT.set(a.lk); fillT.set(a.lf); bgT.set(a.acc).lerp(BASE, .86); }
     roomBtns.forEach((b, k) => b.classList.toggle('on', k === i));
   }
   setGiant(ACTS[i].giant, i < 6);
@@ -318,14 +366,22 @@ function tick() {
   if (cur) {
     const p = poseAt(Math.min(gi, POSE.length - 1), vG - Math.floor(vG));
     const tp = phase === 1 ? Math.min(1, phaseT) : 1;
-    const inE = 1 - Math.pow(1 - Math.min(1, tp * 1.15), 3);
-    cur.position.set(p[0], p[1] + Math.sin(now * .8) * .025, p[2]);
-    cur.rotation.set(p[3] + rotX, p[4] + rotU + Math.sin(now * .35) * .03, p[5]);
-    const sc = (phase === 1 ? inE : 1) * p[6];
-    cur.scale.setScalar(Math.max(.0001, sc));
+    let scMul = 1, dropY = 0, sweep = 0;
+    if (phase === 1) {
+      const e = 1 - Math.pow(1 - tp, 3);
+      const c1 = 1.70158, c3 = c1 + 1;
+      scMul = 1 + c3 * Math.pow(tp - 1, 3) + c1 * Math.pow(tp - 1, 2);
+      dropY = (1 - e) * 1.15;
+      sweep = (1 - e) * -2.6;
+    }
+    cur.position.set(p[0], p[1] + dropY + Math.sin(now * .8) * .025, p[2]);
+    cur.rotation.set(p[3] + rotX, p[4] + rotU + sweep + Math.sin(now * .35) * .03, p[5]);
+    const sc = Math.max(.0001, scMul) * p[6];
+    cur.scale.setScalar(sc);
     if (phase !== 1 && prev) {
-      prev.scale.multiplyScalar(Math.max(.0001, 1 - dt * 4.5));
-      prev.rotation.y += dt * 2.2;
+      prev.position.y -= dt * 1.15;
+      prev.scale.multiplyScalar(Math.max(.0001, 1 - dt * 3.4));
+      prev.rotation.y += dt * 5;
       if (prev.scale.x < .02) { prev.visible = false; prev = null; }
     }
   }
@@ -333,6 +389,7 @@ function tick() {
   rim.color.lerp(accTarget, dt * 3);
   key.color.lerp(keyT, dt * 3);
   fill.color.lerp(fillT, dt * 3);
+  scene.background.lerp(bgT, dt * 3);
   cam.position.x += ((nx * .28) - cam.position.x) * dt * 4;
   cam.position.y += ((.55 + ny * .16) - cam.position.y) * dt * 4;
   cam.lookAt(0, .35, 0);
