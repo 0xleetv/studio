@@ -1,0 +1,31 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{margin:0;background:#101318;overflow:hidden}#st{position:fixed;inset:0}</style>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
+</head><body><div id="st"></div>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+const m = new URLSearchParams(location.search).get('m') || 'pegasus';
+const lit = new URLSearchParams(location.search).get('lit') === '1';
+document.title = 'probe2 ' + m + (lit ? ' lit' : ' unlit');
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(innerWidth, innerHeight); document.getElementById('st').appendChild(renderer.domElement);
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0x101318);
+const cam = new THREE.PerspectiveCamera(38, innerWidth/innerHeight, .01, 100);
+const key = new THREE.DirectionalLight(0xffffff, lit ? 2.4 : .2); key.position.set(3,4,4); scene.add(key);
+const rim = new THREE.DirectionalLight(0x88ccff, lit ? 1.6 : .1); rim.position.set(-4,2,-3); scene.add(rim);
+const hemi = new THREE.HemisphereLight(0xffffff, 0x222833, lit ? .9 : .05); scene.add(hemi);
+new GLTFLoader().load('assets/' + m + '.glb', (g) => {
+  const box = new THREE.Box3().setFromObject(g.scene);
+  const size = box.getSize(new THREE.Vector3()), ctr = box.getCenter(new THREE.Vector3());
+  g.scene.position.sub(ctr);
+  const sc = 2.2 / Math.max(size.x, size.y, size.z);
+  g.scene.scale.setScalar(sc);
+  if (!lit) g.scene.traverse(o => { if (o.isMesh) { o.material = new THREE.MeshStandardMaterial({ map: o.material.map || null, color: o.material.color ? o.material.color.clone() : new THREE.Color(1,1,1), roughness: .85 }); } });
+  scene.add(g.scene);
+  cam.position.set(2.6, 1.1, 3.2); cam.lookAt(0, 0, 0);
+  document.title = 'OK ' + m + ' sz ' + size.x.toFixed(1) + ',' + size.y.toFixed(1) + ',' + size.z.toFixed(1);
+  let a = 0;
+  (function tick(){ requestAnimationFrame(tick); a += .006; g.scene.rotation.y = a; renderer.render(scene, cam); })();
+}, undefined, (e) => { document.title = 'ERR ' + m + ' ' + e; });
+</script></body></html>
