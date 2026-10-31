@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 
 const cv = document.getElementById('gl');
 const giant = document.getElementById('giant');
@@ -65,8 +66,10 @@ const MX = mob ? .3 : 1;
 const MY = mob ? .5 : 0;
 
 const loader = new GLTFLoader();
+loader.setMeshoptDecoder(MeshoptDecoder);
 const cache = {};
 const queue = [];
+let loadingNow = false;
 
 function build(id, obj) {
   const g = new THREE.Group();
@@ -83,14 +86,14 @@ function build(id, obj) {
 }
 
 function pump() {
-  while (queue.length) {
-    const [id, done] = queue.shift();
-    if (cache[id]) { done(cache[id]); continue; }
-    loader.load('assets/' + MODELS[id].file,
-      gltf => { try { cache[id] = build(id, gltf.scene); done(cache[id]); } catch (e) { console.error('BUILDFAIL', id); } },
-      undefined,
-      () => { console.error('LOADFAIL', id); });
-  }
+  if (loadingNow || !queue.length) return;
+  const [id, done] = queue.shift();
+  if (cache[id]) { done(cache[id]); return; }
+  loadingNow = true;
+  loader.load('assets/' + MODELS[id].file,
+    gltf => { try { cache[id] = build(id, gltf.scene); done(cache[id]); } catch (e) { console.error('BUILDFAIL', id); } loadingNow = false; pump(); },
+    undefined,
+    () => { console.error('LOADFAIL', id); loadingNow = false; pump(); });
 }
 function requestModel(id, done) {
   if (cache[id]) { done(cache[id]); return; }
