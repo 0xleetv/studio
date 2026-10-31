@@ -95,8 +95,7 @@ new GLTFLoader().load('assets/shoe.glb', (g) => {
   wrap = new THREE.Group();
   wrap.add(root);
   scene.add(wrap);
-  document.title = 'GLB OK ' + wrap.children[0].children.length;
-}, undefined, (e) => { document.title = 'GLB ERR ' + (e && (e.message || e)); });
+}, undefined, (e) => { console.warn('glb', e); });
 
 const acts = Array.from(document.querySelectorAll('.act'));
 acts.forEach((a, i) => a.style.setProperty('--acc', CW[i].body));
@@ -115,7 +114,7 @@ function poses() {
   ];
 }
 function stopPos() {
-  const s = acts.map((a) => a.offsetTop + a.offsetHeight * .5 - innerHeight * .5);
+  const s = acts.map((a) => a.offsetTop + a.offsetHeight * .85 - innerHeight * .5);
   s.push(Math.max(s[5] + innerHeight * .5, archiveEl.offsetTop - innerHeight * .35));
   s[0] = 0;
   return s;
