@@ -32,13 +32,13 @@ const MODELS = {
 };
 
 const ACTS = [
-  { id: 'hero', model: 'shopify', giant: 'AIRBORNE', acc: '#EDEDEA', kick: '0XLEETV STUDIO', name: 'AIRBORNE', line: 'A Nike concept store, five legends deep. Real pairs, real geometry, one stage.', cta: 'DRAG TO SPIN. CLICK A SHOE TO KNOW MORE.', price: 'CONCEPT' },
-  { id: 'aj1', model: 'aj1', giant: 'THE TEN', acc: '#E23B30', kick: 'OFF WHITE X AIR JORDAN 1, 2017', name: 'THE TEN', line: 'Virgil Abloh cut the 1985 Chicago Jordan open in 2017 and taped it back together. Zip tie still on.', cta: 'CLICK THE SHOE.', price: 'RETAIL $160' },
-  { id: 'dunk', model: 'dunk', giant: 'BEAR', acc: '#4CB878', kick: 'GRATEFUL DEAD X NIKE SB, 2020', name: 'THE GREEN BEAR', line: 'Fuzzy suede, a dancing bear on the tongue, and a stash pocket under it. July 2020.', cta: 'CLICK THE SHOE.', price: 'RETAIL $110' },
-  { id: 'af1', model: 'af1', giant: 'AF1', acc: '#E58B35', kick: 'NIKE AIR FORCE 1, 1982', name: 'THE FORCE', line: 'Bruce Kilgore, 1982. The first basketball shoe with Air under the heel. Still the uniform.', cta: 'CLICK THE SHOE.', price: 'RETAIL $115' },
-  { id: 'travis', model: 'travis', giant: 'CACTUS', acc: '#D9C6A5', kick: 'TRAVIS SCOTT X AIR FORCE 1, 2019', name: 'CACTUS JACK', line: 'Houston patchwork, corduroy, and a swoosh that comes off and flips. November 2019.', cta: 'CLICK THE SHOE.', price: 'RETAIL $160' },
-  { id: 'peg', model: 'peg', giant: 'PEG 36', acc: '#3CE4D6', kick: 'NIKE AIR ZOOM PEGASUS 36, 2019', name: 'THE 36TH', line: 'The running line since 1983. Zoom Air under engineered mesh. 36 turns in.', cta: 'CLICK THE SHOE.', price: 'RETAIL $120' },
-  { id: 'stage', model: null, giant: '', acc: '#EDEDEA' }
+  { id: 'hero', model: 'shopify', giant: 'AIRBORNE', acc: '#EDEDEA', lk: '#FFFFFF', lf: '#FFFFFF', kick: '0XLEETV STUDIO', name: 'AIRBORNE', line: 'A Nike concept store, five legends deep. Real pairs, real geometry, one stage.', cta: 'DRAG TO SPIN. CLICK A SHOE TO KNOW MORE.', price: 'CONCEPT' },
+  { id: 'aj1', model: 'aj1', giant: 'THE TEN', acc: '#E23B30', lk: '#FF7A66', lf: '#8A2E24', kick: 'OFF WHITE X AIR JORDAN 1, 2017', name: 'THE TEN', line: 'Virgil Abloh cut the 1985 Chicago Jordan open in 2017 and taped it back together. Zip tie still on.', cta: 'CLICK THE SHOE.', price: 'RETAIL $160' },
+  { id: 'dunk', model: 'dunk', giant: 'BEAR', acc: '#4CB878', lk: '#7DE8A4', lf: '#2E7A50', kick: 'GRATEFUL DEAD X NIKE SB, 2020', name: 'THE GREEN BEAR', line: 'Fuzzy suede, a dancing bear on the tongue, and a stash pocket under it. July 2020.', cta: 'CLICK THE SHOE.', price: 'RETAIL $110' },
+  { id: 'af1', model: 'af1', giant: 'AF1', acc: '#E58B35', lk: '#FFC078', lf: '#8A5A20', kick: 'NIKE AIR FORCE 1, 1982', name: 'THE FORCE', line: 'Bruce Kilgore, 1982. The first basketball shoe with Air under the heel. Still the uniform.', cta: 'CLICK THE SHOE.', price: 'RETAIL $115' },
+  { id: 'travis', model: 'travis', giant: 'CACTUS', acc: '#D9C6A5', lk: '#F2E2C4', lf: '#8A7A55', kick: 'TRAVIS SCOTT X AIR FORCE 1, 2019', name: 'CACTUS JACK', line: 'Houston patchwork, corduroy, and a swoosh that comes off and flips. November 2019.', cta: 'CLICK THE SHOE.', price: 'RETAIL $160' },
+  { id: 'peg', model: 'peg', giant: 'PEG 36', acc: '#3CE4D6', lk: '#7CF0E4', lf: '#1E8A80', kick: 'NIKE AIR ZOOM PEGASUS 36, 2019', name: 'THE 36TH', line: 'The running line since 1983. Zoom Air under engineered mesh. 36 turns in.', cta: 'CLICK THE SHOE.', price: 'RETAIL $120' },
+  { id: 'stage', model: null, giant: '', acc: '#EDEDEA', lk: '#FFFFFF', lf: '#FFFFFF' }
 ];
 
 const INFO = [
@@ -206,7 +206,8 @@ LIGHTS.forEach((l, i) => {
   b.addEventListener('click', () => {
     document.querySelectorAll('.sw').forEach(x => x.classList.remove('on'));
     b.classList.add('on');
-    key.color.set(l[1]); fill.color.set(l[2]); renderer.toneMappingExposure = l[3];
+    swatchSel = [l[1], l[2], l[3]];
+    keyT.set(l[1]); fillT.set(l[2]); key.color.set(l[1]); fill.color.set(l[2]); renderer.toneMappingExposure = l[3];
   });
   sw.appendChild(b);
 });
@@ -242,6 +243,8 @@ function setGiant(txt, on) {
 }
 
 let accTarget = new THREE.Color(0xEDEDEA);
+let keyT = new THREE.Color(0xFFFFFF), fillT = new THREE.Color(0xFFFFFF);
+let swatchSel = ['#FFFFFF', '#FFFFFF', 1.12];
 function onScroll() {
   const v = scrollY / actH;
   const i = Math.min(6, Math.max(0, Math.floor(v)));
@@ -252,6 +255,8 @@ function onScroll() {
     const a = ACTS[i];
     body.style.setProperty('--acc', a.acc);
     accTarget.set(a.acc);
+    if (i === 6) { keyT.set(swatchSel[0]); fillT.set(swatchSel[1]); renderer.toneMappingExposure = swatchSel[2]; }
+    else { keyT.set(a.lk); fillT.set(a.lf); }
     roomBtns.forEach((b, k) => b.classList.toggle('on', k === i));
   }
   setGiant(ACTS[i].giant, i < 6);
@@ -326,6 +331,8 @@ function tick() {
   }
 
   rim.color.lerp(accTarget, dt * 3);
+  key.color.lerp(keyT, dt * 3);
+  fill.color.lerp(fillT, dt * 3);
   cam.position.x += ((nx * .28) - cam.position.x) * dt * 4;
   cam.position.y += ((.55 + ny * .16) - cam.position.y) * dt * 4;
   cam.lookAt(0, .35, 0);
