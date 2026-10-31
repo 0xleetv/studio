@@ -17,12 +17,17 @@
     <div class="stage">
       <span class="giant" aria-hidden="true">AIRBORNE</span>
       <div class="glow"></div>
-      <img class="shoe" id="heroShoe" src="assets/aj1.webp" alt="Air Jordan 1 High OG Royal" draggable="false">
+      <div class="shoe spinwrap" style="--ar:1.83">
+        <div class="spinbox">
+          <img class="face front" src="assets/aj1.webp" alt="Air Jordan 1 High OG Royal" draggable="false">
+          <img class="face back" src="assets/aj1.webp" alt="" aria-hidden="true" draggable="false">
+        </div>
+      </div>
     </div>
     <div class="copy">
       <p class="line">Six silhouettes. One stage.</p>
       <p class="price">FROM $115</p>
-      <p class="cta">CLICK THE SHOE TO KNOW MORE</p>
+      <p class="cta">HOVER TO SPIN. CLICK TO KNOW MORE.</p>
     </div>
     <p class="hint">SCROLL</p>
   </section>
@@ -38,11 +43,11 @@
   </div>
 </section>
 <section class="room" id="timeline">
-  <p class="rlabel">THE TIMELINE. SWIPE THROUGH THE YEARS.</p>
+  <p class="rlabel">THE TIMELINE. SWIPE OR SCROLL SIDEWAYS.</p>
   <div class="strip" id="strip"></div>
 </section>
 <section class="railsec" id="railsec">
-  <p class="raillabel">THE LINEUP. SWIPE SIDEWAYS.</p>
+  <p class="raillabel">THE LINEUP. SCROLL OVER THE SHOES TO SWIPE.</p>
   <div class="rail" id="rail"></div>
 </section>
 <section class="room" id="stage">
@@ -80,6 +85,6 @@
     </div>
   </div>
 </div>
-<script src="app.js"></script>
+<script src="app.js?v=2"></script>
 </body>
 </html>

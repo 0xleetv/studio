@@ -51,6 +51,7 @@ const SHOES = [
   }
 ];
 window.__SHOES = SHOES;
+const AR = { aj1: 1.83, aj5: 1.67, af1: 2.19, am270: 1.90, pegasus: 2.29, p6000: 2.32 };
 
 const flow = document.getElementById("flow");
 const rail = document.getElementById("rail");
@@ -68,13 +69,18 @@ function buildActs() {
       '<div class="stage">' +
         '<span class="giant" aria-hidden="true">' + s.giant + "</span>" +
         '<div class="glow"></div>' +
-        '<img class="shoe" src="' + s.img + '" alt="' + s.alt + '" loading="lazy" draggable="false">' +
+        '<div class="shoe spinwrap" style="--ar:' + AR[s.id] + '">' +
+          '<div class="spinbox">' +
+            '<img class="face front" src="' + s.img + '" alt="' + s.alt + '" loading="lazy" draggable="false">' +
+            '<img class="face back" src="' + s.img + '" alt="" aria-hidden="true" loading="lazy" draggable="false">' +
+          '</div>' +
+        '</div>' +
       "</div>" +
       '<div class="copy">' +
         '<h3 class="name" style="font-size:15px;font-weight:700;letter-spacing:0.04em;margin-bottom:10px">' + s.name + "</h3>" +
         '<p class="line">' + s.line + "</p>" +
         '<p class="price">' + s.cw + " " + s.price + "</p>" +
-        '<p class="cta">CLICK THE SHOE TO KNOW MORE</p>' +
+        '<p class="cta">HOVER TO SPIN. CLICK TO KNOW MORE.</p>' +
       "</div>";
     flow.appendChild(act);
   });
@@ -101,6 +107,11 @@ function openDetail(i) {
   const s = SHOES[i];
   openIdx = i;
   document.documentElement.style.setProperty("--acc", s.accent);
+  const frgb = hexToRgb(s.accent);
+  detail.style.background =
+    "radial-gradient(110% 90% at 72% 18%, rgba(" + frgb.join(",") + ",0.2), rgba(6, 7, 9, 0.94) 60%)";
+  detail.querySelector(".dwrap").style.background =
+    "linear-gradient(165deg, rgba(" + frgb.join(",") + ",0.14), #0D0E11 48%)";
   document.getElementById("dShoe").src = s.img;
   document.getElementById("dShoe").alt = s.alt;
   document.getElementById("dName").textContent = s.name;
@@ -126,23 +137,12 @@ document.getElementById("dBag").addEventListener("click", () => {
   document.getElementById("dNote").hidden = false;
 });
 
-const acts = Array.from(document.querySelectorAll(".act"));
-const shoesEls = acts.map(a => a.querySelector(".shoe"));
-const giantEls = acts.map(a => a.querySelector(".giant"));
 const shoeIdx = [0, 1, 2, 3, 4, 5];
 
 let mx = 0.5, my = 0.5, sx = 0.5, sy = 0.5;
 window.addEventListener("pointermove", e => {
   mx = e.clientX / window.innerWidth;
   my = e.clientY / window.innerHeight;
-});
-
-acts.forEach((a, k) => {
-  const shoe = shoesEls[k];
-  if (!shoe) return;
-  shoe.addEventListener("pointerenter", e => { if (e.pointerType !== "touch") a.classList.add("hover"); });
-  shoe.addEventListener("pointerleave", () => a.classList.remove("hover"));
-  shoe.addEventListener("click", () => openDetail(shoeIdx[k]));
 });
 
 function hexToRgb(h) {
@@ -191,6 +191,43 @@ requestAnimationFrame(frame);
 
 buildActs();
 buildRail();
+
+const acts = Array.from(document.querySelectorAll(".act"));
+const shoesEls = acts.map(a => a.querySelector(".shoe"));
+const giantEls = acts.map(a => a.querySelector(".giant"));
+acts.forEach((a, k) => a.style.setProperty("--a2", SHOES[shoeIdx[k]].accent));
+acts.forEach((a, k) => {
+  const wrap = shoesEls[k];
+  if (!wrap) return;
+  const box = wrap.querySelector(".spinbox");
+  wrap.addEventListener("pointerenter", e => { if (e.pointerType !== "touch") a.classList.add("hover"); });
+  wrap.addEventListener("pointerleave", e => {
+    a.classList.remove("hover");
+    if (e.pointerType !== "touch" && box) box.style.transform = "rotateY(0deg)";
+  });
+  wrap.addEventListener("pointerdown", e => {
+    wrap._px = e.clientX;
+    wrap._moved = 0;
+    wrap._spin = e.pointerType === "touch";
+  });
+  window.addEventListener("pointerup", () => {
+    wrap._movedFinal = wrap._moved || 0;
+    wrap._spin = false;
+    wrap._px = null;
+  });
+  wrap.addEventListener("pointermove", e => {
+    if (wrap._px != null) wrap._moved = Math.max(wrap._moved || 0, Math.abs(e.clientX - wrap._px));
+    if (!box) return;
+    if (e.pointerType === "touch" && !wrap._spin) return;
+    const r = wrap.getBoundingClientRect();
+    const nx = clamp((e.clientX - r.left) / r.width, 0, 1);
+    box.style.transform = "rotateY(" + ((nx - 0.5) * 360).toFixed(1) + "deg)";
+  });
+  wrap.addEventListener("click", () => {
+    if ((wrap._movedFinal || 0) > 12) return;
+    openDetail(shoeIdx[k]);
+  });
+});
 
 const YEARS = [
   { y: "1982", img: "assets/af1.webp", n: "AIR FORCE 1", l: "Air enters the court." },

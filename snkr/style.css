@@ -266,3 +266,51 @@ body, .rail { scrollbar-width: none; }
 }
 .rail.live .card:hover { transform: translateY(-8px); }
 .rail.live .card:hover img { transform: scale(1.07) rotate(-4deg); }
+
+.shoe.spinwrap {
+  perspective: 1200px; touch-action: pan-y;
+  width: min(46vw, 580px);
+  aspect-ratio: var(--ar, 2);
+  max-width: calc(56svh * var(--ar, 2));
+  filter: none;
+}
+@media (max-width: 720px) {
+  .shoe.spinwrap { width: 86vw; max-width: calc(48svh * var(--ar, 2)); }
+}
+.spinbox {
+  position: absolute; inset: 0;
+  transform-style: preserve-3d;
+  transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.3, 1);
+  will-change: transform;
+}
+.face {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: contain; pointer-events: none;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  filter: drop-shadow(0 30px 24px rgba(0, 0, 0, 0.55));
+}
+.face.back { transform: rotateY(180deg) scaleX(-1); }
+
+.glow { overflow: visible; }
+.glow::before, .glow::after {
+  content: ""; position: absolute; inset: -30%;
+  background: radial-gradient(closest-side, var(--a2, var(--acc)), transparent 68%);
+  filter: blur(60px); border-radius: 50%; pointer-events: none;
+}
+.glow::before { opacity: 0.5; animation: drift1 19s ease-in-out infinite alternate; }
+.glow::after { opacity: 0.32; animation: drift2 26s ease-in-out infinite alternate; }
+@keyframes drift1 { from { transform: translate(-14%, -8%) scale(1); } to { transform: translate(12%, 10%) scale(1.28); } }
+@keyframes drift2 { from { transform: translate(12%, 12%) scale(1.22); } to { transform: translate(-12%, -10%) scale(0.92); } }
+
+.detail { transition: opacity 0.35s ease; }
+.dwrap { transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1); }
+.dinfo > * { opacity: 0; transform: translateY(16px); transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.detail.open .dinfo > * { opacity: 1; transform: translateY(0); }
+.detail.open .dinfo > :nth-child(1) { transition-delay: 0.2s; }
+.detail.open .dinfo > :nth-child(2) { transition-delay: 0.26s; }
+.detail.open .dinfo > :nth-child(3) { transition-delay: 0.32s; }
+.detail.open .dinfo > :nth-child(4) { transition-delay: 0.38s; }
+.detail.open .dinfo > :nth-child(5) { transition-delay: 0.44s; }
+.detail.open .dinfo > :nth-child(6) { transition-delay: 0.5s; }
+.detail.open .dinfo > :nth-child(7) { transition-delay: 0.56s; }
+.detail.open .dinfo > :nth-child(8) { transition-delay: 0.62s; }
