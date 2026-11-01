@@ -183,11 +183,12 @@ addEventListener('pointermove', e => {
   ny = -((e.clientY / innerHeight) * 2 - 1);
 });
 
-let dX = 0, dY = 0, moved = 0, rotX = 0, rotU = 0, dragging = false;
+let dX = 0, dY = 0, moved = 0, rotX = 0, rotU = 0, dragging = false, sx = 0, sy = 0;
 addEventListener('pointerdown', e => {
   if (e.target.closest('button, a, #detail, #dback, #rooms, #intro')) return;
-  dragging = true; moved = 0; dX = e.clientX; dY = e.clientY;
+  dragging = true; moved = 0; dX = e.clientX; dY = e.clientY; sx = e.clientX; sy = e.clientY;
 });
+addEventListener('pointercancel', () => { dragging = false; });
 addEventListener('pointermove', e => {
   if (!dragging) return;
   const dx = e.clientX - dX, dy = e.clientY - dY;
@@ -199,7 +200,8 @@ addEventListener('pointermove', e => {
 addEventListener('pointerup', e => {
   if (!dragging) return;
   dragging = false;
-  if (moved < 7 && cur) {
+  const tapMax = e.pointerType === 'touch' ? 24 : 7;
+  if (Math.hypot(e.clientX - sx, e.clientY - sy) < tapMax && cur) {
     const r = cv.getBoundingClientRect();
     const p = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
     const ray = new THREE.Raycaster(); ray.setFromCamera(p, cam);
@@ -217,8 +219,10 @@ function applyTint(hex) {
   if (!cur || !cur.userData.mats) return;
   cur.userData.mats.forEach(x => x.m.color.copy(hex ? new THREE.Color(hex) : x.oc));
 }
+let openedAt = 0;
 function openInfo(i) {
   const d = INFO[i]; if (!d) return;
+  openedAt = performance.now();
   document.getElementById('dkick').textContent = d.kick;
   scramble(document.getElementById('dname'), d.name, 460);
   document.getElementById('dline').textContent = d.line;
@@ -269,6 +273,7 @@ function actIdxOfCur() {
   return k >= 0 ? k : Math.min(gi, INFO.length - 1);
 }
 function closeInfo() {
+  if (performance.now() - openedAt < 350) return;
   detail.classList.remove('open'); dback.classList.remove('on');
   document.body.classList.remove('lock');
   detail.setAttribute('aria-hidden', 'true');

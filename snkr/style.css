@@ -163,6 +163,7 @@ body.lock { overflow:hidden; }
   .szrow { grid-template-columns:repeat(3,1fr); }
   .dspecs b { min-width:104px; }
   .hint { display:none; }
+  #rooms { flex-wrap:wrap; justify-content:center; max-width:calc(100vw - 24px); row-gap:6px; }
   #rooms button { padding:8px 10px; font-size:9px; }
   #intro .ib { font-size:15vw; }
 }
